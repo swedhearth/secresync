@@ -1,0 +1,154 @@
+{
+"alert": {
+    "name":{
+        "local": "Quick Access Database",
+        "dbxFile": "Dropbox Database",
+        "localFile": "Database File"
+    },
+    "offline": {
+        "q": "Cant't connect to the cloud.<br><br>It looks like you don't have the internet connection.",
+        "y": null,
+        "n": "OK. I see."
+    },
+    "deleteVendor": {
+        "q": "Do you really want to delete ${ vName }?",
+        "y": "Yes I do!",
+        "n": "No! It was a mistake!",
+        "i": "trashBin"
+    },
+    "newVersion": {
+        "q": "A new version of the App is available.",
+        "y": "OK!<br>Update the App now!",
+        "n": "Don't update it yet.<br>I will reload the app manually."
+    },
+    "syncDbWith": {
+        "local": {
+            "q": "To load the database automaticaly you can save it in the LPM App.",
+            "y": "OK!<br>Save the database in the App!",
+            "n": "No, don't do it.<br>I will load the database manually.",
+            "i": "local"
+        },
+        "dbxFile": {
+            "q": "Would you like to synchronise the App to the Dropbox?",
+            "y": "Yes!<br>Go on then!",
+            "n": "No, I don't.<br>Thank you.",
+            "i": "dbxFile"
+        },
+        "localFile": {
+            "q": "Would you like to synchronise the App with a Local File?",
+            "y": "Yes!<br>Go on then!",
+            "n": "No, I don't.<br>Thank you.",
+            "i": "localFile"
+        },
+    },
+    "disconnectDbFrom":{
+        "local": {
+            "q": "You are about to disconnect the Quick Access Database from this device.<br><br>You may not be able to use the App without an internet connection.<br>No other synchronised databases will be affected.",
+            "y": "Yes!<br><br>Remove the Quick Access Database from this device.<br>",
+            "n": "Oh, no!<br><br>It was a mistake.",
+            "i": "local"
+        },
+        "dbxFile": {
+            "q": "You are about to disconnect the Dropbox Database.<br>The App database will not be synchronised with the Dropbox Database.<br>The App permission to use the Dropbox will be revoked.",
+            "y": "Yes!<br>Disconnect the Dropbox Database!",
+            "n": "Oh, no!<br><br>It was a mistake.",
+            "i": "dbxFile"
+        },
+        "localFile": {
+            "q": "You are about to disconnect the Database File.<br>The App database will not longer be synchronised with the your Database File.",
+            "y": "Yes!<br>Disconnect the Database File!",
+            "n": "Oh, no!<br><br>It was a mistake.",
+            "i": "localFile"
+        },
+    },
+    "deleteExistingStore":{
+        "local": {
+            "q": "The local Quick Access Database exists. Are you sure you want to create a new Database?",
+            "y": "Yes I do!<br>Remove the existing Quick Access Database.",
+            "n": "No! It was a mistake!",
+            "i": "local"
+        },
+        "dbxFile": {
+            "q": "There is an existing connection to the Dropbox Database. What do we do?",
+            "y": "Remove the current connection to the Dropbox Database.<br><br>I understand that I may lose all the data.",
+            "n": "Oh... I didn't realise that. Do not delete the connection. I want to use it",
+            "i": "dbxFile"
+        },
+        "localFile": {
+            "q": "There is an existing connection to the Database File. What do we do?",
+            "y": "Remove the current connection to the Database File.",
+            "n": "Do not delete the connection. I want to use it",
+            "i": "localFile"
+        },
+    },
+    "update":{
+        "q": "The ${ sName } has ${ sAge } content than the App data.<br><br>The ${ sName } was modified: ${ sMod }<br>The App data was modified: ${ aMod }<br><br>What do we do?",
+        "y": "<b>The ${ sName } is wrong.</b><br><br>Keep the App data.<br><br>${ isAlter }",
+        "n": "<b>The ${ sName } is correct.</b><br><br>Keep the ${ sName } data.<br><br>Update the App data to match the ${ sName }.",
+        "i": "${ sKey }",
+        "storeOlder": "an older",
+        "storeNewer": "a newer",
+        "alter": "Update the ${ sName } to match the App data.",
+        "noAlter": "<b>CAUTION: The ${ sName } wil NOT be updated.</b>",
+    },
+    "localFileLoadOrCreate": {
+        "q": "Do you have an existing Database File?",
+        "y": "Yes. I already have an existing Database File<br><br>Let me connect to it",
+        "n": "I need to create a new Database File<br><br>Just let me save it...",
+        "i": "localFile"
+    },
+    "localFileLoadOrDownload": {
+        "q": "You can't synchronise the Database File of this device.",
+        "y": "I wan't to upload a new Database File.<br>",
+        "n": "I want to download a copy of the current database.",
+        "i": "localFile"
+    },
+    "catchLoad": {
+        "q": "There is a problem with the ${ sName } connection.",
+        "y": "Lets remove the connection and reload the App.<br>",
+        "n": "No! Just ignore it for the time beign!",
+        "i": "${ sKey }",
+    },
+    "catchSync": {
+        "q": "Can't Synchronise the ${ sName }<br><br>The computer says:<br><br>${ cErr }",
+        "y": null,
+        "n": "OK. I see.",
+        "i": "${ sKey }",
+    },
+    "catchUpdate": {
+        "q": "Can't update the ${ sName }.<br><br>.<br><br>The connection will be removed.<br><br>${ cErr }",
+        "y": null,
+        "n": "OK. I see.",
+        "i": "${ sKey }",
+    }
+    
+},
+"message":{
+    "existingDb": "Please enter password to your Database",
+    "existingOrNew": "Please enter password to your existing Database or click New Database icon.",
+    "newDb": "To create a new Database, please enter a new, strong password.",
+    "loggedOff": "You have been logged off after inactivity. Re-input your password to unlock the database.",
+    "loadBd":"Load the database or create a new one",
+    "dbFailed": "Database file is corrupted or cannot be unlocked. You have ${ count } more attempts to unlock it...",
+    "appFailed": "Something went wrong... The App can't start. Try to reload the App",
+    "passShort": "Master Password must be at least 10 characters long.",
+    "logShort": "Account Login must be at least 6 characters long.",
+    "nameShort": "Account Name must be at least 4 characters long.",
+    "deleteVendorReject": "The '${ vName }' Account has not been removed.",
+    "deleteVendorFailed": "Ooops! There is a problem... Can't save the change. The '${ vName }' Account has not been removed.",
+    "submitFormFailed": "Ooops! There is a problem... Can't save the change for the '${ vName }' Account.",
+    "submitPassFailed": "Ooops! There is a problem... Can't save the new Password the '${ vName }' Account. The Password has not been changed.",
+    "vendorExists": "Account name: '${ vName }' is already in use! Choose another name.",
+    "oldPassCopied": "Old Password copied.",
+    "passCopied": "Password copied.",
+    "logCopied": "Login copied.",
+    "vendorDeleted": "Account sucessfully deleted.",
+    "exitAppConfirm": "Press the Back Button again to exit the App.",
+    "fileHandlerFailed": "The FileHandler failed. The Database File cannot be modified. Choose the Database File using the FileReader.",
+    "noFilePickedErr": "No file was uploaded using the FileReader. Database cannot be loaded...",
+    "pickFileFR": "Choose the Database File using the FileReader. Database cannot be modified...",
+    "pickFile": "Choose the Database File...",
+    "offline": "No internet connection. Can't sync the cloud.",
+    "online": "You are back online.",
+}
+}
