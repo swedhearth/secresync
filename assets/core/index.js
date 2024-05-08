@@ -269,8 +269,17 @@ word
         this.changeCredentials = async _ => {
             const [plainPassString, plainPinString, persistKey] = await this.getCredentials(true);
             const [cryptoKeyObj, saltU8Ary] = await this.crypto.getNewCryptoKeyAndSalt(plainPassString, plainPinString);
-            encryptDatabase = _ => this.crypto.getCipherFromString(JSON.stringify(this.dbObj), cryptoKeyObj, saltU8Ary); //this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+            this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary);
+            encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj))); //this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
             //Change encrypted dbx Handle (dbxFile)
+            const dbxStore = this.dbStore["dbxFile"];
+            const dbxFileHandleEncrypted = dbxStore.handleGet();
+            const decodedDbxRefresher = await this.decodeToString(dbxFileHandleEncrypted);
+            await dbxStore.handleUpdate(this.encryptString(this.handlePlain)); //returns u8Ary
+
+
+
+            
             
             if(persistKey){//do it only once!!
                 persistCryptoKey(cryptoKeyObj, plainPinString);
@@ -504,6 +513,7 @@ word
             storeObj.syncing = false;
             storeObj.syncIcon.killClass("storeSyncing"); 
         };
+        storeObj.handleGet = async _ => await thisApp.idxDb.get(storeObj.key);
         storeObj.handleUpdate = async data => {
             storeObj.handle = await data;
             await thisApp.idxDb.set(storeObj.key, storeObj.handle);
@@ -519,7 +529,7 @@ word
             storeObj.dbMod = 0;
             storeObj.syncStop();
             storeObj.dontSync = thisApp.consent && thisApp.localStorage.exists ? thisApp.localStorage.get(storeObj.key + "DontSync") : true;
-            storeObj.handle = await thisApp.idxDb.get(storeObj.key);
+            storeObj.handle = await storeObj.handleGet();
             storeObj.handlePlain = storeObj.redirect ? await storeObj.redirect() : null;
             const thisStoreExists = (storeObj.handle || storeObj.handlePlain) && !storeObj.syncPaused;
             storeObj.iconOpacity(thisStoreExists);
@@ -641,9 +651,9 @@ word
 
 
 
-            if(dbxSyncExisting){///from redirect - from already operational database through sync method
+/*             if(dbxSyncExisting){///from redirect - from already operational database through sync method
                 thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting);
-            }
+            } */
 
             const fileListResponse = await dbx.filesListFolder({path: ''});
 
