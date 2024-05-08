@@ -36,7 +36,7 @@ PassSync
 
 Entangled Secrets App
 
-
+sec.snc
 Secret
 
 Acceess Everywhere
@@ -102,7 +102,7 @@ word
 /* ****************************------------------------------------- APP -------------------------------------***********************************/
     function App(){
         console.log("App Initiated");
-        this.URL = window.location.origin + window.location.pathname;//"https://swedhearth.github.io/lpm/";"https://www.havetogoto.co.uk/"
+        this.URL = window.location.origin + window.location.pathname;//"https://swedhearth.github.io/secresync/"
         this.consent = null; // null = in private mode(storage disabled, false = consent not given, true = storage available
         this.encryptDatabase = null; // will be set in the decodeToJson function
         this.decryptDatabase = null; // will be set in the decodeToJson function
@@ -243,6 +243,11 @@ word
 
                     this.decryptDatabase = dbCipherU8Ary => this.crypto.getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj); // assign new function for decrypt using the retrieved cryptoKeyObj
                     this.encryptDatabase = _ => this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+                    
+                    this.decryptString = stringCipherU8Ary => this.crypto.getStringFromCipher(stringCipherU8Ary, cryptoKeyObj);
+                    this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary);
+                    
+                    console.log("saltU8Ary: ", saltU8Ary);
 
                     if(persistKey) persistCryptoKey(cryptoKeyObj, plainPinString);
                     res(dbObject);
@@ -340,7 +345,7 @@ word
             this.dbStore = dbStore;
             this.ui.localiseDbStores();
 
-            this.idxDb = this.consent ? await new IdxDb("lpmIdxDbNextAttempt", 1, "assets") : new Storage(null);
+            this.idxDb = this.consent ? await new IdxDb("SecreSync", 1, "assets") : new Storage(null);
         };
         
         this.changeLangTo = async lang => {
@@ -547,8 +552,8 @@ word
 
     /* ---------------------------------------------------------  DBX File Store --------------------------------------------------------------------- */
     function DbxFile (thisApp){
-        const CLIENT_ID = '02fhhbs8a911871';
-        const REDIRECT_URI = thisApp.URL; //"https://swedhearth.github.io/lpm/";
+        const CLIENT_ID = "1040klsqlfss2cv";
+        const REDIRECT_URI = thisApp.URL; //"https://swedhearth.github.io/secresync/";
         const timeoutMsec = 5000;
         const dbxAuth = new Dropbox.DropboxAuth({
             clientId: CLIENT_ID,
@@ -586,7 +591,7 @@ word
                     if(! await thisApp.alert.privateModeEnableClipboard() ) return;
                     navigator.clipboard.writeText(dbxAuth.codeVerifier);
                 }
-                if(thisApp.dbObj) thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary());
+                if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary());
                 // Set History State Here!!!!!!
                 window.history.replaceState({authorising: true}, '', window.location.pathname);
                 thisApp.urlReplace(authUrl);
@@ -594,13 +599,13 @@ word
                 this.catchSync(e).then(e => thisApp.start(e, true));// catch syncs are already in the chatchSync function - IS THIS NECESSARY?
             }
         }
-
+                    
         const readDbxFile = async _ => {
             if(!this.handlePlain && !this.handle) return;
-            if (this.handlePlain) await this.handleUpdate(getEncodedU8Ary(this.handlePlain));
+            if(this.handlePlain) await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //returns u8Ary
             if(!thisApp.online) return this.syncPaused ? null : this.syncPause().then(thisApp.alert.offline);
             this.syncStart();
-            const decodedDbxRefresher = this.handlePlain || await decodeToString(this.handle);
+            const decodedDbxRefresher = this.handlePlain || await thisApp.decryptString(this.handle);
             dbx = await promiseWithTimeout(timeoutMsec, refreshToken(decodedDbxRefresher));
 
             let dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
@@ -612,7 +617,7 @@ word
 
             const fileListResponse = await dbx.filesListFolder({path: ''});
 
-            if(!fileListResponse.result.entries.map(obj => obj.name).includes("lpm.db")){
+            if(!fileListResponse.result.entries.map(obj => obj.name).includes("secre.snc")){
                 if(!thisApp.dbObj){
                     // ASK if new DB needs creating "No file, no app.dbObj - Need to create a new DB";
                     //app.dbObj = {mod: new Date(), vendors:[]};
@@ -622,7 +627,7 @@ word
                 return this.update();
             }
             //////////////////////////////////////////////////////////make it as try catch - to avoid double request from dropbox (filesListFolder and filesDownload)
-            const response = await dbx.filesDownload({path: '/lpm.db'});
+            const response = await dbx.filesDownload({path: '/secre.snc'});
             
             const encodedDbxFileContent = await response.result.fileBlob.arrayBuffer();
             const dbxDbObj = await thisApp.decodeToJson(encodedDbxFileContent);
@@ -636,7 +641,7 @@ word
             this.syncStart();
             if(!alreadyUpdated){
                 await dbx.filesUpload(
-                    {path: '/lpm.db', contents: await thisApp.getDbFileBlob(), mode: "overwrite", autorename: false}
+                    {path: '/secre.snc', contents: await thisApp.getDbFileBlob(), mode: "overwrite", autorename: false}
                 );
             }
             return this.connect(thisApp.dbObj);
@@ -723,11 +728,11 @@ word
     /* ---------------------------------------------------------  Local File Store --------------------------------------------------------------------- */
     function LocalFile (thisApp){
         const fileOptions = { // File Options - save and read names and types
-            suggestedName: 'lpm',
+            suggestedName: 'secre',
             types: [{
-                description: 'LPMdb',
+                description: 'SecreSync Database',
                 accept: {
-                    'application/db': ['.db']
+                    'application/snc': ['.snc']
                 }
             }],
             excludeAcceptAllOption: true,
@@ -786,7 +791,7 @@ word
         }
 
         const downloadLocalFile = async _ => {
-            const downloadedFileName = downloadFile(await thisApp.getDbFileBlob(), "lpm.db");
+            const downloadedFileName = downloadFile(await thisApp.getDbFileBlob(), "secre.snc");
             await new Promise(res => setTimeout(res, 1000));
             thisApp.message.dbFileDownloaded(downloadedFileName);
         }
@@ -926,7 +931,7 @@ word
             }
         }
 
-        navigator.serviceWorker.register('service-worker.js', {scope: '/lpm/'}).then(reg => {
+        navigator.serviceWorker.register('service-worker.js', {scope: '/SecreSync/'}).then(reg => {
             reg.addEventListener('updatefound', _ => 
                 reg.installing.addEventListener('statechange', onstateChange)
             );

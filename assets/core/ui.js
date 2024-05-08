@@ -854,7 +854,7 @@ console.log("initiate Interface");
                             dom.add("button").html("Download Unprotected Database CVS").onClick(e => {
                                 downloadFile(
                                     new Blob([getCvsTContents()], {type : 'text/html'}),
-                                    'lpm_Emergency_Unprotected.csv'
+                                    'SecreSync_Emergency_Unprotected.csv'
                                 );
                                 e.target.kill();
                             })
@@ -871,7 +871,7 @@ console.log("initiate Interface");
                 const constStr = "document.querySelector('form').addEventListener('submit', unlockDb); const dbCipherString= '" + await thisApp.getEncryptedDbU8Ary()  + "';";
                 const scriptString = [Dom, Crypto, downloadFile, unlockDb, constStr].map(f => f.toString()).join('');
                 
-                const doc = document.implementation.createHTMLDocument("LPM Emergency");
+                const doc = document.implementation.createHTMLDocument("SecreSync Emergency");
                 const styleHtml = "body{position: absolute;margin: 0;padding: 0;width: 100%;font-family: monospace;font-size: 16px;}body *{max-width: 900px;}form{outline: 1px solid grey;margin: 1vmin auto;padding: 1vmin;}form *{text-align: center;}label{display:block;padding:1em;}input{font-family: monospace;font-size: 0.9em;line-height: 1.5em;border: 0;border-bottom: 1px solid rgb(240, 240, 240);transition: all 0.3s ease;padding: 0.5em 2.5em;display: block;margin: 0em auto 10vh;min-width: 50%;}input:focus-visible{outline:0;border-bottom: 1px solid black;color: black;}.btnWrp{display: flex;margin: auto;position: sticky;top: 0px;justify-content: center;}button{margin: 1em;padding:1em;}.account{margin: 1em auto;padding:1em;outline: 1px solid grey;background: #fafafa;}.prop{display: table-row;}.prop *{padding:0.5em;display: table-cell;}.key{font-weight: bold;}.val{color:black;}";
                 dom.add("style").html(styleHtml).attachTo(doc.head);
                 dom.add("form")
@@ -885,7 +885,7 @@ console.log("initiate Interface");
                 dom.add("script").setAttr("id", "preliminaryScript").setAttr("data-scriptstring", scriptString).html(preliminaryScriptHtml).attachTo(doc.body); // add string content of the main script (scriptString) to dataset.scriptstring of the preliminaryScript in order to prevent parsing large HTML, evaluating and compiling script on the document loading (it slows down the display of the form). The main script (scriptString) is added, parsed and compiled after DOMContentLoaded
                 const emrgDbName = downloadFile(
                     new Blob(['<!DOCTYPE html>' + doc.documentElement.outerHTML], {type : 'text/html'}),
-                    "lpm_Emergency.html"
+                    "SecreSync_Emergency.html"
                 );
                 thisApp.message.emergDbCreated(emrgDbName);
             };

@@ -203,6 +203,17 @@ function Crypto(){
         const dbString = await getDecompressedString(dbU8Ary);
         return [JSON.parse(dbString), saltU8Ary];
     }
+    
+    async function getCipherFromString(string, cryptoKeyObj, saltU8Ary){
+        const stringU8Ary = await getCompressedU8Ary(string);
+        return encryptStringUseKey(stringU8Ary, cryptoKeyObj, saltU8Ary, aesGcmObj); //u8Ary
+    }
+    
+    async function getStringFromCipher(stringCipherU8Ary, cryptoKeyObj){
+        const [decryptedU8Ary, saltU8Ary] = await decryptStringUseKey(u8AryFrom(stringCipherU8Ary), cryptoKeyObj, aesGcmObj);
+        return getDecompressedString(decryptedU8Ary);
+    }
+    
 
     async function getCryptoKeyObjFromPlains(dbCipherU8Ary, plainPassString, plainPinString){
         const passU8Ary = await getHashU8Ary(plainPassString, plainPinString);
@@ -296,6 +307,8 @@ function Crypto(){
     this.getDbObjectFromCipher = getDbObjectFromCipher; // require dbCipherU8Ary, cryptoKeyObj // returns db object
     this.getCryptoKeyObjFromPlains = getCryptoKeyObjFromPlains; // require dbCipherU8Ary, plainPassString, plainPinString, returns decryptedStringAryBuf
     this.getNewCryptoKeyAndSalt = getNewCryptoKeyAndSalt;
+    this.getStringFromCipher = getStringFromCipher;
+    this.getCipherFromString = getCipherFromString;
     this.DatabaseObject = DatabaseObject;
     this.Vendor = Vendor;
     this.vPass = vPass;
