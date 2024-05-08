@@ -398,10 +398,13 @@ word
             try{
                 Object.values(this.dbStore).forEach(storeObj => storeObj.removeDontSync());
                 await this.decodeToJson(false);
+                console.log("await this.decodeToJson(false)");
                 this.setDbObj(null);
+                console.log(this.dbObj);
                 this.paint();
                 this.checkExtraSync().catch(e => this.start(e, true));
-            }catch(e){
+            }catch(err){
+                console.log(err);
                 this.start()
             }
         };
