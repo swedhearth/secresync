@@ -104,12 +104,12 @@ word
         console.log("App Initiated");
         this.URL = window.location.origin + window.location.pathname;//"https://swedhearth.github.io/secresync/"
         this.consent = null; // null = in private mode(storage disabled, false = consent not given, true = storage available
-        this.encryptDatabase = null; // will be set in the decodeToJson function
-        this.decryptDatabase = null; // will be set in the decodeToJson function
+        let encryptDatabase = null; // will be set in the decodeToJson function
+        let decryptString = null; // will be set in the decodeToJson function
         this.pendingPromise = null;
         let _encryptedDb = null;
         
-        this.getEncryptedDbU8Ary = async _ => (_encryptedDb = (_encryptedDb || this.encryptDatabase()));
+        this.getEncryptedDbU8Ary = async _ => (_encryptedDb = (_encryptedDb || encryptDatabase()));
         this.getDbFileBlob = _ => this.getEncryptedDbU8Ary().then(encryptedDbU8Ary => new Blob([encryptedDbU8Ary.buffer], {type:"application/octet-stream"}));
         this.setDbObj = dbObj => {
             this.dbObj = new this.crypto.DatabaseObject(dbObj);
@@ -119,8 +119,8 @@ word
         this.reload = _ => this.urlReplace(this.URL);
         this.reset = async function(){
             this.dbObj = null;
-            this.encryptDatabase = _encryptedDb = null;
-            this.decryptDatabase = null;
+            encryptDatabase = _encryptedDb = null;
+            decryptString = null;
             this.pendingPromise = null;
             return Promise.all(Object.keys(this.dbStore).map(storeKey => this.dbStore[storeKey].reset()));
         };
@@ -199,31 +199,31 @@ word
             return credentialsResponseAry;
         };
 
-        this.decodeToJson = async (dbCipherU8Ary, credentialsResponseAry, badPin, isImport) => { //credentialsResponseAry only when using Local File and there is no decryptDatabase
-            if(this.pendingPromise) return this.pendingPromise.then(_ => this.decodeToJson(dbCipherU8Ary, credentialsResponseAry, badPin, isImport));
+        this.decodeToString = async (cipherU8Ary, credentialsResponseAry, badPin, isImport) => { //credentialsResponseAry only when using Local File and there is no decryptDatabase
+            if(this.pendingPromise) return this.pendingPromise.then(_ => this.decodeToString(cipherU8Ary, credentialsResponseAry, badPin, isImport));
             const maxBadPin = 3;
             return this.pendingPromise = new Promise(async (res, rej) => {
                 try{
-                    const newDatabase = !dbCipherU8Ary;
-                    let dbObject, cryptoKeyObj, saltU8Ary;
-                    if(this.decryptDatabase && !isImport){
-                        [dbObject] = await this.decryptDatabase(dbCipherU8Ary);
-                        return res(dbObject);
+                    const newCredentials = !cipherU8Ary;
+                    let decryptedString, cryptoKeyObj, saltU8Ary;
+                    if(decryptString && !isImport){
+                        [decryptedString] = await decryptString(cipherU8Ary);
+                        return res(decryptedString);
                     }
-                    const [plainPassString, plainPinString, persistKey] = credentialsResponseAry || await this.getCredentials(newDatabase); //credentialsResponseAry only when using Local File
-                    if(newDatabase){
+                    const [plainPassString, plainPinString, persistKey] = credentialsResponseAry || await this.getCredentials(newCredentials); //credentialsResponseAry only when using Local File
+                    if(newCredentials){
                         [cryptoKeyObj, saltU8Ary] = await this.crypto.getNewCryptoKeyAndSalt(plainPassString, plainPinString);
                     }else{
                         if(plainPassString && plainPinString){
-                            cryptoKeyObj = await this.crypto.getCryptoKeyObjFromPlains(dbCipherU8Ary, plainPassString, plainPinString);
-                            [dbObject, saltU8Ary] = await this.crypto.getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj);
-                            if(isImport) return res(dbObject);
+                            cryptoKeyObj = await this.crypto.getCryptoKeyObjFromPlains(cipherU8Ary, plainPassString, plainPinString);
+                            [decryptedString, saltU8Ary] = await this.crypto.getStringFromCipher(cipherU8Ary, cryptoKeyObj);
+                            if(isImport) return res(decryptedString);
                         }else if(plainPinString){
                             try{
                                 if(plainPinString === true) throw "deletePesistedCredentials"; // clicked Log with Pass and Pin
                                 const [cryptoKeyCipher, cryptoKeyNonce] = await getPesistedCredentials();
                                 cryptoKeyObj = await this.crypto.getCryptoKeyFromKeyHexCipherInBrowser(plainPinString, cryptoKeyCipher, cryptoKeyNonce);
-                                [dbObject, saltU8Ary] = await this.crypto.getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj);
+                                [decryptedString, saltU8Ary] = await this.crypto.getStringFromCipher(cipherU8Ary, cryptoKeyObj);
                             }catch(err){ // "deletePesistedCredentials" or "die" or "fatal" (connection issue) or "retry"
                                 badPin = badPin || 1;
                                 if(badPin > maxBadPin || err === "deletePesistedCredentials"){
@@ -234,23 +234,27 @@ word
                                     this.message.persistedBadPin(1 + maxBadPin - badPin);
                                 }
                                 this.pendingPromise = null;
-                                return res(this.decodeToJson(dbCipherU8Ary, credentialsResponseAry, ++badPin));
+                                return res(this.decodeToString(cipherU8Ary, credentialsResponseAry, ++badPin));
                             }
                         }else{
                             return res(null); // this.credentialsResponseAry is empty  no plainPassString and no plainPinString
                         }
                     }
 
-                    this.decryptDatabase = dbCipherU8Ary => this.crypto.getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj); // assign new function for decrypt using the retrieved cryptoKeyObj
-                    this.encryptDatabase = _ => this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+                    //this.decryptDatabase = cipherU8Ary => this.crypto.getDbObjectFromCipher(cipherU8Ary, cryptoKeyObj); // assign new function for decrypt using the retrieved cryptoKeyObj
                     
-                    this.decryptString = stringCipherU8Ary => this.crypto.getStringFromCipher(stringCipherU8Ary, cryptoKeyObj);
+                    
+                    decryptString = cipherU8Ary => this.crypto.getStringFromCipher(cipherU8Ary, cryptoKeyObj);
                     this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary);
+                    encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj)); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+                    
+                    
+                    //this.encryptDatabase = _ => this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
                     
                     console.log("saltU8Ary: ", saltU8Ary);
 
                     if(persistKey) persistCryptoKey(cryptoKeyObj, plainPinString);
-                    res(dbObject);
+                    res(decryptedString);
                 }catch(err){
                     rej(err);
                 }
@@ -259,10 +263,14 @@ word
             .finally(_ => this.pendingPromise = null);
         };
         
+        this.decodeToJson = (dbCipherU8Ary, credentialsResponseAry, badPin, isImport) => decodeToString(dbCipherU8Ary, credentialsResponseAry, badPin, isImport).then(decryptedString => JSON.parse(decryptedString));
+        
         this.changeCredentials = async _ => {
             const [plainPassString, plainPinString, persistKey] = await this.getCredentials(true);
             const [cryptoKeyObj, saltU8Ary] = await this.crypto.getNewCryptoKeyAndSalt(plainPassString, plainPinString);
-            this.encryptDatabase = _ => this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+            encryptDatabase = _ => this.crypto.getCipherFromString(JSON.stringify(this.dbObj), cryptoKeyObj, saltU8Ary); //this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+            //Change encrypted dbx Handle (dbxFile)
+            
             if(persistKey){//do it only once!!
                 persistCryptoKey(cryptoKeyObj, plainPinString);
             }
@@ -572,6 +580,7 @@ word
         async function getRefreshFromCode(dbxUrlCode, dbxCodeVerifier){
             dbxAuth.setCodeVerifier(dbxCodeVerifier);
             const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, dbxUrlCode);
+            console.log("accessTokenResponse:", accessTokenResponse);
             return accessTokenResponse.result.refresh_token;
         }
 
@@ -602,17 +611,32 @@ word
                     
         const readDbxFile = async _ => {
             if(!this.handlePlain && !this.handle) return;
-            if(this.handlePlain) await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //returns u8Ary
+            
+            const dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
+            await thisApp.idxDb.delete("dbxSyncExisting");
+            
+/*             if(thisApp.pendingPromise){
+                await thisApp.pendingPromise; // await for the Local Database decodeToJson
+            } */
+            
+/*             if(!thisApp.encryptString){// No decodeToJson been run yet - and the dbxSyncExisting should also be present - if not it means that it is a new DB?
+                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting);
+                
+            } */
+            
+            if(this.handlePlain) {
+                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //from redirect - from already operational database through sync method // if is dbxSyncExisting - it will decode otherwise will create a new DB
+                await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //returns u8Ary
+            }
             if(!thisApp.online) return this.syncPaused ? null : this.syncPause().then(thisApp.alert.offline);
             this.syncStart();
-            const decodedDbxRefresher = this.handlePlain || await thisApp.decryptString(this.handle);
+            const decodedDbxRefresher = this.handlePlain || await thisApp.decodeToString(this.handle);
             dbx = await promiseWithTimeout(timeoutMsec, refreshToken(decodedDbxRefresher));
 
-            let dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
-            await thisApp.idxDb.delete("dbxSyncExisting");
+
 
             if(dbxSyncExisting){///from redirect - from already operational database through sync method
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting.buffer);
+                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting);
             }
 
             const fileListResponse = await dbx.filesListFolder({path: ''});

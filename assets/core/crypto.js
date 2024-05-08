@@ -8,8 +8,8 @@ function Crypto(){
     const encodeText = text => new TextEncoder().encode(text);
     const decodeText = u8Ary => new TextDecoder().decode(u8Ary);
     
-    const paddingPrefixString = "__padding__"; // [95, 95, 112, 97, 100, 100, 105, 110, 103, 95, 95]    
-    const paddingPrefixU8Ary = encodeText(paddingPrefixString); // [95, 95, 112, 97, 100, 100, 105, 110, 103, 95, 95]   
+    //const paddingPrefixString = "__padding__"; // [95, 95, 112, 97, 100, 100, 105, 110, 103, 95, 95]    
+    //const paddingPrefixU8Ary = encodeText(paddingPrefixString); // [95, 95, 112, 97, 100, 100, 105, 110, 103, 95, 95]   
     
     const u8AryFrom = data => new Uint8Array(data);
     const concatU8Arys = async (...u8Arys) => u8AryFrom(await new Blob(u8Arys).arrayBuffer()); // or any iterable object such as an Array, having ArrayBuffers, TypedArrays, DataViews, Blobs, strings, or a mix of any of such elements
@@ -174,13 +174,13 @@ function Crypto(){
         return getCryptoKeyFromCryptoKeyHexCipher(cryptoKeyHexCipherU8Ary, existingCryptoKeyHexCipherCryptoKey);
     }
 
-    function getPaddedStringU8Ary(contentStringU8Ary, minPaddedStringLen){ 
+/*     function getPaddedStringU8Ary(contentStringU8Ary, minPaddedStringLen){ 
         if(contentStringU8Ary.length + paddingPrefixU8Ary.length > minPaddedStringLen ) return contentStringU8Ary; 
         const randomPaddingU8Ary = getNonCryptoRandomU8Ary(minPaddedStringLen - paddingPrefixU8Ary.length - contentStringU8Ary.length);
         return concatU8Arys(contentStringU8Ary, paddingPrefixU8Ary, randomPaddingU8Ary);
-    }
+    } */
 
-    function getContentU8Ary(paddedU8Ary){
+/*     function getContentU8Ary(paddedU8Ary){
         const paddedU8AryString = [...paddedU8Ary].join(",");
         const paddingPrefixU8AryString = "," + [...paddingPrefixU8Ary].join(","); // "95,95,112,97,100,100,105,110,103,95,95" with a leading comma;
         const paddingIndex = paddedU8AryString.indexOf(paddingPrefixU8AryString); // find index of ",95,95,112,97,100,100,105,110,103,95,95" (__padding__)
@@ -188,30 +188,31 @@ function Crypto(){
         if(paddingIndex < 0) return paddedU8Ary; // if no __padding__ then return original U8Ary
         
         return u8AryFrom(paddedU8AryString.substring(0, paddingIndex).split(",").map(x => +x)); // remove from string everything after found paddingIndex , change the string back to array of integers, then to Uint8Array and return
-    }
+    } */
 
-    async function getDbCipherU8Ary(dbObject, cryptoKeyObj, saltU8Ary){
+/*     async function getDbCipherU8Ary(dbObject, cryptoKeyObj, saltU8Ary){
         const dbStringU8Ary = await getCompressedU8Ary(JSON.stringify(dbObject));
         const paddedStringU8Ary = await getPaddedStringU8Ary(dbStringU8Ary, minDbStringLength); // compressed DB Object + __padding__ + random geebrish
         return encryptStringUseKey(paddedStringU8Ary, cryptoKeyObj, saltU8Ary, aesGcmObj);
-    }
+    } */
 
-    async function getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj){ //dbCipherU8Ary will be bufferAry when from file
+/*     async function getDbObjectFromCipher(dbCipherU8Ary, cryptoKeyObj){ //dbCipherU8Ary will be bufferAry when from file
     //console.log("in getDbObjectFromCipher", dbCipherU8Ary, cryptoKeyObj);
         const [decryptedU8Ary, saltU8Ary] = await decryptStringUseKey(u8AryFrom(dbCipherU8Ary), cryptoKeyObj, aesGcmObj);
         const dbU8Ary = getContentU8Ary(decryptedU8Ary); //compressed dbU8ary
         const dbString = await getDecompressedString(dbU8Ary);
         return [JSON.parse(dbString), saltU8Ary];
-    }
+    } */
     
-    async function getCipherFromString(string, cryptoKeyObj, saltU8Ary){
-        const stringU8Ary = await getCompressedU8Ary(string);
+    async function getCipherFromString(plainString, cryptoKeyObj, saltU8Ary){
+        const stringU8Ary = await getCompressedU8Ary(plainString);
         return encryptStringUseKey(stringU8Ary, cryptoKeyObj, saltU8Ary, aesGcmObj); //u8Ary
     }
     
-    async function getStringFromCipher(stringCipherU8Ary, cryptoKeyObj){
-        const [decryptedU8Ary, saltU8Ary] = await decryptStringUseKey(u8AryFrom(stringCipherU8Ary), cryptoKeyObj, aesGcmObj);
-        return getDecompressedString(decryptedU8Ary);
+    async function getStringFromCipher(cipherU8Ary, cryptoKeyObj){
+        const [decryptedU8Ary, saltU8Ary] = await decryptStringUseKey(u8AryFrom(cipherU8Ary), cryptoKeyObj, aesGcmObj);//cipherU8Ary will be bufferAry when from file
+        const decryptedString = await getDecompressedString(decryptedU8Ary);
+        return [decryptedString, saltU8Ary];
     }
     
 
@@ -303,8 +304,8 @@ function Crypto(){
     this.getNewPlainPinNonceHashString = getNewPlainPinNonceHashString; // returns nonce hash sring to be stored in idxDb
     this.getNewCryptoKeyHexCipherU8Ary = getNewCryptoKeyHexCipherU8Ary;
     this.getCryptoKeyFromKeyHexCipherInBrowser = getCryptoKeyFromKeyHexCipherInBrowser; // require plainPinString, cryptoKeyHexCipherU8Ary, plainPinNonceHashString // returns encrypted database key cryptoKeyObj
-    this.getDbCipherFromObject = getDbCipherU8Ary; // require dbObject, cryptoKeyObj, saltU8Ary // returns cipherTextU8Ary
-    this.getDbObjectFromCipher = getDbObjectFromCipher; // require dbCipherU8Ary, cryptoKeyObj // returns db object
+    //this.getDbCipherFromObject = getDbCipherU8Ary; // require dbObject, cryptoKeyObj, saltU8Ary // returns cipherTextU8Ary
+    //this.getDbObjectFromCipher = getDbObjectFromCipher; // require dbCipherU8Ary, cryptoKeyObj // returns db object
     this.getCryptoKeyObjFromPlains = getCryptoKeyObjFromPlains; // require dbCipherU8Ary, plainPassString, plainPinString, returns decryptedStringAryBuf
     this.getNewCryptoKeyAndSalt = getNewCryptoKeyAndSalt;
     this.getStringFromCipher = getStringFromCipher;
