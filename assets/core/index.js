@@ -263,7 +263,7 @@ word
             .finally(_ => this.pendingPromise = null);
         };
         
-        this.decodeToJson = (dbCipherU8Ary, credentialsResponseAry, badPin, isImport) => decodeToString(dbCipherU8Ary, credentialsResponseAry, badPin, isImport).then(decryptedString => JSON.parse(decryptedString));
+        this.decodeToJson = (dbCipherU8Ary, credentialsResponseAry, badPin, isImport) => this.decodeToString(dbCipherU8Ary, credentialsResponseAry, badPin, isImport).then(decryptedString => JSON.parse(decryptedString));
         
         this.changeCredentials = async _ => {
             const [plainPassString, plainPinString, persistKey] = await this.getCredentials(true);
