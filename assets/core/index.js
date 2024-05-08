@@ -213,6 +213,7 @@ word
                     const [plainPassString, plainPinString, persistKey] = credentialsResponseAry || await this.getCredentials(newCredentials); //credentialsResponseAry only when using Local File
                     if(newCredentials){
                         [cryptoKeyObj, saltU8Ary] = await this.crypto.getNewCryptoKeyAndSalt(plainPassString, plainPinString);
+                        decryptedString = "{}";
                     }else{
                         if(plainPassString && plainPinString){
                             cryptoKeyObj = await this.crypto.getCryptoKeyObjFromPlains(cipherU8Ary, plainPassString, plainPinString);
