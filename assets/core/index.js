@@ -384,13 +384,15 @@ word
         };
         
         this.checkExtraSync = async function() {
-            const syncPromises = [];
+            //const syncPromises = [];
             const storeObjects = Object.values(this.dbStore);
             for(const storeObj of storeObjects){
                 if(storeObj.handle || storeObj.dontSync || storeObj.syncPaused || !storeObj.canAlter()) continue;
-                await this.alert.syncDbWith(storeObj.key) ? syncPromises.push(storeObj.sync().catch(storeObj.catchSync)) : await storeObj.handleRemove(true);
+                //await this.alert.syncDbWith(storeObj.key) ? syncPromises.push(await storeObj.sync().catch(storeObj.catchSync)) : await storeObj.handleRemove(true);
+                await this.alert.syncDbWith(storeObj.key) ? await storeObj.sync().catch(storeObj.catchSync) : await storeObj.handleRemove(true);
             }
-            return Promise.all(syncPromises).then(_ => storeObjects.filter(storeObj => storeObj.handle).length || this.message.noWriteStores("noSyncHandles")); //&& this.message.storeConnectionTrue(storeObj.name)
+            //return Promise.all(syncPromises).then(_ => storeObjects.filter(storeObj => storeObj.handle).length || this.message.noWriteStores("noSyncHandles")); //&& this.message.storeConnectionTrue(storeObj.name)
+            return storeObjects.filter(storeObj => storeObj.handle).length || this.message.noWriteStores("noSyncHandles");
         };
 
         this.paint = async _ =>  this.ui.initMain();
