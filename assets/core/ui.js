@@ -152,6 +152,7 @@ console.log("initiate Interface");
             moduleSection.ridKids().attach(
                 dom.adDiv("scrollWrp").attachAry([
                     langModule(thisApp, _ =>  moduleFinish(thisApp.start)),
+                    dom.adDiv("appTitle", "SecreSync"),
                     dom.adDiv("loadIconWrp").attachAry([
                         getStoreLoadIcon(thisApp.dbStore.dbxFile, moduleFinish),//loadDbxFile
                         getStoreLoadIcon(thisApp.dbStore.localFile, moduleFinish),//loadLocalFile

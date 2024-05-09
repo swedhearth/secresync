@@ -122,7 +122,7 @@ word
             encryptDatabase = _encryptedDb = null;
             decryptString = null;
             this.pendingPromise = null;
-            return Promise.all(Object.keys(this.dbStore).map(storeKey => this.dbStore[storeKey].reset()));
+            return Promise.all(Object.values(this.dbStore).map(storeObj => storeObj.reset())); // or just return Promise.all(Object.values(this.dbStore).map(reset));
         };
         this.clearAllStorage = async function(){
             this.localStorage.clear();
@@ -241,17 +241,11 @@ word
                             return res(null); // this.credentialsResponseAry is empty  no plainPassString and no plainPinString
                         }
                     }
-
-                    //this.decryptDatabase = cipherU8Ary => this.crypto.getDbObjectFromCipher(cipherU8Ary, cryptoKeyObj); // assign new function for decrypt using the retrieved cryptoKeyObj
                     
-                    
+                    this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary); // used to encrypt plain handle in dbx, oneDrive and Google Drive
                     decryptString = cipherU8Ary => this.crypto.getStringFromCipher(cipherU8Ary, cryptoKeyObj);
-                    this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary);
                     encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj)); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
-                    
-                    
-                    //this.encryptDatabase = _ => this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
-                    
+
                     console.log("saltU8Ary: ", saltU8Ary);
 
                     if(persistKey) persistCryptoKey(cryptoKeyObj, plainPinString);
@@ -264,26 +258,27 @@ word
             .finally(_ => this.pendingPromise = null);
         };
         
-        this.decodeToJson = (dbCipherU8Ary, credentialsResponseAry, badPin, isImport) => this.decodeToString(dbCipherU8Ary, credentialsResponseAry, badPin, isImport).then(decryptedString => JSON.parse(decryptedString));
+        this.decodeToJson = (...args) => this.decodeToString(...args).then(decryptedString => JSON.parse(decryptedString));
         
         this.changeCredentials = async _ => {
             const [plainPassString, plainPinString, persistKey] = await this.getCredentials(true);
             const [cryptoKeyObj, saltU8Ary] = await this.crypto.getNewCryptoKeyAndSalt(plainPassString, plainPinString);
-            this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary);
-            encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj))); //this.crypto.getDbCipherFromObject(this.dbObj, cryptoKeyObj, saltU8Ary); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
-            //Change encrypted dbx Handle (dbxFile)
-            const dbxStore = this.dbStore["dbxFile"];
-            const dbxFileHandleEncrypted = dbxStore.handleGet();
-            const decodedDbxRefresher = await this.decodeToString(dbxFileHandleEncrypted);
-            await dbxStore.handleUpdate(this.encryptString(this.handlePlain)); //returns u8Ary
-
-
-
             
+            const storesWithEncryptedHandles = Object.values(this.dbStore).filter(storeObj => storeObj.redirect && storeObj.handle); //handles for dbx, one drive, google stores
+            const encryptedHandles = await Promise.all(storesWithEncryptedHandles.map(storeObj => this.idxDb.get(storeObj.key)));
+            const decryptedHandles = await Promise.all(encryptedHandles.map(encryptedHandle => this.decodeToString(encryptedHandle))); // decrypted handles for dbx, one drive, google stored t
+            await Promise.all(storesWithEncryptedHandles.map(storeObj => {
+                storeObj.handle = null;
+                return this.idxDb.delete(storeObj.key);
+            })); // remove obsolete handle
             
-            if(persistKey){//do it only once!!
-                persistCryptoKey(cryptoKeyObj, plainPinString);
-            }
+            this.encryptString = string => this.crypto.getCipherFromString(string, cryptoKeyObj, saltU8Ary); // used to encrypt plain handle in dbx, oneDrive and Google Drive
+            encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj)); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
+            
+            await Promise.all(storesWithEncryptedHandles.map((storeObj, idx) => storeObj.handleUpdate(this.encryptString(decryptedHandles[idx])))); // restore newly encrypted handles
+            
+            if(persistKey) persistCryptoKey(cryptoKeyObj, plainPinString);//do it only once!!
+
             this.dbStoreUpdateAll(true).then(rejectedPromises => {
                 if(rejectedPromises.length) this.message.dbCredentialsChangeModerateFail(rejectedPromises);
             }).catch(err => {
@@ -379,7 +374,7 @@ word
                 this.setDbObj(this.dbObj);
             }
             return new Promise((res, rej) => {
-                Promise.allSettled(Object.keys(this.dbStore).map(storeKey => this.dbStore[storeKey].update().catch(this.dbStore[storeKey].catchUpdate)))
+                Promise.allSettled(Object.values(this.dbStore).map(storeObj => storeObj.update().catch(storeObj.catchUpdate)))
                 .then(results => {
                     const rejectedPromises = results.filter(res => res.status === "rejected")
                     const fulfilledPromisesLen = results.filter(res => res.value && res.status === "fulfilled").length;
@@ -424,7 +419,7 @@ word
         
         this.start = async (msg, err, appStartFailCount = 0) =>{
             const maxAppStartFais = 4;
-            const existingStores = (await this.reset()).filter(store => store !== false); // main delay (~30ms) is await thisApp.idxDb.get(storeObj.key) in the storeObj.reset function
+            const existingStores = (await this.reset()).filter(storeObj => storeObj !== false); // main delay (~30ms) is await thisApp.idxDb.get(storeObj.key) in the storeObj.reset function
             const storesExist = existingStores.length;
             msg = msg || (storesExist ? this.message.existingDb() : this.message.loadBd());
             try{
@@ -432,9 +427,9 @@ word
                 this.message[err ? "error" : "digest"](msg);
                 if(storesExist){
                     // TO DO |!!! const mpMsg = existingStores.filter(store => store.handlePlain).length ? this.txtBank.app.values.redirectWelcome : msg; //redirectWelcome: "You almost there. Please re-type your password" // TO DO (messages)
-                    const readPromiseAry = existingStores.map(store => store.read().catch(store.catchLoad));
+                    const readPromiseAry = existingStores.map(storeObj => storeObj.read().catch(storeObj.catchLoad));
                     await Promise.race(readPromiseAry).then(this.paint);
-                    if(!this.dbObj) throw "noDbObj";
+                    if(!this.dbObj) throw "noDbObj"; // is this even possible?
                     this.checkExtraSync().catch(err => this.start(err, true, ++appStartFailCount));
                 }else{ // no saved stores - load or create
                     await this.ui.loader().then(fn => fn()).catch(err => {throw "BackButtonPressed"});
@@ -513,7 +508,6 @@ word
             storeObj.syncing = false;
             storeObj.syncIcon.killClass("storeSyncing"); 
         };
-        storeObj.handleGet = async _ => await thisApp.idxDb.get(storeObj.key);
         storeObj.handleUpdate = async data => {
             storeObj.handle = await data;
             await thisApp.idxDb.set(storeObj.key, storeObj.handle);
@@ -529,23 +523,24 @@ word
             storeObj.dbMod = 0;
             storeObj.syncStop();
             storeObj.dontSync = thisApp.consent && thisApp.localStorage.exists ? thisApp.localStorage.get(storeObj.key + "DontSync") : true;
-            storeObj.handle = await storeObj.handleGet();
+            storeObj.handle = await thisApp.idxDb.get(storeObj.key);
             storeObj.handlePlain = storeObj.redirect ? await storeObj.redirect() : null;
             const thisStoreExists = (storeObj.handle || storeObj.handlePlain) && !storeObj.syncPaused;
             storeObj.iconOpacity(thisStoreExists);
             return thisStoreExists ? storeObj : false;
         };
         storeObj.connect = async storeDbObj =>{
-            storeObj.dbMod = storeDbObj.mod;
+            storeObj.dbMod = storeDbObj.mod; //0
             if(storeObj.dbMod !== thisApp.dbObj.mod){ //storeObj.dbMod and thisApp.dbObj are NOT the same
                 if(storeObj.dbMod > thisApp.dbObj.mod){ //storeObj.dbMod is newer than thisApp.dbObj - Update the inApp database
                     thisApp.setDbObj(storeDbObj);
-                }else{ //storeObj is older than thisApp.dbObj - localFile and / or Dbx File will be overwritten if accepted
+                }else if(storeObj.dbMod){ //storeObj exists and is older than thisApp.dbObj - localFile and / or Dbx File will be overwritten if accepted
                    const isSetOlderStore = await thisApp.alert.setOlderStore(storeObj.key);
                     if(isSetOlderStore) thisApp.setDbObj(storeDbObj);
                     if(isSetOlderStore === null) await storeObj.handleRemove(false); // cross presses
                     //else (false) - continue - the storeDbObj will be overwritten with the current thisApp.dbObj 
-                }
+                }// if (storeObj.dbMod = undefined) - when connection new DB from dbx - update with thisApp.dbObj
+
                 await thisApp.dbStoreUpdateAll(false).then(rejectedPromises => {
                     if(rejectedPromises.length) thisApp.message.storeConnectFail(storeObj.name);
                     thisApp.paint(true);
@@ -631,17 +626,8 @@ word
             const dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
             await thisApp.idxDb.delete("dbxSyncExisting");
             
-/*             if(thisApp.pendingPromise){
-                await thisApp.pendingPromise; // await for the Local Database decodeToJson
-            } */
-            
-/*             if(!thisApp.encryptString){// No decodeToJson been run yet - and the dbxSyncExisting should also be present - if not it means that it is a new DB?
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting);
-                
-            } */
-            
             if(this.handlePlain) {
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //from redirect - from already operational database through sync method // if is dbxSyncExisting - it will decode otherwise will create a new DB
+                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //from redirect - from already operational database through sync method // if is dbxSyncExisting - it will decode otherwise will return empty object {}
                 await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //returns u8Ary
             }
             if(!thisApp.online) return this.syncPaused ? null : this.syncPause().then(thisApp.alert.offline);
@@ -650,20 +636,16 @@ word
             dbx = await promiseWithTimeout(timeoutMsec, refreshToken(decodedDbxRefresher));
 
 
-
-/*             if(dbxSyncExisting){///from redirect - from already operational database through sync method
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting);
-            } */
-
             const fileListResponse = await dbx.filesListFolder({path: ''});
 
             if(!fileListResponse.result.entries.map(obj => obj.name).includes("secre.snc")){
-                if(!thisApp.dbObj){
+                if(!thisApp.dbObj.mod){ // no db.mod object if loaded from Loader it will be {}
                     // ASK if new DB needs creating "No file, no app.dbObj - Need to create a new DB";
                     //app.dbObj = {mod: new Date(), vendors:[]};
-                    thisApp.setDbObj(null);
-
+                    window.confirm("Do you want to create a new DB on DropBox?");
+                    thisApp.setDbObj(null); // thisApp.dbObj.mod = now // this.dbMod = 0
                 }
+                // no file but the thisApp.dbObj exists
                 return this.update();
             }
             //////////////////////////////////////////////////////////make it as try catch - to avoid double request from dropbox (filesListFolder and filesDownload)
