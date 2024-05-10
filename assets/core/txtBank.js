@@ -143,13 +143,13 @@ const txtBankObj = {
         "i": "${sKey}"
       },
      "remoteSyncOrOverwrite": {
-        "q": "${ sName } does not exist in the cloud.",
+        "q": "${ sName } already exists in the cloud.",
         "y": "Synchronize the app's database with data from the cloud.",
         "n": "Replace the data in the cloud with the current app database.",
         "i": "${ sKey }"
       },
       "remoteSyncOrNew": {
-        "q": "${ sName } does not exist in the cloud.",
+        "q": "${ sName } already exists exist in the cloud.",
         "y": "Create a new database using data from the cloud.",
         "n": "Replace the data in the cloud with a new database.",
         "i": "${ sKey }"
@@ -494,13 +494,13 @@ const txtBankObj = {
         "i": "${ sKey }"
       },
       "remoteSyncOrNew": {
-        "q": "${ sName } no existe en la nube.",
+        "q": "${ sName } ya existe existe en la nube.",
         "y": "Crea una nueva base de datos utilizando datos de la nube.",
         "n": "Reemplaza los datos en la nube con una nueva base de datos.",
         "i": "${ sKey }"
       },
       "remoteCreateNew": {
-        "q": "${ sName } se creará en la nube.",
+        "q": "${ sName } ya existe existe en la nube.",
         "y": "Sí, por favor.<br>Crea una nueva base de datos y sincronízala con la nube.",
         "n": "No. Eso fue un error.<br>Elimina la conexión con la nube.",
         "i": "${ sKey }"
@@ -833,13 +833,13 @@ const txtBankObj = {
         "i": "${sKey}"
       },
      "remoteSyncOrOverwrite": {
-        "q": "${ sName } n'existe pas dans le nuage.",
+        "q": "${ sName } existe déjà dans le nuage.",
         "y": "Synchronisez la base de données de l'application avec les données du nuage.",
         "n": "Remplacez les données dans le nuage par la base de données actuelle de l'application.",
         "i": "${ sKey }"
       },
       "remoteSyncOrNew": {
-        "q": "${ sName } n'existe pas dans le nuage.",
+        "q": "${ sName } existe déjà dans le nuage.",
         "y": "Créez une nouvelle base de données en utilisant les données du nuage.",
         "n": "Remplacez les données dans le nuage par une nouvelle base de données.",
         "i": "${ sKey }"
@@ -1178,13 +1178,13 @@ const txtBankObj = {
         "i": "${ sKey }"
       },
       "remoteSyncOrOverwrite": {
-        "q": "${ sName } nie istnieje w chmurze.",
+        "q": "${ sName } już istnieje w chmurze.",
         "y": "Zsynchronizuj bazę danych aplikacji z danymi z chmury.",
         "n": "Zastąp dane w chmurze aktualną bazą danych aplikacji.",
         "i": "${ sKey }"
       },
       "remoteSyncOrNew": {
-        "q": "${ sName } nie istnieje w chmurze.",
+        "q": "${ sName } już istnieje w chmurze.",
         "y": "Utwórz nową bazę danych używając danych z chmury.",
         "n": "Zastąp dane w chmurze nową bazą danych.",
         "i": "${ sKey }"
