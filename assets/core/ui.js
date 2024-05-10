@@ -399,6 +399,11 @@ console.log("initiate Interface");
         this.appFailed = _ => appAlert("appFailed");
         
         this.setOlderStore = storeKey => appAlert("setOlderStore", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        
+        this.remoteSyncOrOverwrite = storeKey => appAlert("remoteSyncOrOverwrite", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        this.remoteSyncOrNew = storeKey => appAlert("remoteSyncOrNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        this.remoteCreateNew = storeKey => appAlert("remoteCreateNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        this.remoteFileRemoved = storeKey => appAlert("remoteFileRemoved", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
     }
 
      /* Messages -----------------------------------------------------------------------*/

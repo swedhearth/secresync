@@ -474,7 +474,7 @@ word
             if (!thisApp.dbObj && err.name  === "OperationError") throw "OperationError";
             if(errMsg === "DeleteDatabase") throw "DeleteDatabase";
             if(errMsg === "BackButtonPressed") throw "BackButtonPressed";
-            if(await thisApp.alert.catchLoad(storeObj.key)){
+            if(await thisApp.alert.catchLoad(storeObj.key, err)){
                 await storeObj.handleRemove(false);
                 return thisApp.start()
             }
@@ -587,13 +587,31 @@ word
           });
           return Promise.race([timeout, promise]);
         }
-
-        async function getRefreshFromCode(dbxUrlCode, dbxCodeVerifier){
+        
+        const redirect = async _ => {
+            if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline); //will return false or null
+            const urlSearchParams = Object.fromEntries(new URLSearchParams(window.location.search.substring(1)));
+            window.history.replaceState({lastBackExists: true}, '', window.location.pathname); // removes the url parameters from the url without reloading the page
+            
+            let dbxCodeVerifier = null;
+            if(urlSearchParams.code){
+                if(thisApp.sessionStorage.exists){
+                    dbxCodeVerifier = thisApp.sessionStorage.get('dbxCodeVerifier');
+                    thisApp.sessionStorage.clear();
+                }else{
+                    dbxCodeVerifier = await navigator.clipboard.readText();
+                }
+                if(!dbxCodeVerifier) return thisApp.reload();
+            }
+            
+            if(!dbxCodeVerifier || !urlSearchParams.code || urlSearchParams.error) return null; //thisApp.checkHistoryState(); //null;
+            
             dbxAuth.setCodeVerifier(dbxCodeVerifier);
-            const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, dbxUrlCode);
+            const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, urlSearchParams.code);
             console.log("accessTokenResponse:", accessTokenResponse);
             return accessTokenResponse.result.refresh_token;
         }
+
 
         async function refreshToken(rToken){
             dbxAuth.setRefreshToken(rToken);
@@ -601,7 +619,7 @@ word
             return new Dropbox.Dropbox({ auth: dbxAuth });
         }
 
-        const loadDbxFile = async _ => {
+        const loadDbxFile = async _ => { // function o connect to the login page of the DropBox, which then upon acceptance will redirect back to the app with the decodedDbxRefresher (accessTokenResponse.result.refresh_token) stored in the handlePlain
             if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline);
             try{
                 const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
@@ -622,36 +640,58 @@ word
                     
         const readDbxFile = async _ => {
             if(!this.handlePlain && !this.handle) return;
-            
-            const dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
+
+            const dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting"); // only exists with this.handlePlain
+                //dbxSyncExisting exists = Already Operational Database - must re-type the same password to access (wrong pass will throw Error)
+                //dbxSyncExisting doesn't exist = New Database - must create a new password
             await thisApp.idxDb.delete("dbxSyncExisting");
             
-            if(this.handlePlain) {
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //from redirect - from already operational database through sync method // if is dbxSyncExisting - it will decode otherwise will return empty object {}
-                await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //returns u8Ary
+            if(this.handlePlain){ //fresh redirect - either from loader (no database) or through sync (existing database)
+                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //returns decrypted database(if dbxSyncExisting) or empty object {}
+                await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
             }
             if(!thisApp.online) return this.syncPaused ? null : this.syncPause().then(thisApp.alert.offline);
             this.syncStart();
-            const decodedDbxRefresher = this.handlePlain || await thisApp.decodeToString(this.handle);
-            dbx = await promiseWithTimeout(timeoutMsec, refreshToken(decodedDbxRefresher));
+            const refresherToken = this.handlePlain || await thisApp.decodeToString(this.handle);
+            dbx = await promiseWithTimeout(timeoutMsec, refreshToken(refresherToken));
 
-
-            const fileListResponse = await dbx.filesListFolder({path: ''});
-
-            if(!fileListResponse.result.entries.map(obj => obj.name).includes("secre.snc")){
-                if(!thisApp.dbObj.mod){ // no db.mod object if loaded from Loader it will be {}
-                    // ASK if new DB needs creating "No file, no app.dbObj - Need to create a new DB";
-                    //app.dbObj = {mod: new Date(), vendors:[]};
-                    window.confirm("Do you want to create a new DB on DropBox?");
-                    thisApp.setDbObj(null); // thisApp.dbObj.mod = now // this.dbMod = 0
+            const encodedDbxFileContent = await dbx.filesDownload({path: '/secre.snc'}).then(res => res.result.fileBlob.arrayBuffer()).catch(_ => null);
+console.log(encodedDbxFileContent);
+            //const fileListResponse = await dbx.filesListFolder({path: ''});
+           // const secreSyncFileExists = fileListResponse.result.entries.map(obj => obj.name).includes("secre.snc");
+            if(this.handlePlain){ // fresh redirect - either from loader (no database) or through sync (existing database)
+                if(encodedDbxFileContent){ // dbx file already exists
+                    const alertMsg = dbxSyncExisting ? "remoteSyncOrOverwrite" : "remoteSyncOrNew";
+                    const confirmSync = await thisApp.alert[alertMsg](this.key);
+                        //"There is already a database in your Dropbox. Would you like to Sychronise the data (YES) or Overwrite the data (NO)?"
+                        //"There is already a database in your Dropbox. Would you like to Sychronise the data (YES) or wipe ot the data - I want to start fresh / or forgot the password!"
+                    if(confirmSync === false){
+                        if(!dbxSyncExisting) thisApp.setDbObj(null);
+                        return this.update();
+                    }
+                    if(confirmSync === null) return this.handleRemove(false);// will remove handle and return false
+                }else{//dbx file does not exist exists 
+                    if(!dbxSyncExisting){ //dbx file does not exist exists and the dtatabase doest't exist
+                       // const confNew = window.confirm("Do you want to create a new DB on DropBox?");
+                        if(!await thisApp.alert.remoteCreateNew(this.key)) {
+                            return await this.handleRemove(false).then(thisApp.reload);
+                        }
+                        thisApp.setDbObj(null);
+                    }
+                    return this.update(); //dbx file does not exist exists but the dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
                 }
-                // no file but the thisApp.dbObj exists
-                return this.update();
             }
-            //////////////////////////////////////////////////////////make it as try catch - to avoid double request from dropbox (filesListFolder and filesDownload)
-            const response = await dbx.filesDownload({path: '/secre.snc'});
+            //this.handle exists or sync is required after alerts
+            if(!encodedDbxFileContent){ // unlike scenario that the this.handle exists but not the dbx file (was manually deleted?)
+                if(!thisApp.dbObj.mod) throw "Critical Error - No DBX File and No Database"; // is this correct??? - handle exists, no file, no db
+                const confUpd = window.confirm("Something is not right. You have active connection to the DBX file but it looks like the file has been removed. Would you like to restore the data into the file?"); // will this be triggered at all?
+                if(await thisApp.alert.remoteFileRestore(this.key)) return this.update(); //dbx file does not exist exists but the dtatabase already exist thisApp.dbObj
+                return this.handleRemove(false); // will remove handle and return false
+            }
+
+            //const response = await dbx.filesDownload({path: '/secre.snc'});
+            //const encodedDbxFileContent = await response.result.fileBlob.arrayBuffer();
             
-            const encodedDbxFileContent = await response.result.fileBlob.arrayBuffer();
             const dbxDbObj = await thisApp.decodeToJson(encodedDbxFileContent);
             if(!thisApp.dbObj) thisApp.dbObj = dbxDbObj; // dropbox database loaded from button after redirect or from local handler if no local db is stored
             return this.connect(dbxDbObj);
@@ -678,28 +718,7 @@ word
                 readDbxFile().then(thisApp.paint).catch(this.catchLoad);
             }
         }
-        
-        const redirect = async _ => {
-            if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline);
-            const urlSearchParams = Object.fromEntries(new URLSearchParams(window.location.search.substring(1)));
 
-            //if(urlSearchParams.error || !urlSearchParams.code) return null;
-            let dbxCodeVerifier = null;
-            if(urlSearchParams.code){
-                window.history.replaceState({authorised: true}, '', window.location.pathname);
-                if(thisApp.sessionStorage.exists){
-                    dbxCodeVerifier = thisApp.sessionStorage.get('dbxCodeVerifier');
-                    thisApp.sessionStorage.clear();
-                }else{
-                    dbxCodeVerifier = await navigator.clipboard.readText();
-                }
-                if(!dbxCodeVerifier) return thisApp.reload();
-            }
-            
-            if(!dbxCodeVerifier || !urlSearchParams.code || urlSearchParams.error) return null; //thisApp.checkHistoryState(); //null;
-            return await getRefreshFromCode(urlSearchParams.code, dbxCodeVerifier);// NEW ACCOUNT - NEW JOIN
-        }
-        
         this.key = "dbxFile";
         //this.name = "Dropbox Database";
         this.load = loadDbxFile

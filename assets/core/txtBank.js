@@ -141,6 +141,30 @@ const txtBankObj = {
         "y": "${sName} contains<br>the data I want to use.<br><br>Application Database will be updated.",
         "n": "Application Database contains<br>the data I want to use.<br><br>${sName} will be updated with the Application Database.",
         "i": "${sKey}"
+      },
+     "remoteSyncOrOverwrite": {
+        "q": "${ sName } does not exist in the cloud.",
+        "y": "Synchronize the app's database with data from the cloud.",
+        "n": "Replace the data in the cloud with the current app database.",
+        "i": "${ sKey }"
+      },
+      "remoteSyncOrNew": {
+        "q": "${ sName } does not exist in the cloud.",
+        "y": "Create a new database using data from the cloud.",
+        "n": "Replace the data in the cloud with a new database.",
+        "i": "${ sKey }"
+      },
+      "remoteCreateNew": {
+        "q": "${ sName } will be created in the cloud.",
+        "y": "Yes, please.<br>Create a new database and synchronize it with the cloud.",
+        "n": "No. That was a mistake.<br>Delete the connection with the cloud.",
+        "i": "${ sKey }"
+      },
+      "remoteFileRestore": {
+        "q": "A problem occurred.<br>It seems that ${ sName } is connected to the app but its data could not be loaded.<br>It is possible that the database file has been removed from the cloud.",
+        "y": "Try again to save the data in the cloud.",
+        "n": "Strange situation.<br>Just remove the connection with the cloud.",
+        "i": "${ sKey }"
       }
     },
     "message": {
@@ -251,11 +275,9 @@ const txtBankObj = {
         "formIconTypeLog": "Login Type Account",
         "local": "Quick Access Database",
         "dbxFile": "Dropbox Database",
-        "localFile": "Database Backup File",
-        //"msgModule": "History Log",
+        "localFile": "Database Backup File"
       },
       "htmls": {
-        //"infoLine": "Please press the icon to load the database file.",
         "formLabelName": "Account Name",
         "formLabelLog": "Login / Username",
         "formLabelPass": "Password",
@@ -464,6 +486,30 @@ const txtBankObj = {
         "y": "${sName} contiene<br>los datos que quiero utilizar.<br><br>La base de datos de la aplicación será actualizada.",
         "n": "La base de datos de la aplicación contiene<br>los datos que quiero utilizar.<br><br>${sName} será actualizado con la base de datos de la aplicación.",
         "i": "${sKey}"
+      },
+     "remoteSyncOrOverwrite": {
+        "q": "${ sName } no existe en la nube.",
+        "y": "Sincroniza la base de datos de la aplicación con los datos de la nube.",
+        "n": "Reemplaza los datos en la nube con la base de datos actual de la aplicación.",
+        "i": "${ sKey }"
+      },
+      "remoteSyncOrNew": {
+        "q": "${ sName } no existe en la nube.",
+        "y": "Crea una nueva base de datos utilizando datos de la nube.",
+        "n": "Reemplaza los datos en la nube con una nueva base de datos.",
+        "i": "${ sKey }"
+      },
+      "remoteCreateNew": {
+        "q": "${ sName } se creará en la nube.",
+        "y": "Sí, por favor.<br>Crea una nueva base de datos y sincronízala con la nube.",
+        "n": "No. Eso fue un error.<br>Elimina la conexión con la nube.",
+        "i": "${ sKey }"
+      },
+      "remoteFileRestore": {
+        "q": "Ocurrió un problema.<br>Parece que ${ sName } está conectada a la aplicación pero no se pudieron cargar sus datos.<br>Es posible que el archivo de la base de datos haya sido eliminado de la nube.",
+        "y": "Intenta de nuevo guardar los datos en la nube.",
+        "n": "Situación extraña.<br>Simplemente elimina la conexión con la nube.",
+        "i": "${ sKey }"
       }
     },
     "message": {
@@ -574,11 +620,9 @@ const txtBankObj = {
         "formIconTypeLog": "Cuenta de Tipo Inicio de Sesión",
         "local": "Base de Datos de Acceso Rápido",
         "dbxFile": "Base de Datos de Dropbox",
-        "localFile": "Archivo de Respaldo de la Base de Datos",
-        //"msgModule": "Registro de Historia",
+        "localFile": "Archivo de Respaldo de la Base de Datos"
       },
       "htmls": {
-        //"infoLine": "Por favor, presione el ícono para cargar el archivo de la base de datos.",
         "formLabelName": "Nombre de la Cuenta",
         "formLabelLog": "Inicio de Sesión / Nombre de Usuario",
         "formLabelPass": "Contraseña",
@@ -787,6 +831,30 @@ const txtBankObj = {
         "y": "${sName} contient<br>les données que je souhaite utiliser.<br><br>La base de données de l'application sera mise à jour.",
         "n": "La base de données de l'application contient<br>les données que je souhaite utiliser.<br><br>${sName} sera mis à jour avec la base de données de l'application.",
         "i": "${sKey}"
+      },
+     "remoteSyncOrOverwrite": {
+        "q": "${ sName } n'existe pas dans le nuage.",
+        "y": "Synchronisez la base de données de l'application avec les données du nuage.",
+        "n": "Remplacez les données dans le nuage par la base de données actuelle de l'application.",
+        "i": "${ sKey }"
+      },
+      "remoteSyncOrNew": {
+        "q": "${ sName } n'existe pas dans le nuage.",
+        "y": "Créez une nouvelle base de données en utilisant les données du nuage.",
+        "n": "Remplacez les données dans le nuage par une nouvelle base de données.",
+        "i": "${ sKey }"
+      },
+      "remoteCreateNew": {
+        "q": "${ sName } sera créé dans le nuage.",
+        "y": "Oui, s'il vous plaît.<br>Créez une nouvelle base de données et synchronisez-la avec le nuage.",
+        "n": "Non. C'était une erreur.<br>Supprimez la connexion avec le nuage.",
+        "i": "${ sKey }"
+      },
+      "remoteFileRestore": {
+        "q": "Un problème est survenu.<br>Il semble que ${ sName } soit connecté à l'application mais ses données n'ont pas pu être chargées.<br>Il est possible que le fichier de base de données ait été supprimé du nuage.",
+        "y": "Essayez à nouveau de sauvegarder les données dans le nuage.",
+        "n": "Situation étrange.<br>Supprimez simplement la connexion avec le nuage.",
+        "i": "${ sKey }"
       }
     },
     "message": {
@@ -897,11 +965,9 @@ const txtBankObj = {
         "formIconTypeLog": "Compte de Type Connexion",
         "local": "Base de Données d'Accès Rapide",
         "dbxFile": "Base de Données Dropbox",
-        "localFile": "Fichier de Sauvegarde de la Base de Données",
-        //"msgModule": "Journal d’Histoire",
+        "localFile": "Fichier de Sauvegarde de la Base de Données"
       },
       "htmls": {
-        //"infoLine": "Veuillez appuyer sur l'icône pour charger le fichier de la base de données.",
         "formLabelName": "Nom du Compte",
         "formLabelLog": "Identifiant / Nom d'Utilisateur",
         "formLabelPass": "Mot de Passe",
@@ -1110,6 +1176,30 @@ const txtBankObj = {
         "y": "${ sName } zawiera dane, ktorych chce uzwac.<br><br>${ sName } zastapi Baze Danych Aplikacji.",
         "n": "Baza Danych Aplikacji zawiera dane, ktorych chce uzwac.<br><br>${ sName } zostanie zaktualizowana.",
         "i": "${ sKey }"
+      },
+      "remoteSyncOrOverwrite": {
+        "q": "${ sName } nie istnieje w chmurze.",
+        "y": "Zsynchronizuj bazę danych aplikacji z danymi z chmury.",
+        "n": "Zastąp dane w chmurze aktualną bazą danych aplikacji.",
+        "i": "${ sKey }"
+      },
+      "remoteSyncOrNew": {
+        "q": "${ sName } nie istnieje w chmurze.",
+        "y": "Utwórz nową bazę danych używając danych z chmury.",
+        "n": "Zastąp dane w chmurze nową bazą danych.",
+        "i": "${ sKey }"
+      },
+      "remoteCreateNew": {
+        "q": "${ sName } zostanie utworzona w chmurze.",
+        "y": "Tak, proszę.<br>Utwórz nową bazę danych i zsynchronizuj ją z chmurą.",
+        "n": "Nie. To była pomyłka.<br>Usuń połączenie z chmurą.",
+        "i": "${ sKey }"
+      },
+      "remoteFileRestore": {
+        "q": "Wystąpił problem.<br>Wygląda na to, że ${ sName } jest połączona z aplikacją, ale nie udało się załadować jej danych.<br>Możliwe, że plik bazy danych został usunięty z chmury.",
+        "y": "Spróbuj ponownie zapisać dane w chmurze.",
+        "n": "Dziwna sytuacja.<br>Po prostu usuń połączenie z chmurą.",
+        "i": "${ sKey }"
       }
     },
     "message": {
@@ -1185,7 +1275,7 @@ const txtBankObj = {
         "newDbLoad": "Utwórz Nową Bazę Danych",
         "dbxFileLoad": "Połącz z Istniejącą Bazą Danych Dropbox lub Utwórz Nową w Dropbox",
         "localFileLoad": "Załaduj Bazę Danych z Istniejącego Pliku Kopii Zapasowej",
-        "localCred": "Szybka Baza Danych",// Lokalna Baza Danych / Szybka Baza Zadnych / Podreczna Baza Danych ????
+        "localCred": "Szybka Baza Danych",
         "dbxFileCred": "Baza Danych Dropbox",
         "localFileCred": "Zapasowa Kopia Bazy Danych",
         "newDb": "Utwórz Nową Bazę Danych",
@@ -1220,11 +1310,9 @@ const txtBankObj = {
         "formIconTypeLog": "Konto Typu Dane Logowania",
         "local": "Szybka Baza Danych",
         "dbxFile": "Baza Danych Dropbox",
-        "localFile": "Zapasowa Kopia Bazy Danych",
-        //"msgModule": "Historia Powiadomień",
+        "localFile": "Zapasowa Kopia Bazy Danych"
       },
       "htmls": {
-        //"infoLine": "Proszę nacisnąć ikonę, aby załadować plik bazy danych.",
         "formLabelName": "Nazwa Konta",
         "formLabelLog": "Login / Nazwa Użytkownika",
         "formLabelPass": "Hasło",
@@ -1237,18 +1325,18 @@ const txtBankObj = {
         "formLabelPassEntropy": "Entropia Hasła",
         "formLabelPassGrade": "Ocena Hasła",
         "vendorPassGradeVal": {
-          "inadequate": "Niewystarczające",// Nie adekwatne, nieodpowiednie, niezadowalajace, ponizej normy
-          "extremelyWeak": "Wyjątkowo Słabe",//Mierne
-          "veryWeak": "Bardzo Słabe", // Bardzo Slabe
-          "weak": "Słabe", // Mizerne, //Kiepskie
-          "fair": "Przeciętne", // Znosne
-          "fine": "Poprawne", // Przecietne,// Wystarczajace, //zadawalajace, do przyjecia, poprawne, przecietne, satysfakcjonujace, srednie,wzgledne, znosne
+          "inadequate": "Niewystarczające",
+          "extremelyWeak": "Wyjątkowo Słabe",
+          "veryWeak": "Bardzo Słabe",
+          "weak": "Słabe",
+          "fair": "Przeciętne",
+          "fine": "Poprawne",
           "good": "Dobre",
           "strong": "Silne",
           "veryStrong": "Bardzo Silne",
-          "great": "Świetne", // swietne
+          "great": "Świetne",
           "excellent": "Doskonałe",
-          "superior": "Wybitne" // wybitne //celujace, wybitne, wysmienite, mistrzowskie, wyborne, wspaniale, znakomite, perfekcyjne, kapitalne
+          "superior": "Wybitne"
         },
         "credFormTitle": "Odblokuj Bazę Danych",
         "credFormImportTitle": "Odblokuj Bazę Danych do importu",
@@ -1292,3 +1380,18 @@ const txtBankObj = {
     }
   }
 }
+// /* /* Lokalna Baza Danych / Szybka Baza Zadnych / Podreczna Baza Danych ????*/
+        // "vendorPassGradeVal": {
+          // "inadequate": "Niewystarczające",/* Nie adekwatne, nieodpowiednie, niezadowalajace, ponizej normy*/
+          // "extremelyWeak": "Wyjątkowo Słabe",/*/Mierne*/
+          // "veryWeak": "Bardzo Słabe", /*// Bardzo Slabe*/
+          // "weak": "Słabe", /*// Mizerne, //Kiepskie*/
+          // "fair": "Przeciętne", /*// Znosne*/
+          // "fine": "Poprawne", /*// Przecietne,// Wystarczajace, //zadawalajace, do przyjecia, poprawne, przecietne, satysfakcjonujace, srednie,wzgledne, znosne*/
+          // "good": "Dobre",
+          // "strong": "Silne",
+          // "veryStrong": "Bardzo Silne",
+          // "great": "Świetne", /*// swietne*/
+          // "excellent": "Doskonałe",
+          // "superior": "Wybitne" /*// wybitne //celujace, wybitne, wysmienite, mistrzowskie, wyborne, wspaniale, znakomite, perfekcyjne, kapitalne*/
+        // }, */
