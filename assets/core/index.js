@@ -869,7 +869,7 @@ console.log(encodedDbxFileContent);
                 return {
                     true: readFile,
                     false: updateLocalFile,
-                    null: _ => {this.syncStop; return false;}
+                    null: _ => {this.syncStop(); return false;}
                 }[ await thisApp.alert.localFileLoadOrCreate() ]();// This can have three outcomes (null - closed with cross or backbutton (this.syncStop) , false (updateLocalFile) or true (readFile)) then run function
             }
             if(await thisApp.alert.localFileDownload()) await downloadLocalFile();
