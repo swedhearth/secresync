@@ -683,6 +683,8 @@ word
                     await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
                     if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
                     return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
+                }else{
+                    thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests existing credentials (if dbxSyncExisting);
                 }
             }
 
