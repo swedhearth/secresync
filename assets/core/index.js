@@ -599,6 +599,7 @@ word
         
         
         const getEncodedDbxFileContent = async refresherToken => {
+            console.log(refresherToken);
             dbx = await Promise.race([
                 new Promise((resolve, reject) => setTimeout(_ =>  reject(new Error("timeout")), timeoutMsec)), 
                 async _ => {
@@ -607,6 +608,7 @@ word
                     return new Dropbox.Dropbox({ auth: dbxAuth });
                 }
             ]);
+            console.log(dbx);
             //dbx = await promiseWithTimeout(timeoutMsec, refreshToken(refresherToken));
             return dbx.filesDownload({path: dbxFilePath}).then(res => res.result.fileBlob.arrayBuffer()).catch(_ => null);
         }
