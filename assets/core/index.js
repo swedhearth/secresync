@@ -677,11 +677,13 @@ word
 
                 // if alert confirmSync skipped (null) or No dbx file contents, No saved encrypted database (dbxSyncExisting) and no create new database alert response - return false
                 if(confirmSync === null || (!encodedDbxFileContent && !dbxSyncExisting && !await thisApp.alert.remoteCreateNew(this.key))) return false; 
-                
-                thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests credentials (or not if it is sync?)  - to decrypt existing or create a new DB - returns decrypted database(if dbxSyncExisting) or empty object {} if new
-                await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
-                if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
-                if(!confirmSync) return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
+
+                if(!confirmSync){
+                    thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests credentials (or not if it is sync?)  - to decrypt existing or create a new DB - returns decrypted database(if dbxSyncExisting) or empty object {} if new
+                    await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
+                    if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
+                    return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
+                }
             }
 
 console.log(encodedDbxFileContent);
@@ -693,6 +695,7 @@ console.log(encodedDbxFileContent);
             }
 
             const dbxDbObj = await thisApp.decodeToJson(encodedDbxFileContent);
+            if(this.handlePlain) await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
             if(!thisApp.dbObj) thisApp.dbObj = dbxDbObj;
             return this.connect(dbxDbObj);
         }
