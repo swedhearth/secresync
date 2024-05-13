@@ -417,10 +417,17 @@ console.log("initiate Interface");
         let msgHistory = {};
 
         const resetMsgModule = _ => msgModule.ridKids().cssName("msgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory"));
-
-        msgModule.onClick(_ =>{
+        const clearMsgModulePromise = _ => {
             clearTimeout(timerHide);
             msgPromise = null;
+        }
+        window.addEventListener('popstate', _ => {
+            clearMsgModulePromise();
+            resetMsgModule();
+        });
+
+        msgModule.onClick(_ =>{
+            clearMsgModulePromise();
             if(msgModule.hasClass("fullHistory")) return resetMsgModule();
             msgModule.addClass("fullHistory").killAttr("title").txt(getTxtBankHtmlTxt("msgHistory")).attachAry(Object.keys(msgHistory).map(nowDate => dom.adDiv(`msgHistoryRow ${msgHistory[nowDate].css}`, `${new Date(parseInt(nowDate)).toUKstring()} - ${msgHistory[nowDate].txt}`)));
         });
