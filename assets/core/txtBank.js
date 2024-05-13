@@ -154,7 +154,7 @@ const txtBankObj = {
         "n": "Replace the data in the cloud with the current app database.",
         "i": "${ sKey }"
       },
-"remoteSyncOrNew": {
+"remoteLoadOrNew": {
   "q": "${sName} already exists in the cloud.",
   "y": "Load the data from the cloud.",
   "n": "Replace the existing cloud data with a new database.",
@@ -506,7 +506,7 @@ const txtBankObj = {
         "n": "Reemplaza los datos en la nube con la base de datos actual de la aplicación.",
         "i": "${ sKey }"
       },
-"remoteSyncOrNew": {
+"remoteLoadOrNew": {
   "q": "${sName} ya existe en la nube.",
   "y": "Cargar los datos desde la nube.",
   "n": "Reemplazar los datos existentes en la nube con una nueva base de datos.",
@@ -858,7 +858,7 @@ const txtBankObj = {
         "n": "Remplacez les données dans le nuage par la base de données actuelle de l'application.",
         "i": "${ sKey }"
       },
-"remoteSyncOrNew": {
+"remoteLoadOrNew": {
   "q": "${sName} existe déjà dans le nuage.",
   "y": "Charger les données depuis le nuage.",
   "n": "Remplacer les données existantes dans le nuage par une nouvelle base de données.",
@@ -1210,7 +1210,7 @@ const txtBankObj = {
         "n": "Zastąp dane w chmurze aktualną bazą danych aplikacji.",
         "i": "${ sKey }"
       },
-        "remoteSyncOrNew": {
+        "remoteLoadOrNew": {
           "q": "${sName} już istnieje w chmurze.",
           "y": "Załaduj dane z chmury.",
           "n": "Zastąp istniejące dane w chmurze nową bazą danych.",

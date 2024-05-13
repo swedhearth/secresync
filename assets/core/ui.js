@@ -402,9 +402,10 @@ console.log("initiate Interface");
         this.setOlderStore = storeKey => appAlert("setOlderStore", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
         
         this.remoteSyncOrOverwrite = storeKey => appAlert("remoteSyncOrOverwrite", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
-        this.remoteSyncOrNew = storeKey => appAlert("remoteSyncOrNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        this.remoteLoadOrNew = storeKey => appAlert("remoteLoadOrNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
         this.remoteCreateNew = storeKey => appAlert("remoteCreateNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
-        this.remoteFileRemoved = storeKey => appAlert("remoteFileRemoved", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        this.remoteFileRestore = storeKey => appAlert("remoteFileRestore", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+
     }
 
      /* Messages -----------------------------------------------------------------------*/

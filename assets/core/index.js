@@ -671,9 +671,7 @@ word
             const encodedDbxFileContent =  await getEncodedDbxFileContent(this.handlePlain || await thisApp.decodeToString(this.handle)); // it will only ask for credentials when automatic connection
 
             if(this.handlePlain){ //fresh redirect - either from loader (no database) or through sync (existing database)
-                const confirmSync = encodedDbxFileContent ? await thisApp.alert[dbxSyncExisting ? "remoteSyncOrOverwrite" : "remoteSyncOrNew"](this.key) : false; //true=(sync), false=(overwrite or create) || !encodedDbxFileContent, null=alert skipped
-                //remoteSyncOrOverwrite: "There is already a database in the cloud. Would you like to Sychronise or Replace the data in the cloud with the current app database?"
-                //remoteSyncOrNew: "There is already a database in the cloud. Create a new application database using data from the cloud or Replace the data in the cloud with a brand new database"
+                const confirmSync = encodedDbxFileContent ? await thisApp.alert[dbxSyncExisting ? "remoteSyncOrOverwrite" : "remoteLoadOrNew"](this.key) : false; //true=(sync), false=(overwrite or create) || !encodedDbxFileContent, null=alert skipped
 
                 // if alert confirmSync skipped (null) or No dbx file contents, No saved encrypted database (dbxSyncExisting) and no create new database alert response - return false
                 if(confirmSync === null || (!encodedDbxFileContent && !dbxSyncExisting && !await thisApp.alert.remoteCreateNew(this.key))) return false; 
@@ -683,9 +681,10 @@ word
                     await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
                     if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
                     return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
-                }else{
-                    thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests existing credentials (if dbxSyncExisting);
                 }
+                // at this point is encodedDbxFileContent exists and either dbxSyncExisting exists and we need to decrypt it or load and read of dbx file is requested in Loader (No dbxSyncExisting)
+                if(dbxSyncExisting) thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests existing credentials (if dbxSyncExisting);
+
             }
 
 console.log(encodedDbxFileContent);
