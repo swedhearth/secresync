@@ -483,13 +483,14 @@ word
             }
             await storeObj.syncPause();
         }
-        storeObj.catchSync = async e => {
-            const errMsg = handleCatch(e);
+        storeObj.catchSync = async err => {
+            const errMsg = handleCatch(err);
             await thisApp.alert.catchSync(storeObj.key, errMsg);
             await storeObj.handleRemove(false);
+            return errMsg;
         }
-        storeObj.catchUpdate = async e => {
-            const errMsg = handleCatch(e);
+        storeObj.catchUpdate = async err => {
+            const errMsg = handleCatch(err);
             await thisApp.alert.catchUpdate(storeObj.key, errMsg);
             await storeObj.handleRemove(true);
             throw storeObj.key + " Error";
@@ -638,18 +639,22 @@ word
             try{
                 const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
                 if(thisApp.sessionStorage.exists){
-                    if(! await thisApp.alert.remoteRedirect(this.key)) return;
+                    if(!await thisApp.alert.remoteRedirect(this.key)) throw "skipCloudSync";
                     thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
                 }else{
-                    if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) return;
+                    if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) throw "skipCloudSync";
                     navigator.clipboard.writeText(dbxAuth.codeVerifier);
                 }
                 if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX /// What if in private mode???????? //if thisApp.idxDb.exists?????
                 // Set History State Here!!!!!!
                 window.history.replaceState({authorising: true}, '', window.location.pathname);
+                
                 thisApp.urlReplace(authUrl);
-            }catch(e){
-                this.catchSync(e).then(e => thisApp.start(e, true));// catch syncs are already in the chatchSync function - IS THIS NECESSARY?
+            }catch(err){
+                if(err === "skipCloudSync"){
+                    return thisApp.dbObj ? false : thisApp.start(false, false);
+                }
+                this.catchSync(err).then(err => thisApp.start(err, true));// catch syncs are already in the chatchSync function - IS THIS NECESSARY?
             }
         }
 
