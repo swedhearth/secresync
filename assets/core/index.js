@@ -637,7 +637,6 @@ word
             if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline);
             try{
                 const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
-                const encryptedDbObj = await thisApp.getEncryptedDbU8Ary();
                 if(thisApp.sessionStorage.exists){
                     if(! await thisApp.alert.remoteRedirect(this.key)) return;
                     thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
@@ -645,7 +644,7 @@ word
                     if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) return;
                     navigator.clipboard.writeText(dbxAuth.codeVerifier);
                 }
-                if(encryptedDbObj) await thisApp.idxDb.set("dbxSyncExisting", encryptedDbObj); // save current db in IDBX
+                if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX /// What if in private mode???????? //if thisApp.idxDb.exists?????
                 // Set History State Here!!!!!!
                 window.history.replaceState({authorising: true}, '', window.location.pathname);
                 thisApp.urlReplace(authUrl);
@@ -677,7 +676,7 @@ word
                 if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
                 if(!confirmSync) return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
             }
-        
+
 console.log(encodedDbxFileContent);
             //this.handle exists or sync is required after alerts
             if(!encodedDbxFileContent){ // unlikely scenario that the this.handle exists but not the dbx file (was manually deleted?)
