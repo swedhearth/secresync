@@ -599,14 +599,14 @@ word
         
         
         const getEncodedDbxFileContent = async refresherToken => {
-            console.log(refresherToken);
+            const refreshToken = async _ => {
+                dbxAuth.setRefreshToken(refresherToken);
+                await dbxAuth.refreshAccessToken();
+                return new Dropbox.Dropbox({ auth: dbxAuth });
+            };
             dbx = await Promise.race([
                 new Promise((resolve, reject) => setTimeout(_ =>  reject(new Error("timeout")), timeoutMsec)), 
-                async _ => {
-                    dbxAuth.setRefreshToken(refresherToken);
-                    await dbxAuth.refreshAccessToken();
-                    return new Dropbox.Dropbox({ auth: dbxAuth });
-                }
+                refreshToken()
             ]);
             console.log(dbx);
             //dbx = await promiseWithTimeout(timeoutMsec, refreshToken(refresherToken));
