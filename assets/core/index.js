@@ -297,7 +297,8 @@ word
             this.delete = name => storage && thisApp.consent ? storage.removeItem(name) : null;
             this.clear = _ => storage && thisApp.consent ? storage.clear() : null;
             this.destroySelf = _ => null; // if not consent
-            this.exists = !!storage;
+            this.exists = storage && thisApp.consent;
+            console.log(this);
         }
         
         function DisplayOptions(dpObj, storage){
