@@ -148,11 +148,11 @@ console.log("initiate Interface");
                 false: dom.adDiv("noConsent", getTxtBankHtmlTxt("noConsent")).onClick(_ => moduleFinish(thisApp.setConsent)),//"setConsent"
                 null: dom.adDiv("noConsent", getTxtBankHtmlTxt("browserIsPrivate")),
             }[thisApp.consent];
-
+            const titleSpanArray = _ => thisApp.longName.split("").map((ch, idx) => dom.addSpan((idx > 4 && idx < 8) || idx > 11 ? "fading" : "", ch));
             moduleSection.ridKids().attach(
                 dom.adDiv("scrollWrp").attachAry([
                     langModule(thisApp, _ =>  moduleFinish(thisApp.start)),
-                    dom.adDiv("appTitle", "SecreSync"),
+                    dom.adDiv("appTitle").attachAry([dom.adDiv("appTitleLongWrp").attachAry(titleSpanArray()), dom.adDiv("appTitleShortWrp").attachAry(titleSpanArray())]),
                     dom.adDiv("loadIconWrp").attachAry([
                         getStoreLoadIcon(thisApp.dbStore.dbxFile, moduleFinish),//loadDbxFile
                         getStoreLoadIcon(thisApp.dbStore.localFile, moduleFinish),//loadLocalFile
@@ -393,7 +393,8 @@ console.log("initiate Interface");
         this.catchSync = (storeKey, err) => appAlert("catchSync", catchObj(storeKey, err));
         this.catchUpdate = (storeKey, err) => appAlert("catchUpdate", catchObj(storeKey, err));
 
-        this.privateModeEnableClipboard = _ => appAlert("privateModeEnableClipboard");
+        this.remoteRedirect = storeKey => appAlert("remoteRedirect", {sKey: storeKey});
+        this.remoteRedirectWithClipboard = storeKey => appAlert("remoteRedirectWithClipboard", {sKey: storeKey});
         this.removePersisted = _ => appAlert("removePersisted");
         this.privateModeUnableSync = _ => appAlert("privateModeUnableSync");
         this.appFailed = _ => appAlert("appFailed");
@@ -454,6 +455,8 @@ console.log("initiate Interface");
         this.error = showError;
         this.existingDb = _ => getTxtBankMsgTxt("existingDb");
         this.loadBd = _ => getTxtBankMsgTxt("loadBd");
+        this.remoteAuthorised = _ => getTxtBankMsgTxt("remoteAuthorised");
+        
         this.loggedOff = _ => {
             killModuleSection();
             return getTxtBankMsgTxt("loggedOff");
@@ -501,6 +504,7 @@ console.log("initiate Interface");
         this.dbFileDownloaded = fName => msgFlash("dbFileDownloaded", {fName:fName});
         this.dbFile = _ => msgFlash("langChange");
         this.storeIsSyncing = sName => msgTxt("storeIsSyncing", {sName:sName});
+        
     };
     
 

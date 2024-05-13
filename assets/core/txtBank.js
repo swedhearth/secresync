@@ -118,12 +118,18 @@ const txtBankObj = {
         "n": "OK. I see.",
         "i": "${sKey}"
       },
-      "privateModeEnableClipboard": {
-        "q": "The App is in Private Mode.<br><br>This App will need a temporary access to your device's Clipboard in order to connect to the Dropbox after redirection.",
-        "y": "I will enable Clipboard access when prompted.",
-        "n": "No, I don't need connecting to the Dropbox.",
-        "i": "dbxFile"
-      },
+"remoteRedirect": {
+  "q": "You will be redirected to begin the cloud connection authorization process.",
+  "y": "Yes, please direct me to the cloud to authorize the connection.",
+  "n": "No, I choose not to connect to the cloud right now.",
+  "i": "${ sKey }"
+},
+"remoteRedirectWithClipboard": {
+  "q": "The app is currently in Private Mode.<br><br>Temporary access to your device's Clipboard is required to initiate cloud connection authorization.",
+  "y": "I will grant Clipboard access upon request.<br>Please navigate me to the cloud to authorize the connection.",
+  "n": "No, I prefer not to connect to the cloud at this time.",
+  "i": "${ sKey }"
+},
       "privateModeUnableSync": {
         "q": "The App is in the Private Mode.<br><br>You can't save the Quick Access Database on this device.<br>To save the data on the device, you need to restart the application and enable App Storage.",
         "y": "",
@@ -148,12 +154,12 @@ const txtBankObj = {
         "n": "Replace the data in the cloud with the current app database.",
         "i": "${ sKey }"
       },
-      "remoteSyncOrNew": {
-        "q": "${ sName } already exists exist in the cloud.",
-        "y": "Create a new database using data from the cloud.",
-        "n": "Replace the data in the cloud with a new database.",
-        "i": "${ sKey }"
-      },
+"remoteSyncOrNew": {
+  "q": "${sName} already exists in the cloud.",
+  "y": "Load the data from the cloud.",
+  "n": "Replace the existing cloud data with a new database.",
+  "i": "${sKey}"
+},
       "remoteCreateNew": {
         "q": "${ sName } will be created in the cloud.",
         "y": "Yes, please.<br>Create a new database and synchronize it with the cloud.",
@@ -212,7 +218,8 @@ const txtBankObj = {
       "importDbSuccess": "The data has been successfully imported.",
       "langChange": "The application language has been set to English.",
       "dbFileDownloaded": "The database copy is being downloaded: ${ fName }",
-      "storeIsSyncing": "The ${ sName } database is currently syncing."
+      "storeIsSyncing": "The ${ sName } database is currently syncing.",
+      "remoteAuthorised": "Application cloud connection has been authorised."
     },
     "app": {
       "titles": {
@@ -463,12 +470,18 @@ const txtBankObj = {
         "n": "OK. Ya veo.",
         "i": "${sKey}"
       },
-      "privateModeEnableClipboard": {
-        "q": "La App está en Modo Privado.<br><br>Esta App necesitará un acceso temporal al Portapapeles de tu dispositivo para conectarse a Dropbox después de la redirección.",
-        "y": "Habilitaré el acceso al Portapapeles cuando se me indique.",
-        "n": "No, no necesito conectarme a Dropbox.",
-        "i": "dbxFile"
-      },
+"remoteRedirect": {
+  "q": "Será redirigido para iniciar el proceso de autorización de conexión con la nube.",
+  "y": "Sí, por favor diríjame a la nube para autorizar la conexión.",
+  "n": "No, elijo no conectarme a la nube en este momento.",
+  "i": "${ sKey }"
+},
+"remoteRedirectWithClipboard": {
+  "q": "La aplicación está en Modo Privado.<br><br>Se requiere acceso temporal al Portapapeles de su dispositivo para iniciar la autorización de conexión con la nube.",
+  "y": "Permitiré el acceso al Portapapeles cuando se solicite.<br>Por favor, diríjame a la nube para autorizar la conexión.",
+  "n": "No, prefiero no conectarme a la nube en este momento.",
+  "i": "${ sKey }"
+},
       "privateModeUnableSync": {
         "q": "La App está en Modo Privado.<br><br>No puedes guardar la Base de Datos de Acceso Rápido en este dispositivo.<br>Para guardar los datos en el dispositivo, necesitas reiniciar la aplicación y habilitar el Almacenamiento de la App.",
         "y": "",
@@ -493,12 +506,12 @@ const txtBankObj = {
         "n": "Reemplaza los datos en la nube con la base de datos actual de la aplicación.",
         "i": "${ sKey }"
       },
-      "remoteSyncOrNew": {
-        "q": "${ sName } ya existe existe en la nube.",
-        "y": "Crea una nueva base de datos utilizando datos de la nube.",
-        "n": "Reemplaza los datos en la nube con una nueva base de datos.",
-        "i": "${ sKey }"
-      },
+"remoteSyncOrNew": {
+  "q": "${sName} ya existe en la nube.",
+  "y": "Cargar los datos desde la nube.",
+  "n": "Reemplazar los datos existentes en la nube con una nueva base de datos.",
+  "i": "${sKey}"
+},
       "remoteCreateNew": {
         "q": "${ sName } ya existe existe en la nube.",
         "y": "Sí, por favor.<br>Crea una nueva base de datos y sincronízala con la nube.",
@@ -557,7 +570,8 @@ const txtBankObj = {
       "importDbSuccess": "Los datos han sido importados con éxito.",
       "langChange": "El idioma de la aplicación se ha establecido en Español.",
       "dbFileDownloaded": "Se está descargando la copia de la base de datos: ${ fName }",
-      "storeIsSyncing": "La base de datos ${ sName } está actualmente sincronizándose."
+      "storeIsSyncing": "La base de datos ${ sName } está actualmente sincronizándose.",
+      "remoteAuthorised": "La conexión con la nube de la aplicación ha sido autorizada."
     },
     "app": {
       "titles": {
@@ -808,12 +822,18 @@ const txtBankObj = {
         "n": "OK. Je vois.",
         "i": "${sKey}"
       },
-      "privateModeEnableClipboard": {
-        "q": "L'application est en mode privé.<br><br>Cette application aura besoin d'un accès temporaire au presse-papiers de votre appareil pour se connecter à Dropbox après la redirection.",
-        "y": "J'activerai l'accès au presse-papiers lorsque cela sera demandé.",
-        "n": "Non, je n'ai pas besoin de me connecter à Dropbox.",
-        "i": "dbxFile"
-      },
+"remoteRedirect": {
+  "q": "Vous serez redirigé pour commencer le processus d'autorisation de connexion au nuage.",
+  "y": "Oui, veuillez me diriger vers le nuage pour autoriser la connexion.",
+  "n": "Non, je choisis de ne pas me connecter au nuage pour l'instant.",
+  "i": "${ sKey }"
+},
+"remoteRedirectWithClipboard": {
+  "q": "L'application est actuellement en Mode Privé.<br><br>Un accès temporaire au Presse-papiers de votre appareil est nécessaire pour initier l'autorisation de connexion au nuage.",
+  "y": "J'accorderai l'accès au Presse-papiers sur demande.<br>Veuillez me naviguer vers le nuage pour autoriser la connexion.",
+  "n": "Non, je préfère ne pas me connecter au nuage pour le moment.",
+  "i": "${ sKey }"
+},
       "privateModeUnableSync": {
         "q": "L'application est en mode privé.<br><br>Vous ne pouvez pas sauvegarder la base de données d'accès rapide sur cet appareil.<br>Pour sauvegarder les données sur l'appareil, vous devez redémarrer l'application et activer le stockage de l'application.",
         "y": "",
@@ -838,12 +858,12 @@ const txtBankObj = {
         "n": "Remplacez les données dans le nuage par la base de données actuelle de l'application.",
         "i": "${ sKey }"
       },
-      "remoteSyncOrNew": {
-        "q": "${ sName } existe déjà dans le nuage.",
-        "y": "Créez une nouvelle base de données en utilisant les données du nuage.",
-        "n": "Remplacez les données dans le nuage par une nouvelle base de données.",
-        "i": "${ sKey }"
-      },
+"remoteSyncOrNew": {
+  "q": "${sName} existe déjà dans le nuage.",
+  "y": "Charger les données depuis le nuage.",
+  "n": "Remplacer les données existantes dans le nuage par une nouvelle base de données.",
+  "i": "${sKey}"
+},
       "remoteCreateNew": {
         "q": "${ sName } sera créé dans le nuage.",
         "y": "Oui, s'il vous plaît.<br>Créez une nouvelle base de données et synchronisez-la avec le nuage.",
@@ -902,7 +922,8 @@ const txtBankObj = {
       "importDbSuccess": "Les données ont été importées avec succès.",
       "langChange": "La langue de l’application a été définie sur le Français.",
       "dbFileDownloaded": "La copie de la base de données est en cours de téléchargement : ${ fName }",
-      "storeIsSyncing": "La base de données ${ sName } est actuellement en cours de synchronisation."
+      "storeIsSyncing": "La base de données ${ sName } est actuellement en cours de synchronisation.",
+      "remoteAuthorised": "La connexion au nuage de l’application a été autorisée."
     },
     "app": {
       "titles": {
@@ -1153,12 +1174,18 @@ const txtBankObj = {
         "n": "W porzadku. Rozumiem.",
         "i": "${ sKey }"
       },
-      "privateModeEnableClipboard": {
-        "q": "Applikacja jest w Prywatnym Trybie.<br><br>By polaczyc do Dropbox, ta Applikacja bedzie wymagac chwilowego dostepu do schowka na urzadzeniu.",
-        "y": "Udostepnie schowek gdy applikacja bedzie tego wymagac.",
-        "n": "Nie, nie potrzebuje dostepu do Dropbox.",
-        "i": "dbxFile"
-      },
+"remoteRedirect": {
+  "q": "Nastąpi przekierowanie w celu rozpoczęcia procesu autoryzacji połączenia z chmurą.",
+  "y": "Tak, proszę o przekierowanie do chmury w celu autoryzacji połączenia.",
+  "n": "Nie, wybieram, aby nie łączyć się z chmurą w tej chwili.",
+  "i": "${ sKey }"
+},
+"remoteRedirectWithClipboard": {
+  "q": "Aplikacja jest obecnie w Trybie Prywatnym.<br><br>Tymczasowy dostęp do Schowka urządzenia jest wymagany, aby zainicjować autoryzację połączenia z chmurą.",
+  "y": "Udzielę dostępu do Schowka na żądanie.<br>Proszę przekierować mnie do chmury, aby autoryzować połączenie.",
+  "n": "Nie, wolę nie łączyć się z chmurą w tym momencie.",
+  "i": "${ sKey }"
+},
       "privateModeUnableSync": {
         "q": "Aplikacja jest w Prywatnym Trybie.<br><br>Nie mozna zachowac na urzadzeniu jako Podreczna Baze Danych.<br><br>By zachowac nane na urzadzeniu, nalezy ponownie uruchomic aplikacje i umozliwic jej dostep do pamieci urzadzenia.",
         "y": "",
@@ -1183,12 +1210,12 @@ const txtBankObj = {
         "n": "Zastąp dane w chmurze aktualną bazą danych aplikacji.",
         "i": "${ sKey }"
       },
-      "remoteSyncOrNew": {
-        "q": "${ sName } już istnieje w chmurze.",
-        "y": "Utwórz nową bazę danych używając danych z chmury.",
-        "n": "Zastąp dane w chmurze nową bazą danych.",
-        "i": "${ sKey }"
-      },
+        "remoteSyncOrNew": {
+          "q": "${sName} już istnieje w chmurze.",
+          "y": "Załaduj dane z chmury.",
+          "n": "Zastąp istniejące dane w chmurze nową bazą danych.",
+          "i": "${sKey}"
+        },
       "remoteCreateNew": {
         "q": "${ sName } zostanie utworzona w chmurze.",
         "y": "Tak, proszę.<br>Utwórz nową bazę danych i zsynchronizuj ją z chmurą.",
@@ -1247,7 +1274,8 @@ const txtBankObj = {
       "importDbSuccess": "Dane zostały pomyślnie zaimportowane.",
       "langChange": "Język aplikacji został ustawiony na Polski.",
       "dbFileDownloaded": "Kopia bazy danych jest pobierana: ${ fName }",
-      "storeIsSyncing": "Baza danych ${ sName } jest obecnie synchronizowana."
+      "storeIsSyncing": "Baza danych ${ sName } jest obecnie synchronizowana.",
+      "remoteAuthorised": "Połączenie aplikacji z chmurą zostało autoryzowane."
     },
     "app": {
       "titles": {

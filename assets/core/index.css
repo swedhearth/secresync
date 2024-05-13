@@ -19,7 +19,8 @@ height: 100%;
 margin: 0;
 padding: 0;
 /* font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif; */
-font-family: "Manrope", sans-serif;
+/* font-family: "Manrope", sans-serif; */
+	font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
 background: linear-gradient(0deg, #ffffffb8, #8b8b8b5e, #ffffff73);
 overflow-x: hidden;
 overscroll-behavior: contain;
@@ -428,9 +429,77 @@ padding: 1vh 3vw;
 
 .appTitle{
 	text-align:center;
-	font-size: 2em;
+	font-size: 1em;
 	margin-top: 5vh;
+	font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
 }
+.appTitleLongWrp, .appTitleShortWrp{
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0%);
+	width: 100%;
+}
+.appTitleLongWrp{
+		animation: appTitleLongWrp 4s ease-in 2s forwards;
+}
+.appTitleLongWrp:before{
+	/* font-family: 'Compart-Icon-Font-Version-0-910' !important; */
+	content: "\2261";
+}
+.appTitleShortWrp{
+	animation: appTitleShortWrp 4s ease-in 2s forwards;
+}
+.appTitle span{
+	width:0.6em;
+	display:inline-block;
+}
+.appTitleShortWrp .fading{
+	animation: fading 4s ease-in-out 2s forwards;
+}
+
+@keyframes appTitleLongWrp {
+  0% {
+    transform: translate(-50%, 0%) scale(1);
+  }
+	50% {
+		transform: translate(-50%, 100%) scale(1);
+	}
+  100% {
+    transform: translate(-50%, 200%) scale(1);
+  }
+}
+
+@keyframes appTitleShortWrp {
+  0% {
+    transform: translate(-50%, 0%) scale(1);
+  }
+	50% {
+		transform: translate(-50%, 0%) scale(1);
+	}
+  100% {
+    transform: translate(-50%, 0%) scale(2);
+  }
+}
+
+@keyframes fading {
+  0% {
+		width: 0.6em;
+		opacity: 1;
+  }
+  10% {
+		width: 0.6em;
+		opacity: 0;
+  }
+	50% {
+		width: 0.6em;
+		opacity: 0;
+	}
+  100% {
+		width: 0em;
+		opacity: 0;
+  }
+}
+
 
 .loadIconWrp{
 		position: absolute;
