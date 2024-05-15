@@ -171,6 +171,12 @@ const txtBankObj = {
         "y": "Try again to save the data in the cloud.",
         "n": "Strange situation.<br>Just remove the connection with the cloud.",
         "i": "${ sKey }"
+      },
+      "clipboardDelay":{
+          "q": "It looks like you didn't approve the access to clipboard on time.",
+          "y": "Let's try again.<br>I'll be quicker this time.",
+          "n": "I don't want you to access the clipboard.<br>Get lost!.",
+          "i": "${ sKey }"
       }
     },
     "message": {
@@ -523,6 +529,12 @@ const txtBankObj = {
         "y": "Intenta de nuevo guardar los datos en la nube.",
         "n": "Situación extraña.<br>Simplemente elimina la conexión con la nube.",
         "i": "${ sKey }"
+      },
+      "clipboardDelay":{
+          "q": "It looks like you didn't approve the access to clipboard on time.",
+          "y": "Let's try again.<br>I'll be quicker this time.",
+          "n": "I don't want you to access the clipboard.<br>Get lost!.",
+          "i": "${ sKey }"
       }
     },
     "message": {
@@ -875,6 +887,12 @@ const txtBankObj = {
         "y": "Essayez à nouveau de sauvegarder les données dans le nuage.",
         "n": "Situation étrange.<br>Supprimez simplement la connexion avec le nuage.",
         "i": "${ sKey }"
+      },
+      "clipboardDelay":{
+          "q": "It looks like you didn't approve the access to clipboard on time.",
+          "y": "Let's try again.<br>I'll be quicker this time.",
+          "n": "I don't want you to access the clipboard.<br>Get lost!.",
+          "i": "${ sKey }"
       }
     },
     "message": {
@@ -1227,6 +1245,12 @@ const txtBankObj = {
         "y": "Spróbuj ponownie zapisać dane w chmurze.",
         "n": "Dziwna sytuacja.<br>Po prostu usuń połączenie z chmurą.",
         "i": "${ sKey }"
+      },
+      "clipboardDelay":{
+          "q": "It looks like you didn't approve the access to clipboard on time.",
+          "y": "Let's try again.<br>I'll be quicker this time.",
+          "n": "I don't want you to access the clipboard.<br>Get lost!.",
+          "i": "${ sKey }"
       }
     },
     "message": {

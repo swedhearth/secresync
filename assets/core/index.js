@@ -290,6 +290,31 @@ word
         };
         /* -------------------------------  End Get CryptoKey  -------------------------------  */
         
+        
+        /* Clipboard*/ 
+        this.getObjectFromClipboard = storeKey => {
+            return new Promise((res, rej) => {
+                let readAttempts = 0;
+                const tryReadClipboard = async _ =>{
+                    try{
+                        readAttempts++;
+                        const requestStart = Date.now();
+                        const objString = await navigator.clipboard.readText();
+                        if(!objString && Date.now() - requestStart > 3000) throw "clipboardDelay";
+                        const obj = JSON.parse(objString);
+                        res(obj);
+                    }catch(err){
+                        if(err !== "clipboardDelay") return rej();//"Denied or Nothing in clipboard"
+                        if(readAttempts < 5) {
+                            await this.alert.clipboardDelay(storeKey) ? tryReadClipboard() : rej();//"User refused clipboard"
+                        }
+                    }
+                }
+                tryReadClipboard();
+            });
+        };
+        
+        /* Objects Constructors*/
         function Storage(storage, thisApp){
             Object.assign(this, storage);
             this.get = name => storage && thisApp.consent ? storage.getItem(name) : null;
@@ -298,7 +323,6 @@ word
             this.clear = _ => storage && thisApp.consent ? storage.clear() : null;
             this.destroySelf = _ => null; // if not consent
             this.exists = storage && thisApp.consent;
-            console.log(this);
         }
         
         function DisplayOptions(dpObj, storage){
@@ -330,6 +354,7 @@ word
             };
         }
         
+        /* Set Up App*/
         this.setUp = async function(dbStore){
             this.consent = !!window.localStorage.getItem("consent");
             this.localStorage = new Storage(window.localStorage, this);
@@ -583,20 +608,8 @@ word
         const dbxAuth = new Dropbox.DropboxAuth({
             clientId: CLIENT_ID,
         });
+        let dbxSyncExisting = null; // holder of encrypted database retrieved from sessionStorage or clipboardObject on redirect - ready for use in the readDbxFile
         let dbx = null; //Dropbox object
-        
-/*         function promiseWithTimeout(timeoutMsec, promise) {
-          const timeout = new Promise((resolve, reject) => {
-            setTimeout(_ =>  reject(new Error("timeout")), timeoutMsec);
-          });
-          return Promise.race([timeout, promise]);
-        }
-        
-        async function refreshToken(refresherToken){
-            dbxAuth.setRefreshToken(refresherToken);
-            await dbxAuth.refreshAccessToken();
-            return new Dropbox.Dropbox({ auth: dbxAuth });
-        } */
         
         
         const getEncodedDbxFileContent = async refresherToken => {
@@ -609,28 +622,34 @@ word
                 new Promise((resolve, reject) => setTimeout(_ =>  reject(new Error("timeout")), timeoutMsec)), 
                 refreshToken()
             ]);
-            console.log(dbx);
-            //dbx = await promiseWithTimeout(timeoutMsec, refreshToken(refresherToken));
             return dbx.filesDownload({path: dbxFilePath}).then(res => res.result.fileBlob.arrayBuffer()).catch(_ => null);
         }
 
         const redirect = async _ => {
-            if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline); //will return false or null
-            const urlSearchParams = Object.fromEntries(new URLSearchParams(window.location.search.substring(1)));
-            window.history.replaceState({lastBackExists: true}, '', window.location.pathname); // removes the url parameters from the url without reloading the page
             
+            //if(locationSearch) window.history.replaceState({lastBackExists: true}, '', window.location.pathname); // removes the url parameters from the url without reloading the page
+
+            if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline); //will return false or null
+            if(!locationSearch) return null;
+            const urlSearchParams = Object.fromEntries(new URLSearchParams(locationSearch));
+
             let dbxCodeVerifier = null;
             if(urlSearchParams.code){
                 if(thisApp.sessionStorage.exists){
                     dbxCodeVerifier = thisApp.sessionStorage.get('dbxCodeVerifier');
                     thisApp.sessionStorage.clear();
+                    dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting");
+                    await thisApp.idxDb.delete("dbxSyncExisting");
                 }else{
-                    dbxCodeVerifier = await navigator.clipboard.readText();
+                    const clipboardObject = await thisApp.getObjectFromClipboard(this.key).catch(_ => null); // display message? - not necessary as the app will be reloaded anyway
+                    if(clipboardObject) {
+                        dbxCodeVerifier = clipboardObject.dbxCodeVerifier;
+                        dbxSyncExisting = clipboardObject.appDbString ? new Uint8Array(clipboardObject.appDbString.split(",").map(x => +x)) : null; 
+                    }
                 }
-                if(!dbxCodeVerifier) return thisApp.reload();
+                if(!dbxCodeVerifier) return thisApp.reload(); // display error ?
             }
-            
-            if(!dbxCodeVerifier || !urlSearchParams.code || urlSearchParams.error) return null; //thisApp.checkHistoryState(); //null;
+            if(!dbxCodeVerifier) return null; // possible urlSearchParams.error;
             
             dbxAuth.setCodeVerifier(dbxCodeVerifier);
             const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, urlSearchParams.code);
@@ -644,14 +663,16 @@ word
                 if(thisApp.sessionStorage.exists){
                     if(!await thisApp.alert.remoteRedirect(this.key)) throw "skipCloudSync";
                     thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
+                    if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX
                 }else{
                     if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) throw "skipCloudSync";
-                    navigator.clipboard.writeText(dbxAuth.codeVerifier);
+                    const clipboardObject = {
+                        dbxCodeVerifier: dbxAuth.codeVerifier,
+                        appDbString: thisApp.dbObj ? "" + await thisApp.getEncryptedDbU8Ary() : ""
+                    }
+                    await navigator.clipboard.writeText(JSON.stringify(clipboardObject));
                 }
-                if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX /// What if in private mode???????? //if thisApp.idxDb.exists?????
-                // Set History State Here!!!!!!
-                window.history.replaceState({authorising: true}, '', window.location.pathname);
-                
+                //window.history.replaceState({authorising: true}, '', window.location.pathname);// Set History State Here!!!!!!
                 thisApp.urlReplace(authUrl);
             }catch(err){
                 if(err === "skipCloudSync"){
@@ -663,14 +684,10 @@ word
 
         const readDbxFile = async _ => {
             if(!this.handlePlain && !this.handle) return;
-            const dbxSyncExisting = await thisApp.idxDb.get("dbxSyncExisting"); // only exists with this.handlePlain
-            await thisApp.idxDb.delete("dbxSyncExisting");
-            
             if(!thisApp.online) return this.syncPaused ? null : this.syncPause().then(thisApp.alert.offline);
             this.syncStart();
             
             const encodedDbxFileContent =  await getEncodedDbxFileContent(this.handlePlain || await thisApp.decodeToString(this.handle)); // it will only ask for credentials when automatic connection
-
             if(this.handlePlain){ //fresh redirect - either from loader (no database) or through sync (existing database)
                 const confirmSync = encodedDbxFileContent ? await thisApp.alert[dbxSyncExisting ? "remoteSyncOrOverwrite" : "remoteLoadOrNew"](this.key) : false; //true=(sync), false=(overwrite or create) || !encodedDbxFileContent, null=alert skipped
 
@@ -681,14 +698,14 @@ word
                     thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests credentials (or not if it is sync?)  - to decrypt existing or create a new DB - returns decrypted database(if dbxSyncExisting) or empty object {} if new
                     await this.handleUpdate(thisApp.encryptString(this.handlePlain)); //saves encrypted handle in IDBX
                     if(!dbxSyncExisting) thisApp.setDbObj(null); // creates new Database
+                    dbxSyncExisting = null;
                     return this.update(); //confirmSync === false //dbx file does not exist exists or needs to be overwritten. The dtatabase already exist (either dbxSyncExisting or new thisApp.dbObj)
                 }
                 // at this point is encodedDbxFileContent exists and either dbxSyncExisting exists and we need to decrypt it or load and read of dbx file is requested in Loader (No dbxSyncExisting)
                 if(dbxSyncExisting) thisApp.dbObj = await thisApp.decodeToJson(dbxSyncExisting); //requests existing credentials (if dbxSyncExisting);
-
+                dbxSyncExisting = null;
             }
 
-console.log(encodedDbxFileContent);
             //this.handle exists or sync is required after alerts
             if(!encodedDbxFileContent){ // unlikely scenario that the this.handle exists but not the dbx file (was manually deleted?)
                 if(!thisApp.dbObj.mod) throw "Critical Error - No DBX File and No Database"; // is this correct??? - handle exists, no file, no db
@@ -922,15 +939,41 @@ console.log(encodedDbxFileContent);
 /* ****************************--------------------------------- END App Stores  ---------------------------------***********************************/
 
 /* ****************************---------------------------------- Initiate App -----------------------------------***********************************/
-
+    /* --------------------------------------------------------- Check History State -------------------------------------------------------------- */
+    const addModuleOpenToHistory = _ =>{
+        if(window.history.state.moduleOpen){
+            console.log("Was moduleOpen do nothing");
+            //history.back();
+        }else{
+            console.log("adding another moduleOpen");
+            window.history.pushState({moduleOpen: true}, "", "");
+        }
+    }
+    const locationSearch = window.location.search.substring(1);
+    
+/*     if(window.history.state && window.history.length < 3){
+        window.history.replaceState(null,"","");
+    } */
+    
+    if(!window.history.state && !locationSearch){
+        window.history.pushState({lastBackExists: true}, '', '');
+    }
+    if(locationSearch){
+        console.log("there is location search. current history: ", history, history.state);
+        document.body.addEventListener("click", _ => {
+            console.log("will go back 2 in history. current history: ", history, history.state);
+            history.go(-2);
+            console.log("after going back 2 in history: ", history, history.state);
+        }, {once:true})
+    }
     /* ---------------------------------------------------------  Declare App --------------------------------------------------------------------- */
     const app = new App();
 
-    /* --------------------------------------------------------- Check History State -------------------------------------------------------------- */
-    if(!window.history.state) window.history.pushState({lastBackExists: true}, '', '');
+
     
     /* ------------------------------------------------------ Add Global window Event Listeners ---------------------------------------------------------- */
     window.addEventListener('popstate',  ev => {
+        console.log("In PopstateEventHandler. History State = ", history.state, history);
         if(!app.message) return console.log("No App!!!!");
         if(!window.history.state){
             app.message.exitAppConfirm();

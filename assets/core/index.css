@@ -440,30 +440,35 @@ padding: 1vh 3vw;
 	width: 100%;
 }
 .appTitleLongWrp{
-		animation: appTitleLongWrp 4s ease-in 2s forwards;
+		animation: appTitleLongWrp 4s linear 2s forwards;
 }
-.appTitleLongWrp:before{
-	/* font-family: 'Compart-Icon-Font-Version-0-910' !important; */
-	content: "\2261";
-}
+/* .appTitleLongWrp:before{ */
+
+/* 	content: "\2630"; */ /*"\2261";   */
+/* } */
+
 .appTitleShortWrp{
-	animation: appTitleShortWrp 4s ease-in 2s forwards;
+	animation: appTitleShortWrp 4s linear 2s forwards;
 }
 .appTitle span{
-	width:0.6em;
+    font-size: 2.3vmin;
+	width:0.7em;
 	display:inline-block;
 }
 .appTitleShortWrp .fading{
-	animation: fading 4s ease-in-out 2s forwards;
+	animation: fading 4s linear 2s forwards;
 }
 
 @keyframes appTitleLongWrp {
   0% {
     transform: translate(-50%, 0%) scale(1);
   }
-	50% {
+/* 	30% {
 		transform: translate(-50%, 100%) scale(1);
-	}
+	} */
+  50% {
+    transform: translate(-50%, 200%) scale(1);
+  }
   100% {
     transform: translate(-50%, 200%) scale(1);
   }
@@ -474,24 +479,40 @@ padding: 1vh 3vw;
     transform: translate(-50%, 0%) scale(1);
   }
 	50% {
-		transform: translate(-50%, 0%) scale(1);
+    transform: translate(-50%, 0%) scale(1);
 	}
-  100% {
-    transform: translate(-50%, 0%) scale(2);
+  60% {
+    transform: translate(-50%, 0%) scale(1, 0.1);
+    opacity:1;
+    text-transform: none;
   }
+	61% {
+    transform: translate(-50%, 0%) scale(1, 0.2);
+    opacity:0;
+		text-transform: uppercase;
+	}
+	100%{
+    transform: translate(-50%, 0%) scale(2);
+    opacity:1;
+		text-transform: uppercase;
+	}
 }
 
 @keyframes fading {
   0% {
-		width: 0.6em;
+		width: 0.7em;
 		opacity: 1;
   }
   10% {
-		width: 0.6em;
+		width: 0.7em;
 		opacity: 0;
   }
+	45%{
+		width: 0.7em;
+		opacity: 0;
+	}
 	50% {
-		width: 0.6em;
+		width: 0.0em;
 		opacity: 0;
 	}
   100% {
@@ -708,6 +729,25 @@ transition: all 0.2s ease-out;
     max-width: var(--max-app-width);
 		background: var(--module-bckg); /* linear-gradient(90deg, rgb(245 245 245), #ffffff, #fafafa); */
 		box-shadow: 0px 0 4px #dcdcdc;
+}
+
+.scrollWrpPrivate:before{
+    content: "Private Mode";
+    position: fixed;
+    width: 100vmin;
+    height: 100vmin;
+    max-width: var(--max-app-width);
+    max-height: var(--max-app-width);
+    display: flex;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    color: red;
+    opacity: 0.05;
+    justify-content: center;
+    align-items: center;
+    /* background: yellow; */
+    font-size: 8vmin;
 }
 
 .scrollWrpOverflow::after{

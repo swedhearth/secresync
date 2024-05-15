@@ -1,5 +1,5 @@
 function Interface(thisApp){
-console.log("initiate Interface");
+//console.log("initiate Interface", thisApp);
     // Initiate DOM
     const dom = new Dom(document);
     
@@ -46,6 +46,8 @@ console.log("initiate Interface");
             e => e.target.replaceWith(getPassEyeIcon(passInpEl, true))
         ).addClass(inpType === "text" ? "passEyeHide" : "");
     };
+    const getScrollWrpClass = _ => `scrollWrp${thisApp.consent ? "" : 'Private'}`;
+
     //  --------------------------------------------------------------- END submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
     
     // Add Icons to thisApp.dbStore Returnable (Part of this (Interface))
@@ -88,7 +90,8 @@ console.log("initiate Interface");
             msgModule,
             spinner
     ]).onClick(function(e){
-        e.target.hasClass && e.target.hasClass("scrollWrp") && this.toggleClass("scrollBarVisible");
+        //e.target is scrollWrp
+        e.target.parentElement.hasClass && e.target.parentElement.hasClass("appSection") && this.toggleClass("scrollBarVisible");
     });
     
     // Add moduleSection Finish and Show
@@ -150,7 +153,7 @@ console.log("initiate Interface");
             }[thisApp.consent];
             const titleSpanArray = _ => thisApp.longName.split("").map((ch, idx) => dom.addSpan((idx > 4 && idx < 8) || idx > 11 ? "fading" : "", ch));
             moduleSection.ridKids().attach(
-                dom.adDiv("scrollWrp").attachAry([
+                dom.adDiv(getScrollWrpClass()).attachAry([
                     langModule(thisApp, _ =>  moduleFinish(thisApp.start)),
                     dom.adDiv("appTitle").attachAry([dom.adDiv("appTitleLongWrp").attachAry(titleSpanArray()), dom.adDiv("appTitleShortWrp").attachAry(titleSpanArray())]),
                     dom.adDiv("loadIconWrp").attachAry([
@@ -405,9 +408,11 @@ console.log("initiate Interface");
         this.remoteLoadOrNew = storeKey => appAlert("remoteLoadOrNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
         this.remoteCreateNew = storeKey => appAlert("remoteCreateNew", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
         this.remoteFileRestore = storeKey => appAlert("remoteFileRestore", {sName: getTxtBankTitleTxt(storeKey), sKey: storeKey});
+        
+        this.clipboardDelay = storeKey => appAlert("clipboardDelay", {sKey: storeKey});
 
     }
-
+ 
      /* Messages -----------------------------------------------------------------------*/
     function  Messages() {
         const msgVisibleTime = 2000; //(2s)
@@ -570,7 +575,7 @@ console.log("initiate Interface");
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         async function paintFormSection(addHistory, vendObj, edit, submitForm, toggleForm){
             let vFormScrollTop = 0;
-            const vForm = dom.adDiv("scrollWrp").on("scroll", e => vFormScrollTop = e.target.scrollTop);
+            const vForm = dom.adDiv(getScrollWrpClass()).on("scroll", e => vFormScrollTop = e.target.scrollTop);
             if(addHistory) window.history.pushState({formOpen: true}, '', '');
             if (count) getCvs(); count = null; // REMOVE FROM FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             let isNew = !vendObj || vendObj.isNew;
@@ -1076,7 +1081,7 @@ console.log("initiate Interface");
             const vListWrp = dom.adDiv("vListWrp");
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const listScrollWrp = dom.adDiv("scrollWrp").on("scroll", e => {
+            const listScrollWrp = dom.adDiv(getScrollWrpClass()).on("scroll", e => {
                 const cssMethods = ["killClass", "addClass"];
                 const [appTaskCssMethod, listTaskCssMethod] = listScrollWrpPrevTopPosition - e.target.scrollTop > 0 ? cssMethods.reverse() : cssMethods;
                 vListMainBarWrp[appTaskCssMethod]("taskBarWrpZeroTop"); 
