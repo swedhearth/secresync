@@ -165,7 +165,8 @@ function Interface(thisApp){
                 ])
             );
             showModuleSection();
-            window.history.pushState({moduleOpen: true}, '', '');
+            //window.history.pushState({moduleOpen: true}, '', '');
+            addModuleOpenToHistory();
             return promise = new Promise(res => resolve = res);
         };
         return detectIncognito().then(paintLoader).catch(error => paintLoader({error: error}));
@@ -333,7 +334,8 @@ function Interface(thisApp){
         function show(canDelete, canPersist, isUnlock, msgObj) {
             if(promise) return promise.then(_ => show(canDelete, canPersist, isUnlock, msgObj));
             paintCredentials(canDelete, canPersist, isUnlock, msgObj, new InputObject(false, msgObj), new InputObject(true, msgObj)); // getPass, getPin
-            window.history.pushState({moduleOpen: true}, '', '');
+            //window.history.pushState({moduleOpen: true}, '', '');
+            addModuleOpenToHistory();
             return promise = new Promise(res => resolve = res);
         }
 
@@ -376,7 +378,8 @@ function Interface(thisApp){
             const alertChoiceAry = ['y', 'n'].reduce((ary, prop) => alertObj[prop] ? [...ary, dom.adDiv("alertChoice", alertObj[prop]).onClick(_ => moduleFinish(prop === 'y'))] : ary, []);
             alertChoiceAry.length && alertTableAry.push(dom.adDiv("alertChoiceWrp").attachAry(alertChoiceAry));
             moduleSection.ridKids().attach(dom.adDiv("alertTable").attach(dom.adDiv("alertWrp").attachAry(alertTableAry)));
-            window.history.pushState({moduleOpen: true}, '', '');
+            addModuleOpenToHistory();
+            //window.history.pushState({moduleOpen: true}, '', '');
             showModuleSection();
             return promise = new Promise(res => resolve = res).finally(spinner.stop);
         }
