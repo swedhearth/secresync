@@ -191,6 +191,34 @@
         });
     }
 /* ****************************------------------------------------- END IDBX -------------------------------------***********************************/
+
+
+    /* --------------------------------------------------------- Check History State -------------------------------------------------------------- */
+
+    const addModuleOpenToHistory = _ =>{
+        if(window.history.state && window.history.state.moduleOpen){
+            console.log("Was moduleOpen do nothing");
+        }else{
+            console.log("adding another moduleOpen");
+            window.history.pushState({moduleOpen: true}, "", "");
+        }
+    }
+
+
+    const locationSearch = window.location.search; //.substring(1);
+    
+    console.log("Window Start history: ", history, history.state);
+    if(locationSearch){
+        window.history.replaceState({redirect: true}, "", window.location.pathname); //replace empty state with redirect state
+    }
+    if(!window.history.state || locationSearch){ // add lastBackExists state if empty state or empty was replaced by redirect state
+        window.history.pushState({lastBackExists: true}, "", "");
+    }
+    if(window.history.state && window.history.state.formOpen){
+        window.history.replaceState({moduleOpen: true},"","");
+    }
+    console.log("App Start history - must have state!: ", history, history.state);
+
     
 /* ****************************------------------------------------- FETCH -------------------------------------***********************************/
 /*     const fetchData = async (url = "", method, payload) => (

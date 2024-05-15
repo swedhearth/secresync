@@ -452,6 +452,7 @@ word
             //msg = msg || (existingStores.length ? this.message.existingDb() : this.message.loadBd());
             
             msg = msg || (redirectedStoreObj ? this.message.remoteAuthorised() : existingStores.length ? this.message.existingDb() : this.message.loadBd());
+            console.log(msg);
             try{
                 if (msg === "BackButtonPressed" || msg === "DeleteDatabase") throw msg;
                 this.message[err ? "error" : "digest"](msg);
@@ -465,6 +466,7 @@ word
                 }
                // this.resetLogOutTimer();
             }catch(err){
+                console.log(err);
                 if(appStartFailCount > maxAppStartFais - 1) {
                     for (const storeObj of existingStores){
                         await storeObj.handleRemove(false);
@@ -939,47 +941,22 @@ word
 /* ****************************--------------------------------- END App Stores  ---------------------------------***********************************/
 
 /* ****************************---------------------------------- Initiate App -----------------------------------***********************************/
-    /* --------------------------------------------------------- Check History State -------------------------------------------------------------- */
-    const addModuleOpenToHistory = _ =>{
-        if(window.history.state.moduleOpen){
-            console.log("Was moduleOpen do nothing");
-            //history.back();
-        }else{
-            console.log("adding another moduleOpen");
-            window.history.pushState({moduleOpen: true}, "", "");
-        }
-    }
-    const locationSearch = window.location.search.substring(1);
-    
-/*     if(window.history.state && window.history.length < 3){
-        window.history.replaceState(null,"","");
-    } */
-    
-    if(!window.history.state && !locationSearch){
-        window.history.pushState({lastBackExists: true}, '', '');
-    }
-    if(locationSearch){
-        console.log("there is location search. current history: ", history, history.state);
-        document.body.addEventListener("click", _ => {
-            console.log("will go back 2 in history. current history: ", history, history.state);
-            history.go(-2);
-            console.log("after going back 2 in history: ", history, history.state);
-        }, {once:true})
-    }
+
     /* ---------------------------------------------------------  Declare App --------------------------------------------------------------------- */
     const app = new App();
-
-
     
     /* ------------------------------------------------------ Add Global window Event Listeners ---------------------------------------------------------- */
     window.addEventListener('popstate',  ev => {
         console.log("In PopstateEventHandler. History State = ", history.state, history);
-        if(!app.message) return console.log("No App!!!!");
+        ///if(!app.message) return console.log("No App!!!!");
+        if(window.history.state && window.history.state.redirect) {
+            alert("will go back 2 pages in history");
+            history.go(-2);// to avoid going back to cloud login page
+        }
         if(!window.history.state){
             app.message.exitAppConfirm();
-            setTimeout(_ => {
-                window.history.pushState({lastBackExists: true}, '', '');
-            }, 5000);
+            console.log("pushing lastBackExists");
+            window.history.pushState({lastBackExists: true}, '', '');
         }
     });
     window.addEventListener('online', app.connectivitychange);

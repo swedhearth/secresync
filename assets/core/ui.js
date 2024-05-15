@@ -430,14 +430,22 @@ function Interface(thisApp){
             msgPromise = null;
         }
         window.addEventListener('popstate', _ => {
-            clearMsgModulePromise();
-            resetMsgModule();
+            if(msgModule.hasClass("fullHistory")){
+                clearMsgModulePromise();
+                resetMsgModule();
+            }
         });
 
         msgModule.onClick(_ =>{
-            clearMsgModulePromise();
-            if(msgModule.hasClass("fullHistory")) return resetMsgModule();
-            msgModule.addClass("fullHistory").killAttr("title").txt(getTxtBankHtmlTxt("msgHistory")).attachAry(Object.keys(msgHistory).map(nowDate => dom.adDiv(`msgHistoryRow ${msgHistory[nowDate].css}`, `${new Date(parseInt(nowDate)).toUKstring()} - ${msgHistory[nowDate].txt}`)));
+            
+            if(msgModule.hasClass("fullHistory")){
+                //return resetMsgModule();
+                history.back();
+            }else{
+                clearMsgModulePromise();
+                addModuleOpenToHistory();
+                msgModule.addClass("fullHistory").killAttr("title").txt(getTxtBankHtmlTxt("msgHistory")).attachAry(Object.keys(msgHistory).map(nowDate => dom.adDiv(`msgHistoryRow ${msgHistory[nowDate].css}`, `${new Date(parseInt(nowDate)).toUKstring()} - ${msgHistory[nowDate].txt}`)));
+            }
         });
 
         const show = (msgObj, logged) => {
@@ -446,9 +454,12 @@ function Interface(thisApp){
                 if(msgObj.cLog) console.log(msgObj.cLog, msgObj.txt);
             }
             if(msgPromise) return msgPromise.then(_ => show(msgObj, true));
+           
             msgModule.txt(msgObj.txt).addClasses("popUp", msgObj.css);
+           
             msgPromise = new Promise(res => {
                 timerHide = setTimeout(_=>{ 
+                    
                     resetMsgModule();// start hide
                     timerHide = setTimeout(_=> res(msgPromise = null), msgTransitionTime)// finish hide
                 }, msgVisibleTime)
