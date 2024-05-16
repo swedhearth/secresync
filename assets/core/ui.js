@@ -121,6 +121,18 @@ function Interface(thisApp){
     }
     window.addEventListener('popstate', moduleFinish);
     
+    const addModuleOpenToHistory = _ =>{
+        if(window.history.state.moduleOpen){
+            console.log("history.state Was moduleOpen do nothing");
+        }else if(window.history.state.formOpen){
+            console.log("history.state Was formOpen changed to moduleOpen");
+            window.history.replaceState({moduleOpen: true},"","");
+        }else{
+            console.log("adding another moduleOpen history.state");
+            window.history.pushState({moduleOpen: true}, "", "");
+        }
+    }
+    
         // --------------------------changeLanguage - langModule ---------------------------------------
     function langModule(thisApp, completeFunction){
         const langSelectWrp = dom.adDiv("langSelectWrp").attachAry(
@@ -459,7 +471,6 @@ function Interface(thisApp){
            
             msgPromise = new Promise(res => {
                 timerHide = setTimeout(_=>{ 
-                    
                     resetMsgModule();// start hide
                     timerHide = setTimeout(_=> res(msgPromise = null), msgTransitionTime)// finish hide
                 }, msgVisibleTime)
@@ -531,7 +542,8 @@ function Interface(thisApp){
         this.dbFileDownloaded = fName => msgFlash("dbFileDownloaded", {fName:fName});
         this.dbFile = _ => msgFlash("langChange");
         this.storeIsSyncing = sName => msgTxt("storeIsSyncing", {sName:sName});
-        
+        this.remoteConnectFail = storeKey => msgErr("remoteConnectFail", {sName: getTxtBankTitleTxt(storeKey)}); // to do!!!
+
     };
     
 

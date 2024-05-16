@@ -313,4 +313,5 @@ function Crypto(){
     this.DatabaseObject = DatabaseObject;
     this.Vendor = Vendor;
     this.vPass = vPass;
+    this.getRandomHexString = getRandomHexString;
 };

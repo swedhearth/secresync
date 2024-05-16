@@ -193,32 +193,50 @@
 /* ****************************------------------------------------- END IDBX -------------------------------------***********************************/
 
 
-    /* --------------------------------------------------------- Check History State -------------------------------------------------------------- */
+    /* --------------------------------------------------------- History State Manipulation and Location Search retrieval if redirected from cloud -------------------------------------------------------------- */
 
-    const addModuleOpenToHistory = _ =>{
-        if(window.history.state && window.history.state.moduleOpen){
-            console.log("Was moduleOpen do nothing");
+/*     const addModuleOpenToHistory = _ =>{
+        if(window.history.state.moduleOpen){
+            console.log("history.state Was moduleOpen do nothing");
+        }else if(window.history.state.formOpen){
+            console.log("history.state Was formOpen changed to moduleOpen");
+            window.history.replaceState({moduleOpen: true},"","");
         }else{
-            console.log("adding another moduleOpen");
+            console.log("adding another moduleOpen history.state");
             window.history.pushState({moduleOpen: true}, "", "");
         }
-    }
+    } */
 
-
-    const locationSearch = window.location.search; //.substring(1);
+/*     const getUrlSearchParams = _ =>{
+        let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
+        if(locationSearch){ //set locationSearch in sessionStorage and go back in history or (if in private mode) replace the empty state at redirection to 'redirect' state - will be used in popstate event.
+            if(window.sessionStorage && window.localStorage.getItem("consent")){
+                window.sessionStorage.setItem("locationSearch", locationSearch);
+                setTimeout(_ => history.go(-2), 200); //wait until disk is flushed, then go 2 pages back in history to avoid going to the cloud authorisation page
+                const end = Date.now() + 300;
+                while (Date.now() < end); //synchronously block execution of the code to avoid unnecessary rendering of the app until back in history
+                return {}; // not really needed - it will go back before it returns
+            }else{
+                window.history.replaceState({redirect: true}, "", window.location.pathname); //replace empty state with the 'redirect' state
+            }
+        }
+        
+        if(!window.history.state || window.history.state.redirect){ // add lastBackExists state if empty state or empty was replaced by the "redirect" state
+            window.history.pushState({lastBackExists: true}, "", "");
+        }
+        if(window.history.state.formOpen){
+            window.history.replaceState({moduleOpen: true},"","");
+        }
+        
+        if(window.sessionStorage){
+            locationSearch = locationSearch || window.sessionStorage.getItem("locationSearch") || ""; //could have been sessionStorage but no consent
+            window.sessionStorage.removeItem("locationSearch");
+        }
+        return Object.fromEntries(new URLSearchParams(locationSearch));
+    };
     
-    console.log("Window Start history: ", history, history.state);
-    if(locationSearch){
-        window.history.replaceState({redirect: true}, "", window.location.pathname); //replace empty state with redirect state
-    }
-    if(!window.history.state || locationSearch){ // add lastBackExists state if empty state or empty was replaced by redirect state
-        window.history.pushState({lastBackExists: true}, "", "");
-    }
-    if(window.history.state && window.history.state.formOpen){
-        window.history.replaceState({moduleOpen: true},"","");
-    }
-    console.log("App Start history - must have state!: ", history, history.state);
-
+    const urlSearchParams = getUrlSearchParams();
+    console.log("urlSearchParams:", urlSearchParams); */
     
 /* ****************************------------------------------------- FETCH -------------------------------------***********************************/
 /*     const fetchData = async (url = "", method, payload) => (

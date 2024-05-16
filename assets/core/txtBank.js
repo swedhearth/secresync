@@ -225,7 +225,8 @@ const txtBankObj = {
       "langChange": "The application language has been set to English.",
       "dbFileDownloaded": "The database copy is being downloaded: ${ fName }",
       "storeIsSyncing": "The ${ sName } database is currently syncing.",
-      "remoteAuthorised": "Application cloud connection has been authorised."
+      "remoteAuthorised": "Application cloud connection has been authorised.",
+      "remoteConnectFail": "${ sName } remoteConnectFail"
     },
     "app": {
       "titles": {
@@ -583,7 +584,8 @@ const txtBankObj = {
       "langChange": "El idioma de la aplicación se ha establecido en Español.",
       "dbFileDownloaded": "Se está descargando la copia de la base de datos: ${ fName }",
       "storeIsSyncing": "La base de datos ${ sName } está actualmente sincronizándose.",
-      "remoteAuthorised": "La conexión con la nube de la aplicación ha sido autorizada."
+      "remoteAuthorised": "La conexión con la nube de la aplicación ha sido autorizada.",
+      "remoteConnectFail": "${ sName } remoteConnectFail"
     },
     "app": {
       "titles": {
@@ -941,7 +943,8 @@ const txtBankObj = {
       "langChange": "La langue de l’application a été définie sur le Français.",
       "dbFileDownloaded": "La copie de la base de données est en cours de téléchargement : ${ fName }",
       "storeIsSyncing": "La base de données ${ sName } est actuellement en cours de synchronisation.",
-      "remoteAuthorised": "La connexion au nuage de l’application a été autorisée."
+      "remoteAuthorised": "La connexion au nuage de l’application a été autorisée.",
+      "remoteConnectFail": "${ sName } remoteConnectFail"
     },
     "app": {
       "titles": {
@@ -1299,7 +1302,8 @@ const txtBankObj = {
       "langChange": "Język aplikacji został ustawiony na Polski.",
       "dbFileDownloaded": "Kopia bazy danych jest pobierana: ${ fName }",
       "storeIsSyncing": "Baza danych ${ sName } jest obecnie synchronizowana.",
-      "remoteAuthorised": "Połączenie aplikacji z chmurą zostało autoryzowane."
+      "remoteAuthorised": "Połączenie aplikacji z chmurą zostało autoryzowane.",
+      "remoteConnectFail": "${ sName } remoteConnectFail"
     },
     "app": {
       "titles": {
