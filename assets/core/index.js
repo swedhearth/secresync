@@ -988,8 +988,17 @@ const getUrlSearchParams = async _ =>{
     if(!window.history.state || window.history.state.redirect){ // add lastBackExists state if empty state or empty was replaced by the "redirect" state
         window.history.pushState({lastBackExists: true}, "", "");
     }
-    while(!window.history.state.lastBackExists){
-        window.history.back();
+    console.log(window.history.state);
+    if(!window.history.state.lastBackExists){
+        window.history.go(-1);
+    }
+    console.log(window.history.state);
+    if(!window.history.state.lastBackExists){
+        window.history.go(-1);
+    }
+    console.log(window.history.state);
+    if(!window.history.state.lastBackExists){
+        window.history.go(-1);
     }
 /*     if(window.history.state.formOpen){
         window.history.replaceState({moduleOpen: true},"","");
