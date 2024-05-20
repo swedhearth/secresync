@@ -978,7 +978,7 @@ const getUrlSearchParams = async _ =>{
         if(window.sessionStorage && window.localStorage.getItem("consent")){
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 200));//wait until disk is flushed, 
-            history.go(-2); //then go 2 pages back in history to avoid going to the cloud authorisation page
+            window.history.go(-2); //then go 2 pages back in history to avoid going to the cloud authorisation page
             return {}; // not really needed - it will go back before it returns
         }else{
             window.history.replaceState({redirect: true}, "", window.location.pathname); //replace empty state with the 'redirect' state
@@ -988,9 +988,12 @@ const getUrlSearchParams = async _ =>{
     if(!window.history.state || window.history.state.redirect){ // add lastBackExists state if empty state or empty was replaced by the "redirect" state
         window.history.pushState({lastBackExists: true}, "", "");
     }
-    if(window.history.state.formOpen){
-        window.history.replaceState({moduleOpen: true},"","");
+    while(!window.history.state.lastBackExists){
+        window.history.back();
     }
+/*     if(window.history.state.formOpen){
+        window.history.replaceState({moduleOpen: true},"","");
+    } */
     
     if(window.sessionStorage){
         locationSearch = locationSearch || window.sessionStorage.getItem("locationSearch") || ""; //could have been sessionStorage but no consent

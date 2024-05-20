@@ -116,7 +116,7 @@ function Interface(thisApp){
     
     function moduleFinish(e){ //e=true, value, function, false, null, popstate
         if(!promise) return;
-        if(e?.type === "popstate"){
+        if(e?.type === "popstate" && window.history.state.moduleOpen){
             resolve(choice); 
             spinner.start();
             killModuleSection();
@@ -130,10 +130,12 @@ function Interface(thisApp){
     const addModuleOpenToHistory = _ =>{
         if(window.history.state.moduleOpen){
             console.log("history.state Was moduleOpen do nothing");
-        }else if(window.history.state.formOpen){
+        }
+/*         else if(window.history.state.formOpen){
             console.log("history.state Was formOpen changed to moduleOpen");
             window.history.replaceState({moduleOpen: true},"","");
-        }else{
+        } */
+        else{
             console.log("adding another moduleOpen history.state");
             window.history.pushState({moduleOpen: true}, "", "");
         }
@@ -448,20 +450,20 @@ function Interface(thisApp){
             msgPromise = null;
         }
         window.addEventListener('popstate', _ => {
-            if(msgModule.hasClass("fullHistory")){
+            if(window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
                 clearMsgModulePromise();
                 resetMsgModule();
             }
         });
 
         msgModule.onClick(_ =>{
-            
             if(msgModule.hasClass("fullHistory")){
                 //return resetMsgModule();
-                history.back();
+                window.history.back();
             }else{
                 clearMsgModulePromise();
-                addModuleOpenToHistory();
+                //addModuleOpenToHistory();
+                window.history.pushState({msgHistory: true}, "", "");
                 msgModule.addClass("fullHistory").killAttr("title").txt(getTxtBankHtmlTxt("msgHistory")).attachAry(Object.keys(msgHistory).map(nowDate => dom.adDiv(`msgHistoryRow ${msgHistory[nowDate].css}`, `${new Date(parseInt(nowDate)).toUKstring()} - ${msgHistory[nowDate].txt}`)));
             }
         });
@@ -608,7 +610,7 @@ function Interface(thisApp){
         async function paintFormSection(addHistory, vendObj, edit, submitForm, toggleForm){
             let vFormScrollTop = 0;
             const vForm = dom.adDiv(getScrollWrpClass()).onClick(toggleScrollBar).on("scroll", e => vFormScrollTop = e.target.scrollTop);
-            if(addHistory) window.history.pushState({formOpen: true}, '', '');
+            if(addHistory) addModuleOpenToHistory(); //window.history.pushState({formOpen: true}, '', '');
             if (count) getCvs(); count = null; // REMOVE FROM FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             let isNew = !vendObj || vendObj.isNew;
             
