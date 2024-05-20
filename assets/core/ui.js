@@ -116,7 +116,7 @@ function Interface(thisApp){
     
     function moduleFinish(e){ //e=true, value, function, false, null, popstate
         if(!promise) return;
-        if(e?.type === "popstate" && window.history.state.moduleOpen){
+        if(e?.type === "popstate" && window.history.state && window.history.state.moduleOpen){
             resolve(choice); 
             spinner.start();
             killModuleSection();
@@ -450,7 +450,7 @@ function Interface(thisApp){
             msgPromise = null;
         }
         window.addEventListener('popstate', _ => {
-            if(window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
+            if(&& window.history.state && window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
                 clearMsgModulePromise();
                 resetMsgModule();
             }
