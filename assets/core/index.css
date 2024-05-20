@@ -457,7 +457,7 @@ padding: 1vh 3vw;
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, 0%);
-	width: 100%;
+	/* width: 100%; */
 }
 .appTitleLongWrp{
 		animation: appTitleLongWrp 4s linear 2s forwards;

@@ -39,7 +39,6 @@ function Interface(thisApp){
             inpType = inpType === "text" ? "password" : "text";
             passInpEls.forEach(passInpEl => passInpEl.type = inpType);
         }
-        
         return getSvgIcon(
             "passEye",
             "showPassToggleBtn",
@@ -47,6 +46,7 @@ function Interface(thisApp){
         ).addClass(inpType === "text" ? "passEyeHide" : "");
     };
     const getScrollWrpClass = _ => `scrollWrp${thisApp.consent ? "" : 'Private'}`;
+    const toggleScrollBar = e => e.target === e.currentTarget && e.currentTarget.hasClass("scrollWrpOverflow") && document.body.toggleClass("scrollBarVisible");
 
     //  --------------------------------------------------------------- END submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
     
@@ -59,7 +59,7 @@ function Interface(thisApp){
             thisStore.name = getTxtBankTitleTxt(thisStore.key);
         }
     }
-
+    
     // create User Interface Sections
     const moduleSection = dom.adDiv("moduleSection appSection zIndex0"); // Shared: Loader, Credentials and Alarms sections
     const msgModule = dom.adDiv("msgModule");//.setAttr("title", getTxtBankHtmlTxt("msgHistory")); // Message module bar expandable to full screen // Change Language of the title when changing Language!!! getTxtBankTitleTxt("msgModule")
@@ -89,10 +89,16 @@ function Interface(thisApp){
             moduleSection,
             msgModule,
             spinner
-    ]).onClick(function(e){
+    ])
+/*     .onClick(function(e){
         //e.target is scrollWrp
-        e.target.parentElement.hasClass && e.target.parentElement.hasClass("appSection") && this.toggleClass("scrollBarVisible");
-    });
+        e.target.parentElement && e.target.parentElement.hasClass && e.target.parentElement.hasClass("appSection") && this.toggleClass("scrollBarVisible");
+        //e.target.parentElement?.hasClass("appSection") && e.target.parentElement.hasClass("appSection") && this.toggleClass("scrollBarVisible");
+        console.log("this: ", this);
+        console.log("e.target: ", e.target); //if e.target is scrollWrp then document.body.toggleClass("scrollBarVisible")
+    }); */
+    
+    // e.target.parentElement.hasClass("appSection") && e.target.parentElement.toggleClass("scrollBarVisible")
     
     // Add moduleSection Finish and Show
     let resolve = null;
@@ -601,7 +607,7 @@ function Interface(thisApp){
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         async function paintFormSection(addHistory, vendObj, edit, submitForm, toggleForm){
             let vFormScrollTop = 0;
-            const vForm = dom.adDiv(getScrollWrpClass()).on("scroll", e => vFormScrollTop = e.target.scrollTop);
+            const vForm = dom.adDiv(getScrollWrpClass()).onClick(toggleScrollBar).on("scroll", e => vFormScrollTop = e.target.scrollTop);
             if(addHistory) window.history.pushState({formOpen: true}, '', '');
             if (count) getCvs(); count = null; // REMOVE FROM FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             let isNew = !vendObj || vendObj.isNew;
@@ -1107,7 +1113,9 @@ function Interface(thisApp){
             const vListWrp = dom.adDiv("vListWrp");
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const listScrollWrp = dom.adDiv(getScrollWrpClass()).on("scroll", e => {
+            const listScrollWrp = dom.adDiv(getScrollWrpClass())
+            .onClick(toggleScrollBar)
+            .on("scroll", e => {
                 const cssMethods = ["killClass", "addClass"];
                 const [appTaskCssMethod, listTaskCssMethod] = listScrollWrpPrevTopPosition - e.target.scrollTop > 0 ? cssMethods.reverse() : cssMethods;
                 vListMainBarWrp[appTaskCssMethod]("taskBarWrpZeroTop"); 

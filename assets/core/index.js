@@ -461,6 +461,9 @@ function App(urlSearchParams){
                 const readPromiseAry = existingStores.map(storeObj => storeObj.read().catch(storeObj.catchLoad));
                 await Promise.race(readPromiseAry).then(this.paint);
                 if(!this.dbObj) throw "noDbObj"; // is this even possible?
+                console.log("in this.start - This Would trigger this.checkExtraSync, but we will wait...");
+                await Promise.all(readPromiseAry);
+                console.log("in this.start - After Promise All...");
                 this.checkExtraSync().catch(err => this.start(err, true, ++appStartFailCount));
             }else{ // no saved stores - load or create
                 await this.ui.loader().then(fn => fn()).catch(err => {throw "BackButtonPressed"});
@@ -671,7 +674,7 @@ function DbxFile (thisApp){
         
         if(!dbxCodeVerifier) return thisApp.reload(); // display error ?
 
-         
+
         dbxAuth.setCodeVerifier(dbxCodeVerifier);
         const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, thisApp.urlSearchParams.code); //urlSearchParams is a global variable collected in core.js at the load of the app
         return accessTokenResponse.result.refresh_token; // this.handlePlain
