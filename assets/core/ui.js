@@ -450,7 +450,7 @@ function Interface(thisApp){
             msgPromise = null;
         }
         window.addEventListener('popstate', _ => {
-            if(&& window.history.state && window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
+            if(window.history.state && window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
                 clearMsgModulePromise();
                 resetMsgModule();
             }
