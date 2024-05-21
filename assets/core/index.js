@@ -565,11 +565,16 @@ function extendStore(storeObj, thisApp){
         storeObj.iconOpacity(thisStoreExists);
         return thisStoreExists ? storeObj : false;
     };
-    storeObj.redirectIsVerified = _ => {
-        const isThisState = thisApp.urlSearchParams.state?.split(".")[0] === storeObj.key ; //thisApp.urlSearchParams is a global variable collected in core.js at the load of the app
-        const redirectError = thisApp.urlSearchParams.error;
-        if(isThisState && redirectError) thisApp.message.remoteConnectFail(storeObj.key);
-        return isThisState && !redirectError && thisApp.urlSearchParams.code;
+    storeObj.getRedirectObject = _ => {
+        const redirectObject = {...thisApp.urlSearchParams}; // will make a copy of object - even from null value; 
+        const isMatchingState = redirectObject.state?.startsWith(storeObj.key); //thisApp.urlSearchParams is a global variable collected in core.js at the load of the app
+
+        if(isMatchingState){
+            thisApp.urlSearchParams = null; //clear the urlSearchParams if it matches thisStoreObj.key
+            if(redirectObject.error) thisApp.message.remoteConnectFail(storeObj.key);
+        }
+
+        return (isMatchingState && !redirectObject.error && redirectObject.code) ? redirectObject : null;
     };
     storeObj.connect = async storeDbObj =>{
         storeObj.dbMod = storeDbObj.mod; //0
@@ -646,8 +651,8 @@ function DbxFile (thisApp){
             return null;
         }
         if(!urlSearchParams.code) return null; // That should not happen */
-        
-        if(!this.redirectIsVerified()) return null;
+        const redirectObject = this.getRedirectObject();
+        if(!redirectObject) return null;
 
         let dbxCodeVerifier = null;
         let dbxStateString = null;
@@ -667,7 +672,7 @@ function DbxFile (thisApp){
             }
         }
         
-        if(dbxStateString !== thisApp.urlSearchParams.state) { //urlSearchParams is a global variable collected in core.js at the load of the app
+        if(dbxStateString !== redirectObject.state) {
             alert("FRAUD!!!!");
             return null;
         }
@@ -676,15 +681,14 @@ function DbxFile (thisApp){
 
 
         dbxAuth.setCodeVerifier(dbxCodeVerifier);
-        const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, thisApp.urlSearchParams.code); //urlSearchParams is a global variable collected in core.js at the load of the app
+        const accessTokenResponse = await dbxAuth.getAccessTokenFromCode(REDIRECT_URI, redirectObject.code);
         return accessTokenResponse.result.refresh_token; // this.handlePlain
     }
 
     const loadDbxFile = async _ => { // function o connect to the login page of the DropBox, which then upon acceptance will redirect back to the app with the decodedDbxRefresher (accessTokenResponse.result.refresh_token) stored in the handlePlain
         if(!thisApp.online) return this.syncPause().then(thisApp.alert.offline);
-        const stateString = this.key + "." + thisApp.crypto.getRandomHexString(16);
+        const stateString = this.key + thisApp.crypto.getRandomHexString(16);
         try{
-            //const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
             const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, stateString, 'code', 'offline', null, undefined, true);
             if(thisApp.sessionStorage.exists){
                 if(!await thisApp.alert.remoteRedirect(this.key)) throw "skipCloudSync";
@@ -695,12 +699,11 @@ function DbxFile (thisApp){
                 if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) throw "skipCloudSync";
                 const clipboardObject = {
                     dbxCodeVerifier: dbxAuth.codeVerifier,
-                    dbxStateString: dbxStateString,
+                    dbxStateString: stateString,
                     appDbString: thisApp.dbObj ? "" + await thisApp.getEncryptedDbU8Ary() : ""
                 }
                 await navigator.clipboard.writeText(JSON.stringify(clipboardObject));
             }
-            //window.history.replaceState({authorising: true}, '', window.location.pathname);// Set History State Here!!!!!!
             thisApp.urlReplace(authUrl);
         }catch(err){
             if(err === "skipCloudSync"){
