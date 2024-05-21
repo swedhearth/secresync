@@ -983,7 +983,7 @@ const getUrlSearchParams = async _ =>{
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 200));//wait until disk is flushed, 
             window.history.go(-2); //then go 2 pages back in history to avoid going to the cloud authorisation page
-            return {}; // not really needed - it will go back before it returns
+            return null; // not really needed - it will go back before it returns
         }else{
             window.history.replaceState({redirect: true}, "", window.location.pathname); //replace empty state with the 'redirect' state
         }
@@ -1010,6 +1010,10 @@ const getUrlSearchParams = async _ =>{
 
 getUrlSearchParams().then( async urlSearchParams => {
     console.log("urlSearchParams:", urlSearchParams);
+    if(!urlSearchParams) {
+        console.log("urlSearchParams is null - Application will not start - instead it will reload.");
+        return;
+    }
     /* ------------------------------------------------------------ Set up and start App -------------------------------------------------------------- */        
     const app = new App(urlSearchParams);
     await app.setUp({
