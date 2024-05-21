@@ -104,6 +104,7 @@ function Interface(thisApp){
     let resolve = null;
     let promise = null;
     let choice = null;
+    let historyOpen = false;
     
     const showModuleSection = _ => {
         moduleSection.addClass("zIndex2");
@@ -115,8 +116,8 @@ function Interface(thisApp){
     }; 
     
     function moduleFinish(e){ //e=true, value, function, false, null, popstate
-        if(!promise) return;
-        if(e?.type === "popstate" && window.history.state && window.history.state.moduleOpen){
+        if(!promise || historyOpen) return;
+        if(e?.type === "popstate"){ 
             resolve(choice); 
             spinner.start();
             killModuleSection();
@@ -128,15 +129,16 @@ function Interface(thisApp){
     window.addEventListener('popstate', moduleFinish);
     
     const addModuleOpenToHistory = _ =>{
-        if(window.history.state.moduleOpen){
-            console.log("history.state Was moduleOpen do nothing");
+        if(!window.history.state){
+            console.log("That should never happen: - No history State!!!!", window.history.state)
+            alert("That should never happen: - No history State!!!!");
+            return;
         }
-/*         else if(window.history.state.formOpen){
-            console.log("history.state Was formOpen changed to moduleOpen");
-            window.history.replaceState({moduleOpen: true},"","");
-        } */
+        if(window.history.state.moduleOpen){
+            console.log("history.state Was moduleOpen do nothing"); //- This will happen when alert pops up while formis open
+        }
         else{
-            console.log("adding another moduleOpen history.state");
+            //console.log("adding another moduleOpen history.state");
             window.history.pushState({moduleOpen: true}, "", "");
         }
     }
@@ -450,19 +452,19 @@ function Interface(thisApp){
             msgPromise = null;
         }
         window.addEventListener('popstate', _ => {
-            if(window.history.state && window.history.state.msgHistory && msgModule.hasClass("fullHistory")){
+            if(historyOpen){
                 clearMsgModulePromise();
                 resetMsgModule();
+                setTimeout(_=>{ historyOpen = false; },0);// delay so all the popstate handlers are fired
             }
         });
 
         msgModule.onClick(_ =>{
-            if(msgModule.hasClass("fullHistory")){
-                //return resetMsgModule();
+            if(historyOpen){
                 window.history.back();
             }else{
+                historyOpen = true;
                 clearMsgModulePromise();
-                //addModuleOpenToHistory();
                 window.history.pushState({msgHistory: true}, "", "");
                 msgModule.addClass("fullHistory").killAttr("title").txt(getTxtBankHtmlTxt("msgHistory")).attachAry(Object.keys(msgHistory).map(nowDate => dom.adDiv(`msgHistoryRow ${msgHistory[nowDate].css}`, `${new Date(parseInt(nowDate)).toUKstring()} - ${msgHistory[nowDate].txt}`)));
             }
@@ -500,7 +502,7 @@ function Interface(thisApp){
         this.digest = showInfo;
         this.error = showError;
         this.existingDb = _ => getTxtBankMsgTxt("existingDb");
-        this.loadBd = _ => getTxtBankMsgTxt("loadBd");
+        this.loadDb = constent => getTxtBankMsgTxt(constent ? "loadDbStandard" : "loadDbPrivate");
         this.remoteAuthorised = _ => getTxtBankMsgTxt("remoteAuthorised");
         
         this.loggedOff = _ => {
@@ -1201,7 +1203,8 @@ function Interface(thisApp){
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     /// Wrap-up Interface, add this.init and return components
-        function resetUI(){
+        function resetUI(e){
+            if(historyOpen) return;
             appSectionForm.hide();
             appSectionList.show();
         }
@@ -1214,7 +1217,6 @@ function Interface(thisApp){
         
         let appInitiated = false;
         
-
 
         //Initiate UI
         return _ => {

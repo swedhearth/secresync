@@ -752,7 +752,8 @@ transition: all 0.2s ease-out;
 }
 
 .scrollWrpPrivate:before{
-    content: "Private Mode";
+    /* content: "Private Mode"; */
+		content: "";
     position: fixed;
     width: 100vmin;
     height: 100vmin;

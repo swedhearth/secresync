@@ -140,12 +140,12 @@ function App(urlSearchParams){
             console.error("this.idxDb - not declared");
         }
         this.consent = null;
-        app.setUp(this.dbStore).then(_ => app.start("No Consent", true));
+        this.setUp(this.dbStore).then(_ => this.start(null, false));
     };
     this.setConsent = _ => {
         this.consent = true;
         this.localStorage.set("consent", Date.now());
-        app.setUp(this.dbStore).then(_ => app.start("With Consent", false));
+        this.setUp(this.dbStore).then(_ => this.start(null, false));
     };
     this.online = navigator.onLine;
     
@@ -249,7 +249,7 @@ function App(urlSearchParams){
                 decryptString = cipherU8Ary => this.crypto.getStringFromCipher(cipherU8Ary, cryptoKeyObj);
                 encryptDatabase = _ => this.encryptString(JSON.stringify(this.dbObj)); // assign new function for decrypt using the retrieved cryptoKeyObj and saltU8Ary
 
-                console.log("saltU8Ary: ", saltU8Ary);
+                //console.log("saltU8Ary: ", saltU8Ary);
 
                 if(persistKey) persistCryptoKey(cryptoKeyObj, plainPinString);
                 res(decryptedString);
@@ -450,9 +450,9 @@ function App(urlSearchParams){
         const maxAppStartFais = 4;
         const existingStores = (await this.reset()).filter(storeObj => storeObj !== false); // main delay (~30ms) is await thisApp.idxDb.get(storeObj.key) in the storeObj.reset function
         const [redirectedStoreObj] = existingStores.filter(store => store.handlePlain); // storeObject || undefined
-        //msg = msg || (existingStores.length ? this.message.existingDb() : this.message.loadBd());
+        //msg = msg || (existingStores.length ? this.message.existingDb() : this.message.loadDb());
         
-        msg = msg || (redirectedStoreObj ? this.message.remoteAuthorised() : existingStores.length ? this.message.existingDb() : this.message.loadBd());
+        msg = msg || (redirectedStoreObj ? this.message.remoteAuthorised() : existingStores.length ? this.message.existingDb() : this.message.loadDb(this.consent));
         console.log(msg);
         try{
             if (msg === "BackButtonPressed" || msg === "DeleteDatabase") throw msg;
@@ -461,9 +461,9 @@ function App(urlSearchParams){
                 const readPromiseAry = existingStores.map(storeObj => storeObj.read().catch(storeObj.catchLoad));
                 await Promise.race(readPromiseAry).then(this.paint);
                 if(!this.dbObj) throw "noDbObj"; // is this even possible?
-                console.log("in this.start - This Would trigger this.checkExtraSync, but we will wait...");
+                //console.log("in this.start - This Would trigger this.checkExtraSync, but we will wait...");
                 await Promise.all(readPromiseAry);
-                console.log("in this.start - After Promise All...");
+                //console.log("in this.start - After Promise All...");
                 this.checkExtraSync().catch(err => this.start(err, true, ++appStartFailCount));
             }else{ // no saved stores - load or create
                 await this.ui.loader().then(fn => fn()).catch(err => {throw "BackButtonPressed"});
@@ -973,6 +973,7 @@ function Local (thisApp){
 
 
 const getUrlSearchParams = async _ =>{
+    console.log("window.history.state AT THE START!!!!", window.history.state, window.history);
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
     if(locationSearch){ //set locationSearch in sessionStorage and go back in history or (if in private mode) replace the empty state at redirection to 'redirect' state - will be used in popstate event.
         if(window.sessionStorage && window.localStorage.getItem("consent")){
@@ -988,26 +989,19 @@ const getUrlSearchParams = async _ =>{
     if(!window.history.state || window.history.state.redirect){ // add lastBackExists state if empty state or empty was replaced by the "redirect" state
         window.history.pushState({lastBackExists: true}, "", "");
     }
-    console.log(window.history.state);
-    if(!window.history.state.lastBackExists){
-        window.history.go(-1);
+
+    while (!window.history.state.lastBackExists) {// 
+        await new Promise(res => {
+            window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
+            window.history.back();
+        });
     }
-    console.log(window.history.state);
-    if(!window.history.state.lastBackExists){
-        window.history.go(-1);
-    }
-    console.log(window.history.state);
-    if(!window.history.state.lastBackExists){
-        window.history.go(-1);
-    }
-/*     if(window.history.state.formOpen){
-        window.history.replaceState({moduleOpen: true},"","");
-    } */
     
     if(window.sessionStorage){
         locationSearch = locationSearch || window.sessionStorage.getItem("locationSearch") || ""; //could have been sessionStorage but no consent
         window.sessionStorage.removeItem("locationSearch");
     }
+    console.log("window.history.state AT THE START before return:", window.history.state, window.history);
     return Object.fromEntries(new URLSearchParams(locationSearch));
 };
 
@@ -1019,17 +1013,14 @@ getUrlSearchParams().then( async urlSearchParams => {
         local: new Local(app),
         dbxFile: new DbxFile(app),
         localFile: new LocalFile(app)
-    });//.then(_ => app.start(false, false));
+    });
     
     window.addEventListener('popstate',  e => {
-        console.log("In PopstateEventHandler. History State = ", history.state, history);
-        ///if(!app.message) return console.log("No App!!!!");
         if(window.history.state && window.history.state.redirect) {
-            history.go(-2);// to avoid going back to cloud login page
+            history.go(-2);// to avoid going back to cloud login page if window.sessionStorage does not exist
         }
         if(!window.history.state){
             app.message.exitAppConfirm();
-            console.log("pushing lastBackExists");
             window.history.pushState({lastBackExists: true}, '', '');
         }
     });
