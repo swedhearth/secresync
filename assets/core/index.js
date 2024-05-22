@@ -697,7 +697,7 @@ function DbxFile (thisApp){
                 if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX
                  */
                 
-                await thisApp.alert.remoteRedirect(this.key).then(allowRedirect => {
+                await thisApp.alert.remoteRedirect(this.key).then(async allowRedirect => {
                     if(!allowRedirect) throw "skipCloudSync";
                     thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
                     thisApp.sessionStorage.set("dbxStateString", stateString);
@@ -719,7 +719,7 @@ function DbxFile (thisApp){
                 
                 
                 
-                await thisApp.alert.remoteRedirectWithClipboard(this.key)).then(allowRedirect => {
+                await thisApp.alert.remoteRedirectWithClipboard(this.key)).then(async allowRedirect => {
                     if(!allowRedirect) throw "skipCloudSync";
                     const clipboardObject = {
                         dbxCodeVerifier: dbxAuth.codeVerifier,
