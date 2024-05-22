@@ -719,7 +719,7 @@ function DbxFile (thisApp){
                 
                 
                 
-                await thisApp.alert.remoteRedirectWithClipboard(this.key)).then(async allowRedirect => {
+                await thisApp.alert.remoteRedirectWithClipboard(this.key).then(async allowRedirect => {
                     if(!allowRedirect) throw "skipCloudSync";
                     const clipboardObject = {
                         dbxCodeVerifier: dbxAuth.codeVerifier,
