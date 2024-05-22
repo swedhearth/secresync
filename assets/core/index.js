@@ -691,20 +691,50 @@ function DbxFile (thisApp){
         try{
             const authUrl = await dbxAuth.getAuthenticationUrl(REDIRECT_URI, stateString, 'code', 'offline', null, undefined, true);
             if(thisApp.sessionStorage.exists){
-                if(!await thisApp.alert.remoteRedirect(this.key)) throw "skipCloudSync";
+/*                 if(!await thisApp.alert.remoteRedirect(this.key)) throw "skipCloudSync";
                 thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
                 thisApp.sessionStorage.set("dbxStateString", stateString);
                 if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX
+                 */
+                
+                await thisApp.alert.remoteRedirect(this.key).then(allowRedirect => {
+                    if(!allowRedirect) throw "skipCloudSync";
+                    thisApp.sessionStorage.set("dbxCodeVerifier", dbxAuth.codeVerifier);
+                    thisApp.sessionStorage.set("dbxStateString", stateString);
+                    if(thisApp.dbObj) await thisApp.idxDb.set("dbxSyncExisting", await thisApp.getEncryptedDbU8Ary()); // save current db in IDBX
+                    thisApp.urlReplace(authUrl);
+                });
+                
+                
+                
+                
             }else{
-                if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) throw "skipCloudSync";
+/*                 if(!await thisApp.alert.remoteRedirectWithClipboard(this.key)) throw "skipCloudSync";
                 const clipboardObject = {
                     dbxCodeVerifier: dbxAuth.codeVerifier,
                     dbxStateString: stateString,
                     appDbString: thisApp.dbObj ? "" + await thisApp.getEncryptedDbU8Ary() : ""
                 }
-                await navigator.clipboard.writeText(JSON.stringify(clipboardObject));
+                await navigator.clipboard.writeText(JSON.stringify(clipboardObject)); */
+                
+                
+                
+                await thisApp.alert.remoteRedirectWithClipboard(this.key)).then(allowRedirect => {
+                    if(!allowRedirect) throw "skipCloudSync";
+                    const clipboardObject = {
+                        dbxCodeVerifier: dbxAuth.codeVerifier,
+                        dbxStateString: stateString,
+                        appDbString: thisApp.dbObj ? "" + await thisApp.getEncryptedDbU8Ary() : ""
+                    }
+                    await navigator.clipboard.writeText(JSON.stringify(clipboardObject));
+                    thisApp.urlReplace(authUrl);
+                });
+
+
+                thisApp.urlReplace(authUrl);
             }
-            thisApp.urlReplace(authUrl);
+            
+            //thisApp.urlReplace(authUrl);
         }catch(err){
             if(err === "skipCloudSync"){
                 return thisApp.dbObj ? false : thisApp.start(false, false);
