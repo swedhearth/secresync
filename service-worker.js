@@ -1,71 +1,213 @@
 const appCaches = [
     {
-        name: 'core_1.514_GitHub',
+        name: 'core_0.010_GitHub',
         urls: [
-            './',
-            './index.html',
-            './assets/core/index.js',
-            './assets/core/dbx.min.js',
-            './assets/core/terra.js',
-            './assets/core/bundle.js.map',
-            './assets/core/index.css'
+            "./",
+            "./index.html",
+            "./assets/src/native/app.js",
+            "./assets/src/native/appDbStore.js",
+            "./assets/src/native/core.js",
+            "./assets/src/native/crypto.js",
+            "./assets/src/native/index.js",
+            "./assets/src/native/txtBank.js",
+            "./assets/src/native/ui.js",
+            "./assets/src/native/index.css"
         ]
     },
     {
-        name: 'static_1.501',
+        name: 'static_0.010_GitHub',
         urls: [
-            './favicon.ico',
-            './lpm.webmanifest',
-            './browserconfig.xml',
-            './assets/static/icons/micon-48x48.png',
-            './assets/static/icons/micon-72x72.png',
-            './assets/static/icons/micon-96x96.png',
-            './assets/static/icons/micon-128x128.png',
-            './assets/static/icons/micon-192x192.png',
-            './assets/static/icons/micon-384x384.png',
-            './assets/static/icons/micon-512x512.png',
-            './assets/static/favicons/apple-touch-icon.png',
-            './assets/static/favicons/favicon-16x16.png',
-            './assets/static/favicons/favicon-32x32.png',
-            './assets/static/favicons/mstile-150x150.png',
-            './assets/static/favicons/safari-pinned-tab.svg',
-            './assets/static/appSvg/sprite.svg',
+            "./favicon.ico",
+            //"./secresync.webmanifest",
+            "./browserconfig.xml",
+            
+            "./assets/src/aquired/dbx.min.js",
+            "./assets/src/aquired/detectIncognito.min.js",
+            
+            "./assets/static/@fonts/century-gothic/cg.woff2",
+            "./assets/static/@fonts/century-gothic/cg.woff",
+            "./assets/static/@fonts/CenturyGothic/CenturyGothic.ttf",
+            
+            "./assets/static/appSvg/sprite.svg",
+            
+            "./assets/static/favicons/android-chrome-192x192.png",
+            "./assets/static/favicons/apple-touch-icon.png",
+            "./assets/static/favicons/apple-touch-icon-60x60.png",
+            "./assets/static/favicons/apple-touch-icon-60x60-precomposed.png",
+            "./assets/static/favicons/apple-touch-icon-76x76.png",
+            "./assets/static/favicons/apple-touch-icon-76x76-precomposed.png",
+            "./assets/static/favicons/apple-touch-icon-120x120.png",
+            "./assets/static/favicons/apple-touch-icon-120x120-precomposed.png",
+            "./assets/static/favicons/apple-touch-icon-152x152.png",
+            "./assets/static/favicons/apple-touch-icon-152x152-precomposed.png",
+            "./assets/static/favicons/apple-touch-icon-180x180.png",
+            "./assets/static/favicons/apple-touch-icon-180x180-precomposed.png",
+            "./assets/static/favicons/apple-touch-icon-precomposed.png",
+            "./assets/static/favicons/favicon-16x16.png",
+            "./assets/static/favicons/favicon-32x32.png",
+            "./assets/static/favicons/mstile-70x70.png",
+            "./assets/static/favicons/mstile-150x150.png",
+            "./assets/static/favicons/mstile-310x150.png",
+            "./assets/static/favicons/mstile-310x310.png",
+            "./assets/static/favicons/safari-pinned-tab.svg",
+
+            "./assets/static/icons/android/android-launchericon-512-512.png",
+            "./assets/static/icons/android/android-chrome-512x512.png",
+            "./assets/static/icons/android/android-launchericon-192-192.png",
+            "./assets/static/icons/android/android-launchericon-144-144.png",
+            "./assets/static/icons/android/android-launchericon-96-96.png",
+            "./assets/static/icons/android/android-launchericon-72-72.png",
+            "./assets/static/icons/android/android-launchericon-48-48.png",
+            "./assets/static/icons/ios/16.png",
+            "./assets/static/icons/ios/20.png",
+            "./assets/static/icons/ios/29.png",
+            "./assets/static/icons/ios/32.png",
+            "./assets/static/icons/ios/40.png",
+            "./assets/static/icons/ios/50.png",
+            "./assets/static/icons/ios/57.png",
+            "./assets/static/icons/ios/58.png",
+            "./assets/static/icons/ios/60.png",
+            "./assets/static/icons/ios/64.png",
+            "./assets/static/icons/ios/72.png",
+            "./assets/static/icons/ios/76.png",
+            "./assets/static/icons/ios/80.png",
+            "./assets/static/icons/ios/87.png",
+            "./assets/static/icons/ios/100.png",
+            "./assets/static/icons/ios/114.png",
+            "./assets/static/icons/ios/120.png",
+            "./assets/static/icons/ios/128.png",
+            "./assets/static/icons/ios/144.png",
+            "./assets/static/icons/ios/152.png",
+            "./assets/static/icons/ios/167.png",
+            "./assets/static/icons/ios/180.png",
+            "./assets/static/icons/ios/192.png",
+            "./assets/static/icons/ios/256.png",
+            "./assets/static/icons/ios/512.png",
+            "./assets/static/icons/ios/1024.png",
+            "./assets/static/icons/windows11/SmallTile.scale-100.png",
+            "./assets/static/icons/windows11/SmallTile.scale-125.png",
+            "./assets/static/icons/windows11/SmallTile.scale-150.png",
+            "./assets/static/icons/windows11/SmallTile.scale-200.png",
+            "./assets/static/icons/windows11/SmallTile.scale-400.png",
+            "./assets/static/icons/windows11/Square150x150Logo.scale-100.png",
+            "./assets/static/icons/windows11/Square150x150Logo.scale-125.png",
+            "./assets/static/icons/windows11/Square150x150Logo.scale-150.png",
+            "./assets/static/icons/windows11/Square150x150Logo.scale-200.png",
+            "./assets/static/icons/windows11/Square150x150Logo.scale-400.png",
+            "./assets/static/icons/windows11/Wide310x150Logo.scale-100.png",
+            "./assets/static/icons/windows11/Wide310x150Logo.scale-125.png",
+            "./assets/static/icons/windows11/Wide310x150Logo.scale-150.png",
+            "./assets/static/icons/windows11/Wide310x150Logo.scale-200.png",
+            "./assets/static/icons/windows11/Wide310x150Logo.scale-400.png",
+            "./assets/static/icons/windows11/LargeTile.scale-100.png",
+            "./assets/static/icons/windows11/LargeTile.scale-125.png",
+            "./assets/static/icons/windows11/LargeTile.scale-150.png",
+            "./assets/static/icons/windows11/LargeTile.scale-200.png",
+            "./assets/static/icons/windows11/LargeTile.scale-400.png",
+            "./assets/static/icons/windows11/Square44x44Logo.scale-100.png",
+            "./assets/static/icons/windows11/Square44x44Logo.scale-125.png",
+            "./assets/static/icons/windows11/Square44x44Logo.scale-150.png",
+            "./assets/static/icons/windows11/Square44x44Logo.scale-200.png",
+            "./assets/static/icons/windows11/Square44x44Logo.scale-400.png",
+            "./assets/static/icons/windows11/StoreLogo.scale-100.png",
+            "./assets/static/icons/windows11/StoreLogo.scale-125.png",
+            "./assets/static/icons/windows11/StoreLogo.scale-150.png",
+            "./assets/static/icons/windows11/StoreLogo.scale-200.png",
+            "./assets/static/icons/windows11/StoreLogo.scale-400.png",
+            "./assets/static/icons/windows11/SplashScreen.scale-100.png",
+            "./assets/static/icons/windows11/SplashScreen.scale-125.png",
+            "./assets/static/icons/windows11/SplashScreen.scale-150.png",
+            "./assets/static/icons/windows11/SplashScreen.scale-200.png",
+            "./assets/static/icons/windows11/SplashScreen.scale-400.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-16.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-20.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-24.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-30.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-32.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-36.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-40.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-44.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-48.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-60.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-64.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-72.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-80.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-96.png",
+            "./assets/static/icons/windows11/Square44x44Logo.targetsize-256.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-16.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-20.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-24.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-30.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-32.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-36.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-40.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-44.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-48.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-60.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-64.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-72.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-80.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-96.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-unplated_targetsize-256.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-16.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-20.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-24.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-30.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-32.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-36.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-40.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-44.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-48.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-60.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-64.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-72.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-80.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-96.png",
+            "./assets/static/icons/windows11/Square44x44Logo.altform-lightunplated_targetsize-256.png"
         ]
     }
 ];
 
-var cacheWhitelist = appCaches.map( (cache) => cache.name );
-
 self.addEventListener('install', event => {
-    event.waitUntil(caches.keys().then(keys => {
-        return Promise.all(appCaches.map(appCache => {
-            if (keys.indexOf(appCache.name) === -1) {
-                return caches.open(appCache.name).then(cache => cache.addAll(appCache.urls)) //"caching: " + appCache.name
-            } else {
-                return Promise.resolve(true); //"found but not caching: " + appCache.name
-            }
-        })).then(_ => {
-            console.log('All relevant resources have been fetched and cached');
-        }).catch(e => {
-            console.log('Error while caching !!!', e);// !!! TO DO !!!
-        });
-    }));
+    event.waitUntil(
+        caches.keys().then(keys => 
+            Promise.all(
+                appCaches.map(appCache => keys.includes(appCache.name) || caches.open(appCache.name).then(cache => cache.addAll(appCache.urls))) //returns true || cache.addAll promise
+            )
+            .then(cs => console.log('Service Worker has been installed. All relevant resources have been fetched and cached', cs))
+            .catch(err => console.error('Error while caching during installing!!!', err))// !!! TO DO !!!
+        )
+    );
 });
 
 self.addEventListener('message', event => {
-	if (event.data.action === 'skipWaiting') self.skipWaiting();
+    if (event.data.action === 'skipWaiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-	event.waitUntil(caches.keys().then(keyList => {
-        return Promise.all(keyList.map(key => {
-            if (cacheWhitelist.indexOf(key) === -1) return caches.delete(key);
-        }));
-	}));
+    const cacheWhitelist = appCaches.map(appCache => appCache.name);
+    event.waitUntil(
+        caches.keys().then(keys => 
+            Promise.all(
+                keys.map(key => !cacheWhitelist.includes(key) && caches.delete(key)) //returns false (the chache has not been deleted) || (if no key in cacheWhitelist === true) it will return the delete promise
+            )
+            .then(cs => console.log('Service Worker has been activated. All old caches have been deleted.', cs))
+            .catch(err => console.error('Error while deleting caches during activation!!!', err))// !!! TO DO !!!
+        )
+    );
 });
+
 
 self.addEventListener('fetch', event => {
-    if (event.request.method !== 'GET') return;
-    event.respondWith(caches.match(event.request).then(response => response || fetch(event.request).then(response)).catch(e => console.log("catch in fetch in Service worker", e)))
+    console.log("'fetch'", event);
+    if (event.request.method === 'GET') event.respondWith(caches.match(event.request)
+    .then(response => {
+        console.log("fetch response = ", response);
+       return response || fetch(event.request).then(response)
+    })
+    .catch(err => console.error("catch in fetch in Service worker", err)));
 });
 
+/* setTimeout(_ => {return true}, 1000)
+
+Promise.all([false,true,true,false].map(i => i && new Promise(res => setTimeout(res, 1000)))); */
