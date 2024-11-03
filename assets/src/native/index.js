@@ -1,6 +1,6 @@
-/* 'core_0.011_GitHub' */
+/* 'core_0.012_GitHub' */
 "use strict";
-
+console.log("index core_0.012_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do

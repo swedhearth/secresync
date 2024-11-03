@@ -1,6 +1,6 @@
 const appCaches = [
     {
-        name: 'core_0.011_GitHub',
+        name: 'core_0.012_GitHub',
         urls: [
             "./",
             "./index.html",
@@ -188,8 +188,8 @@ self.addEventListener('activate', event => {
     const cacheWhitelist = appCaches.map(appCache => appCache.name);
     event.waitUntil(
         caches.keys().then(keys => 
-            Promise.all(keys.map(key => !cacheWhitelist.includes(key) && caches.delete(key))) // key is in the cacheWhitelist - cache has not been deleted - returns false || key is not in the cacheWhitelist - returns the delete cache promise
-            .then(cs => console.log('Service Worker has been activated. All old caches have been deleted.', cs))
+            Promise.all(keys.map(key => !cacheWhitelist.includes(key) && caches.delete(key))) // key is in the cacheWhitelist - cache has not been deleted - returns false || key is not in the cacheWhitelist - returns the delete cache promise, then true
+            .then(cs => console.log('Service Worker has been activated. All old caches have been deleted.',keys, cs))
             .catch(err => console.error('Error while deleting caches during activation!!!', err))// !!! TO DO !!!
         )
     );
