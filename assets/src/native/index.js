@@ -1,4 +1,4 @@
-/* 'core_0.013_GitHub' */
+/* 'core_0.014_GitHub' */
 "use strict";
 console.log("index core_0.013_GitHub");
 /* 
@@ -8,6 +8,8 @@ TO DO:
  
  UserSettings - and or AppDBObjUserSettiings (for app before loading the the db object - then another for after the DBObj has been loaded - e.g. number of revisions stored)make?
  catchSync vs catchLoad vs catchUpdate make correct
+ 
+ alert before getChangePassword !!!!
 */
 
 // get url search parameters

@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.014_GitHub' */
 function Interface(thisApp){
     "use strict";
     if(developerMode) console.log("initiate Interface");
@@ -364,7 +364,6 @@ passHint = credFormPassHint // only new
             const alertChoiceAry = ['y', 'n'].reduce((ary, prop) => alertObj[prop] ? [...ary, dom.addDiv("alertChoice", alertObj[prop]).onClick(_ => modalSectionPromise.fulfill(prop === 'y'))] : ary, []);
             alertChoiceAry.length && alertWrpAry.push(dom.addDiv("alertChoiceWrp").attachAry(alertChoiceAry));
             const alertBody = dom.addDiv("alertWrp").attachAry(alertWrpAry);
-            //console.log("Alert beforeReturn. Name: ", alertObjName);
             return modalSectionPromise.make(alertBody);
         };
         
@@ -382,7 +381,7 @@ passHint = credFormPassHint // only new
         this.noDbObjError = _ => appAlert("noDbObjError");
         this.deleteVendor = vendName => appAlert("deleteVendor", {vName: vendName});
         this.deleteVendorPermanent = vendName => appAlert("deleteVendorPermanent", {vName: vendName});
-        this.newVersion = _ => appAlert("newVersion"); // ?????????????????????????????????????????????????????????????????????????????
+        this.newVersion = _ => appAlert("newVersion");
         this.syncDbWith = storeKey => appAlert(`syncDbWith.${storeKey}`);
         this.disconnectDbFrom = storeKey => appAlert(`disconnectDbFrom.${storeKey}`);
         this.deleteExistingStore = storeKey => appAlert(`deleteExistingStore.${storeKey}`);
@@ -417,8 +416,6 @@ passHint = credFormPassHint // only new
         
         this.registerAuth = _ => appAlert("registerAuth");
         this.oneDriveRefreshAccess = _ => appAlert("oneDriveRefreshAccess");
-        
-        
     }
  
      /* Messages -----------------------------------------------------------------------*/
@@ -453,8 +450,6 @@ passHint = credFormPassHint // only new
             msgModuleSlideDown();
             setTimeout(msgModuleReset, msgTransitionTime);
             msgIsFullArchive = false;
-            //Not Needed !!!! - check!!! - requestAnimationFrame(_ => msgIsFullArchive = false);// delay so the popstate handler is fired
-            //Not Needed !!!! - check!!! - setTimeout(_ => { msgIsFullArchive = false; }, 0);// delay so the popstate handler is fired
             return true; //msg Full Archive has been cleared
         };
         
@@ -698,7 +693,6 @@ passHint = credFormPassHint // only new
                 vendObj.rev.splice(removeIndex, 1); // remove revision
                 thisApp.dbObj.vendors = thisApp.dbObj.vendors.map(vObj => vObj.id !== vendObj.id ? vObj : vendObj);
                 updateStoresAfterChange(vendObj);//save the changes without changing the mod and creating another revision
- 
                 paintFormSection(true, vendObj); // repaint form with the most current vendObj and add to history afret the alert
             };
 
@@ -711,11 +705,13 @@ passHint = credFormPassHint // only new
                 vendObj.mod = null;
                 paintFormSection(false, vendObj, false, true);
             };
+            
             const deleteTrashed = async _ => {
                 if(!await thisApp.alert.deleteVendorPermanent(vendObj.name)) return thisApp.message.deleteVendorReject(vendObj.name);
                 thisApp.dbObj.vendors = thisApp.dbObj.vendors.filter(vObj => vObj.id !== vendObj.id);
                 updateStoresAfterRemoval(vendObj);
             };
+            
             const deleteVendor = async _ => {
                 if(!await thisApp.alert.deleteVendor(vendObj.name)) return thisApp.message.deleteVendorReject(vendObj.name);
                 vendObj.isTrash = Date.now();
@@ -1144,8 +1140,7 @@ passHint = credFormPassHint // only new
                     getTxtBankHtmlTxt("dowloadJson"),
                     getTxtBankHtmlTxt("downloadCsv"),
                     getTxtBankHtmlTxt("downloadSnc"),
-                    
-                    //await thisApp.crypto.safeB64From(await thisApp.getDbCipher())
+
                     await thisApp.crypto.safeB64From(await thisApp.cryptoHandle.getDbCipher())
                     
                 ];
@@ -1177,8 +1172,6 @@ passHint = credFormPassHint // only new
                 );
                 thisApp.message.emergDbCreated(emrgDbName);
             };
-//downloadEmergencyHtmlDB min:
-/* const downloadEmergencyHtmlDB=async t=>{async function unlockDb(t){t.preventDefault();let e=Dom(document),a=new Crypto,o=await a.bufferFromSafeB64(dbCipherSafeB64),n=await a.getCryptoKeyFromPlains(o,inputBoxPass.value,inputBoxPin.value).catch(t=>null),[r]=await a.getStringFromCipher(o,n).catch(t=>[null]);if(!r)return alert("Error");let i=JSON.parse(r);document.body.ridKids();let d=new a.DatabaseObject(i),l=d.vendors,c=await Promise.all(l.map(async t=>(t.pass=await t.getCurrentPassword().then(t=>t.plainString),t))),s=["id","name","log","pass","cPass","note","url","tags","cr8","mod"],m=["id",formLabelName,formLabelLog,formLabelPass,formLabelCustomPass,formLabelNote,formLabelUrl,formLabelTags,vCr8DateLabel,vModDateLabel],p=t=>c.map(t=>s.map((e,a)=>t[e]?'"'+("cr8mod".includes(e)?t[e]/864e5+25569:t[e])+'"':"").join(",")).toSpliced(0,0,m).join("\r\n"),b=t=>c.map(t=>e.addDiv("account").attachAry(s.map((a,o)=>t[a]?e.addDiv("prop").attachAry([e.addSpan("key",`${m[o]}:`),e.addSpan("val","cr8mod".includes(a)?new Date(t[a]).toLocaleString("en-GB",{timeZone:"Europe/London"}):t[a])]):"")));e.addDiv("btnWrp").attachAry([e.addButton("btn",showBtnTxt).onClick(t=>{document.body.attachAry(b()),t.target.kill()}),e.addButton("btn",dowloadJson).onClick(t=>{downloadFile(new Blob([JSON.stringify(c)],{type:"application/json"}),"SecreSync_Emergency_Unprotected.JSON"),t.target.kill()}),e.addButton("btn",downloadCsv).onClick(t=>{downloadFile(new Blob([p()],{type:"text/html"}),"SecreSync_Emergency_Unprotected.csv"),t.target.kill()}),e.addButton("btn",downloadSnc).onClick(t=>{downloadFile(new Blob([o],{type:"application/octet-stream"}),"SecreSync_Emergency_Protected.snc"),t.target.kill()})]).attachTo(document.body)}let a=[getTxtBankHtmlTxt("formLabelName"),getTxtBankHtmlTxt("formLabelLog"),getTxtBankHtmlTxt("formLabelPass"),getTxtBankHtmlTxt("formLabelCustomPass"),getTxtBankHtmlTxt("formLabelNote"),getTxtBankHtmlTxt("formLabelUrl"),getTxtBankHtmlTxt("formLabelTags"),getTxtBankTitleTxt("vCr8DateLabel"),getTxtBankTitleTxt("vModDateLabel"),getTxtBankHtmlTxt("showBtnTxt"),getTxtBankHtmlTxt("dowloadJson"),getTxtBankHtmlTxt("downloadCsv"),getTxtBankHtmlTxt("downloadSnc"),await thisApp.crypto.safeB64From(await thisApp.getDbCipher())],o=`const [formLabelName, formLabelLog, formLabelPass, formLabelCustomPass, formLabelNote, formLabelUrl, formLabelTags, vCr8DateLabel, vModDateLabel, showBtnTxt, dowloadJson, downloadCsv, downloadSnc, dbCipherSafeB64] = [${a.map(t=>`'${t}'`).join(",")}];`,n=[Dom,Crypto,downloadFile,e,o,"document.querySelector('form').addEventListener('submit', unlockDb);"].map(t=>t.toString()).join(""),r=document.implementation.createHTMLDocument("SecreSync Emergency");dom.add("style").html("body{position: absolute;margin: 0;padding: 0;width: 100%;font-family: monospace;font-size: 16px;}body *{max-width: 900px;}form{outline: 1px solid grey;margin: 1vmin auto;padding: 1vmin;}form *{text-align: center;}label{display:block;padding:1em;}input{font-family: monospace;font-size: 0.9em;line-height: 1.5em;border: 0;border-bottom: 1px solid rgb(240, 240, 240);transition: all 0.3s ease;padding: 0.5em 2.5em;display: block;margin: 0em auto 10vh;min-width: 50%;}input:focus-visible{outline:0;border-bottom: 1px solid black;color: black;}.btnWrp{display: flex;margin: auto;position: sticky;top: 0px;justify-content: center;}button{margin: 1em;padding:1em;}.account{margin: 1em auto;padding:1em;outline: 1px solid grey;background: #fafafa;}.prop{display: table-row;}.prop *{padding:0.5em;display: table-cell;}.key{font-weight: bold;}.val{color:black;}").attachTo(r.head),dom.addForm().attachAry([dom.addLabel(null,getTxtBankHtmlTxt("credFormPass")).setAttr("for","inputBoxPass"),dom.addInput().setAttrs({type:"password",id:"inputBoxPass"}),dom.addLabel(null,getTxtBankHtmlTxt("credFormPin")).setAttr("for","inputBoxPin"),dom.addInput().setAttrs({type:"password",id:"inputBoxPin"}),dom.addInput().setAttrs({type:"submit",value:getTxtBankHtmlTxt("unlockDb")})]).attachTo(r.body);dom.add("script").setAttr("id","preliminaryScript").setAttr("data-scriptstring",n).html("window.addEventListener('DOMContentLoaded', function() {const preliminaryScript = document.getElementById('preliminaryScript'); const mainScript = document.createElement('script'); const targetScriptText = document.createTextNode(preliminaryScript.dataset.scriptstring); mainScript.appendChild(targetScriptText); document.body.appendChild(mainScript);})").attachTo(r.body);let i=downloadFile(new Blob(["<!DOCTYPE html>"+r.documentElement.outerHTML],{type:"text/html"}),"SecreSync_Emergency.html");thisApp.message.emergDbCreated(i)}; */
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getDonate = _ => {
@@ -1220,7 +1213,6 @@ passHint = credFormPassHint // only new
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getChangePassword = async _ => {
-                 //thisApp.changeCredentials().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
                  thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
             };
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -- BARS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -1332,9 +1324,6 @@ passHint = credFormPassHint // only new
                         iconEl.toggleClass("elDimmed").forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
                         
                         paintList(); */
-                        
-                        
-                        
 
                         ado.changeDetail(iconName);
                         iconEl.toggleClass("elDimmed").forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
@@ -1403,12 +1392,22 @@ passHint = credFormPassHint // only new
                     },
                 }[adoSorts.sortBy][adoSorts.sortOrder];
                 
-                let vendAllowAry
+/*                 let vendAllowAry
                 if(!adoDetails.typeNote && !adoDetails.typeLog){ //vNote
                     vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => obj.isTrash));
                 }else{
                     vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))));
                 }
+                
+                const vendAllowAry = !adoDetails.typeNote && !adoDetails.typeLog
+                ? sortList(thisApp.dbObj.vendors.filter(obj => obj.isTrash))
+                : sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote)))); */
+                
+                const vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => 
+                  obj.isTrash && !adoDetails.typeNote && !adoDetails.typeLog || 
+                  !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))
+                ));
+
 
                 //let vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))));
                 const highlightSrchStr = txt => searchStr ? txt.replace(new RegExp(searchStr, 'gi'), match => dom.addSpan("hit", match).outerHTML) : txt; // add highlights to text of found searchStr
@@ -1426,14 +1425,12 @@ passHint = credFormPassHint // only new
                                 ? vListScrollWrp.addClass("scrollWrpOverflow") 
                                 : vListScrollWrp.killClass("scrollWrpOverflow");
                             spinner.stop("in paintList - requestAnimationFrame");
-                            //if(developerMode) console.log("vListScrollWrp set. Spinner stopped.")
                         }, stopSpinnerDelay);
-                        
                     });
                     elIdx++;
                 };
                 
-                const vEntry = vendObj => dom.addDiv("vEmpty") //vObj
+                const vEntry = vendObj => dom.addDiv("vEmpty")
                     .onClick(_ => paintFormSection(true, vendObj))
                     .observedBy(new IntersectionObserver(entries => {
                         entries.forEach(entry => {

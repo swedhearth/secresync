@@ -1795,7 +1795,7 @@ const txtBankObj = {
         "local": "Szybka Baza Danych",
         "dbxFile": "Baza Danych Dropbox",
         "oneDriveFile": "Baza Danych OneDrive",
-        "localFile": "Zapasowa Kopia Bazy Danych",
+        "localFile": "Zapasowa Kopia Bazy Danych", //bazy danych pliku urządzenia
         "secreSync": "SecreSync",
         "share": "Share"
       },

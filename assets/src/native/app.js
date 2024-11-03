@@ -1,4 +1,4 @@
-/* 'core_0.013_GitHub' */
+/* 'core_0.014_GitHub' */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -163,7 +163,6 @@ function App(urlSearchParams){
 
     }
 
-    
     //----------------------- Credentials Object Constructor-----------------------//
     function Credentials(thisApp){
         
@@ -487,6 +486,7 @@ function App(urlSearchParams){
                 if(msg) this.message[err ? "error" : "digest"](msg);
                 if(savedStoreObjs.length){
                     let painted;
+                    
                     for(const storeObj of savedStoreObjs){
                         if(storeObj.testOutside) storeObj.testOutside();
                         await storeObj.read().catch(storeObj.catchLoad); // Catch catchLoad is OK!!!!!!!!! catchLoad CAN THROW but will be caught by the try - catch in this.start
@@ -495,14 +495,13 @@ function App(urlSearchParams){
                             this.paint();
                         }
                     }
+                    
                     if(!painted){
                         if(this.dbStore.objectsExist()) throw "noDbObj";
                         throw "remoteConnectionCancelled"; // when was handlePlain and (back || close button pressed)
                     }
-                    
-                    // delay check sync
-                    //setTimeout(_ => this.dbStore.checkExtraSync(this).catch(err => this.start(err, true, ++appStartFailCount)), 500); //.catch(err => this.start(err, true, ++appStartFailCount))
-                    setTimeout(_ => this.dbStore.checkExtraSync(this), 500);
+                   
+                    setTimeout(_ => this.dbStore.checkExtraSync(this), 500); // delay check sync
                 }else{ // no saved stores - load or create
                     this.dbStore.restoreObjectsSync();
                     const returnedFunction = await this.ui.loader();
