@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.011_GitHub' */
 "use strict";
 
 /* 
@@ -90,7 +90,9 @@ function installServiceWorker(){
             console.log("service-worker.js updateFound");
             reg.installing.addEventListener('statechange', onstateChange)
         });
-        reg.update().catch(err => {
+        reg.update()
+        .then(regUpd => console.log("service-worker.js register then update - is it updated now?"))
+        .catch(err => {
                 if(developerMode) console.error(err);
             if(window.confirm("Service Worker Update Failure. Reload App?")){
                 window.location.reload();//window.location.replace(app.URL);

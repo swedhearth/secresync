@@ -1,6 +1,6 @@
 const appCaches = [
     {
-        name: 'core_0.010_GitHub',
+        name: 'core_0.011_GitHub',
         urls: [
             "./",
             "./index.html",
@@ -188,9 +188,7 @@ self.addEventListener('activate', event => {
     const cacheWhitelist = appCaches.map(appCache => appCache.name);
     event.waitUntil(
         caches.keys().then(keys => 
-            Promise.all(
-                keys.map(key => !cacheWhitelist.includes(key) && caches.delete(key)) //returns false (the chache has not been deleted) || (if no key in cacheWhitelist === true) it will return the delete promise
-            )
+            Promise.all(keys.map(key => !cacheWhitelist.includes(key) && caches.delete(key))) // key is in the cacheWhitelist - cache has not been deleted - returns false || key is not in the cacheWhitelist - returns the delete cache promise
             .then(cs => console.log('Service Worker has been activated. All old caches have been deleted.', cs))
             .catch(err => console.error('Error while deleting caches during activation!!!', err))// !!! TO DO !!!
         )
@@ -199,15 +197,11 @@ self.addEventListener('activate', event => {
 
 
 self.addEventListener('fetch', event => {
-    console.log("'fetch'", event);
-    if (event.request.method === 'GET') event.respondWith(caches.match(event.request)
-    .then(response => {
-        console.log("fetch response = ", response);
-       return response || fetch(event.request).then(response)
-    })
-    .catch(err => console.error("catch in fetch in Service worker", err)));
+    if (event.request.method === 'GET')
+        event.respondWith(caches.match(event.request)
+        .then(response =>  response || fetch(event.request)
+            .then(response)
+            .catch(err => console.error("catch in fetch(event.request) in Service worker", event.request, err))
+        )
+        .catch(err => console.error("catch in event.respondWith(caches.match(event.request) in Service worker", event.request, err)));
 });
-
-/* setTimeout(_ => {return true}, 1000)
-
-Promise.all([false,true,true,false].map(i => i && new Promise(res => setTimeout(res, 1000)))); */
