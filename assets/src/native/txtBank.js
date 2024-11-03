@@ -58,7 +58,7 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Do you want to synchronise the database with the local Backup Database File?",
+          "q": "Do you want to synchronise the database with the local Backup Database File?", //Device Database File
           "y": "Yes!<br>Start!",
           "n": "No, I don't want to.<br>Thank you.",
           "i": "localFile"
@@ -84,8 +84,8 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "You are about to remove the connection with the Backup Database File.<br>The application's database will not be synchronised with the Backup Database File.",
-          "y": "Remove the connection with the Backup Database File.",
+          "q": "You are about to remove the connection with the Backup Database File.<br>The application's database will not be synchronised with the Backup Database File.", //Device Database File
+          "y": "Remove the connection with the Backup Database File.", //Device Database File
           "n": "Oh, no! That was a mistake.",
           "i": "localFile"
         }
@@ -110,20 +110,20 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "A connection with the Backup Database File exists on the device. What should we do?",
-          "y": "Remove the connection with the file.<br><br>The Backup Database File will remain on the device.",
+          "q": "A connection with the Backup Database File exists on the device. What should we do?", ////Device Database File
+          "y": "Remove the connection with the file.<br><br>The Backup Database File will remain on the device.",//Device Database File
           "n": "Do not remove the connection.<br><br>I still want to synchronise data with the file.",
           "i": "localFile"
         }
       },
       "localFileLoadOrCreate": {
-        "q": "Do you already have a file with the Backup Copy of the Database?",
+        "q": "Do you already have a file with the Backup Copy of the Database?",// Do you already have a file with a copy of the database that you want synchronise? //Device Database File
         "y": "Yes, I do.<br>I want to choose the file.",
         "n": "No, I don't.<br>I need to create and save a new file.",
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "There is no possibility to synchronise<br>with the Backup Database File on this device.<br><br>However, you can download a copy of the application's database.",
+        "q": "There is no possibility to synchronise<br>with the Backup Database File on this device.<br><br>However, you can download a copy of the application's database.",//Device Database File
         "y": "I want to download a copy<br>of the database.",
         "n": "I do not want to download a copy<br>of the database.",
         "i": "localFile"
@@ -283,7 +283,7 @@ const txtBankObj = {
       "vendorDeleted": "The '${ vName }' Account has been deleted successfully.",
       "exitAppConfirm": "Press the Back Button again to exit the application.",
       "noFilePickedErr": "No Database File has been selected, or the file is corrupted. Unable to load the Database...",
-      "pickFileFR": "Select the database file using FileReader. The Backup Database File will not be able to be modified...",
+      "pickFileFR": "Select the database file using FileReader. The Backup Database File will not be able to be modified...", //Device Database File
       "pickImportFile": "Select the Database File you wish to import.",
       "pickFile": "Please select a Database File...",
       "offline": "No internet connection detected. Unable to sync with the cloud.",
@@ -337,15 +337,15 @@ const txtBankObj = {
         "localSync": "Quick Access Database Connection",
         "dbxFileSync": "Dropbox Database Connection",
         "oneDriveFileSync": "OneDrive Database Connection",
-        "localFileSync": "Backup Database File Connection",
+        "localFileSync": "Backup Database File Connection", //Device Database File
         "newDbLoad": "Create a New Database",
         "dbxFileLoad": "Connect to an Existing Dropbox Database or Create a New One in Dropbox",
         "oneDriveFileLoad":  "Connect to an Existing OneDrive Database or Create a New One in OneDrive",
-        "localFileLoad": "Load a Database from an existing Backup File",
+        "localFileLoad": "Load a Database from an existing Backup File", //Device Database File
         "localCred": "Quick Access Database",
         "dbxFileCred": "Dropbox Database",
         "oneDriveFileCred": "OneDrive Database",
-        "localFileCred": "Backup Database File",
+        "localFileCred": "Backup Database File",//Device Database File
         "newDb": "New Database",
         "unlinkDb": "Disconnect Database",
         "loadNewDb": "Create a New Database",
@@ -390,7 +390,7 @@ const txtBankObj = {
         "local": "Quick Access Database",
         "dbxFile": "Dropbox Database",
         "oneDriveFile": "OneDrive Database",
-        "localFile": "Backup Database File",
+        "localFile": "Backup Database File", //Device Database File.
         "secreSync": "SecreSync",
         "share": "Share"
       },

@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.013_GitHub' */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -404,6 +404,19 @@ function App(urlSearchParams){
         }
     })();
 
+    this.uninstallServiceWorker = async _ => { // NOT USED YET!!!!!!!!
+        try {
+            const keys = await caches.keys();
+            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
+             if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
+
+            const regs = await navigator.serviceWorker.getRegistrations();
+            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
+             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
+        } catch (err) {
+             if(developerMode) console.error("Error during service worker unregistration:", err);
+        }
+    };
 
     /* idxDbErrorHandler*/
     const idxDbErrorHandler = async (errMsg, error) => {

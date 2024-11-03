@@ -1,6 +1,6 @@
 const appCaches = [
     {
-        name: 'core_0.012_GitHub',
+        name: 'core_0.013_GitHub',
         urls: [
             "./",
             "./index.html",
@@ -18,7 +18,7 @@ const appCaches = [
         name: 'static_0.010_GitHub',
         urls: [
             "./favicon.ico",
-            //"./secresync.webmanifest",
+            "./secresync.webmanifest",
             "./browserconfig.xml",
             
             "./assets/src/aquired/dbx.min.js",
