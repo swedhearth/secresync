@@ -1,6 +1,6 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.015_GitHub' */
 const txtBankObj = {
-  "GB": {
+  "EN": {
     "alert": {
       "fromMessage": {
         "q": "${ sMsg }",
@@ -58,7 +58,7 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Do you want to synchronise the database with the local Backup Database File?", //Device Database File
+          "q": "Do you want to synchronise the application database with the local file on this device?", //Device Database File
           "y": "Yes!<br>Start!",
           "n": "No, I don't want to.<br>Thank you.",
           "i": "localFile"
@@ -84,8 +84,8 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "You are about to remove the connection with the Backup Database File.<br>The application's database will not be synchronised with the Backup Database File.", //Device Database File
-          "y": "Remove the connection with the Backup Database File.", //Device Database File
+          "q": "You are about to remove the connection with the Database File.<br>The application's database will not be synchronised with the Database File on this device.", //Device Database File
+          "y": "Remove the connection with the Database File.", //Device Database File
           "n": "Oh, no! That was a mistake.",
           "i": "localFile"
         }
@@ -110,20 +110,20 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "A connection with the Backup Database File exists on the device. What should we do?", ////Device Database File
-          "y": "Remove the connection with the file.<br><br>The Backup Database File will remain on the device.",//Device Database File
+          "q": "A connection with the Database File exists on the device. What should we do?", ////Device Database File
+          "y": "Remove the connection with the file.<br><br>The Database File will remain on the device.",//Device Database File
           "n": "Do not remove the connection.<br><br>I still want to synchronise data with the file.",
           "i": "localFile"
         }
       },
       "localFileLoadOrCreate": {
-        "q": "Do you already have a file with the Backup Copy of the Database?",// Do you already have a file with a copy of the database that you want synchronise? //Device Database File
+        "q": "Do you already have a file with the copy of the Database?",// Do you already have a file with a copy of the database that you want synchronise? //Device Database File
         "y": "Yes, I do.<br>I want to choose the file.",
         "n": "No, I don't.<br>I need to create and save a new file.",
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "There is no possibility to synchronise<br>with the Backup Database File on this device.<br><br>However, you can download a copy of the application's database.",//Device Database File
+        "q": "There is no possibility to synchronise<br>with the Database File on this device.<br><br>However, you can download a copy of the application's database.",//Device Database File
         "y": "I want to download a copy<br>of the database.",
         "n": "I do not want to download a copy<br>of the database.",
         "i": "localFile"
@@ -283,7 +283,7 @@ const txtBankObj = {
       "vendorDeleted": "The '${ vName }' Account has been deleted successfully.",
       "exitAppConfirm": "Press the Back Button again to exit the application.",
       "noFilePickedErr": "No Database File has been selected, or the file is corrupted. Unable to load the Database...",
-      "pickFileFR": "Select the database file using FileReader. The Backup Database File will not be able to be modified...", //Device Database File
+      "pickFileFR": "Select the database file. Data on this file will not be modifiable...", //Device Database File
       "pickImportFile": "Select the Database File you wish to import.",
       "pickFile": "Please select a Database File...",
       "offline": "No internet connection detected. Unable to sync with the cloud.",
@@ -317,7 +317,7 @@ const txtBankObj = {
     "app": {
       "titles": {
         "PL": "Polski",
-        "GB": "English",
+        "EN": "English",
         "FR": "Français",
         "ES": "Español",
         "detDates": "Details of Dates",
@@ -337,15 +337,15 @@ const txtBankObj = {
         "localSync": "Quick Access Database Connection",
         "dbxFileSync": "Dropbox Database Connection",
         "oneDriveFileSync": "OneDrive Database Connection",
-        "localFileSync": "Backup Database File Connection", //Device Database File
+        "localFileSync": "Device Database File Connection", //Device Database File
         "newDbLoad": "Create a New Database",
         "dbxFileLoad": "Connect to an Existing Dropbox Database or Create a New One in Dropbox",
         "oneDriveFileLoad":  "Connect to an Existing OneDrive Database or Create a New One in OneDrive",
-        "localFileLoad": "Load a Database from an existing Backup File", //Device Database File
+        "localFileLoad": "Load Database from device file", //Device Database File
         "localCred": "Quick Access Database",
         "dbxFileCred": "Dropbox Database",
         "oneDriveFileCred": "OneDrive Database",
-        "localFileCred": "Backup Database File",//Device Database File
+        "localFileCred": "Device Database File",
         "newDb": "New Database",
         "unlinkDb": "Disconnect Database",
         "loadNewDb": "Create a New Database",
@@ -390,9 +390,10 @@ const txtBankObj = {
         "local": "Quick Access Database",
         "dbxFile": "Dropbox Database",
         "oneDriveFile": "OneDrive Database",
-        "localFile": "Backup Database File", //Device Database File.
+        "localFile": "Device Database File", //Device Database File.
         "secreSync": "SecreSync",
-        "share": "Share"
+        "share": "Share",
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -427,8 +428,8 @@ const txtBankObj = {
         "credFormImpPass": "Enter Import Database Password",
         "credFormPin": "Enter Your PIN",
         "credFormImportPin": "Enter Import Database PIN",
-        "credFormPersist": "Use PIN Only",
-        "credFormPersistRemove": "Use Password and PIN",
+        "credFormPersist": "Remember password",
+        "credFormPersistRemove": "Remove saved password",
         "credFormPassHint": "Please enter a new password. It can be between 10 and 32 characters long and contain any type of characters.",
         "credFormPinHint": "Please provide a new PIN. It can be between 4 and 32 characters long and contain any type of characters.",
         "credFormPersistHint": "Securely save the encrypted database password on the device to enable unlocking the database using the PIN only. <br>Do not enable this option if using a public device.",
@@ -526,8 +527,8 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "¿Te gustaría sincronizar la App con un Archivo de Respaldo local?",
-          "y": "¡Sí!<br>¡Adelante!",
+          "q": "¿Quieres sincronizar la base de datos de la aplicación con el archivo local en este dispositivo?",
+          "y": "¡Sí!<br>¡Empieza!",
           "n": "No, no quiero.<br>Gracias.",
           "i": "localFile"
         }
@@ -552,9 +553,9 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Estás a punto de desconectar el Archivo de Respaldo de la Base de Datos.<br>La base de datos de la App ya no se sincronizará con el Archivo de Respaldo.",
-          "y": "¡Sí!<br><br>Desconecta el Archivo de Respaldo!",
-          "n": "¡Oh, no!<br><br>Fue un error.",
+          "q": "Estás a punto de eliminar la conexión con el archivo de base de datos.<br>La base de datos de la aplicación no se sincronizará con el archivo de base de datos en este dispositivo.",
+          "y": "Eliminar la conexión con el archivo de base de datos.",
+          "n": "¡Oh, no! Fue un error.",
           "i": "localFile"
         }
       },
@@ -578,22 +579,22 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Hay una conexión existente con el Archivo de Respaldo de la Base de Datos. ¿Qué hacemos?",
-          "y": "Eliminar la conexión actual con el Archivo de Respaldo.",
-          "n": "No eliminar la conexión. Quiero usarla",
+          "q": "Existe una conexión con el archivo de base de datos en el dispositivo. ¿Qué debemos hacer?",
+          "y": "Eliminar la conexión con el archivo.<br><br>El archivo de base de datos permanecerá en el dispositivo.",
+          "n": "No eliminar la conexión.<br><br>Todavía quiero sincronizar los datos con el archivo.",
           "i": "localFile"
         }
       },
       "localFileLoadOrCreate": {
-        "q": "¿Tienes un Archivo de Base de Datos existente?",
-        "y": "Sí. Ya tengo un Archivo de Base de Datos existente<br><br>Déjame conectarme a él",
-        "n": "Necesito crear un nuevo Archivo de Base de Datos<br><br>Solo déjame guardarlo...",
+        "q": "¿Ya tienes un archivo con una copia de la base de datos?",
+        "y": "Sí, lo tengo.<br>Quiero elegir el archivo.",
+        "n": "No, no lo tengo.<br>Necesito crear y guardar un nuevo archivo.",
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "No puedes sincronizar el Archivo de Base de Datos de este dispositivo.",
-        "y": "Quiero descargar una copia de la base de datos actual.<br>",
-        "n": "Ya veo. No quiero descargar.",
+        "q": "No es posible sincronizar<br>con el archivo de base de datos en este dispositivo.<br><br>Sin embargo, puedes descargar una copia de la base de datos de la aplicación.",
+        "y": "Quiero descargar una copia<br>de la base de datos.",
+        "n": "No quiero descargar una copia<br>de la base de datos.",
         "i": "localFile"
       },
       "importDb": {
@@ -752,7 +753,7 @@ const txtBankObj = {
       "vendorDeleted": "La cuenta '${ vName }' se ha eliminado correctamente.",
       "exitAppConfirm": "Presione nuevamente el botón Atrás para salir de la aplicación.",
       "noFilePickedErr": "No se ha seleccionado ningún archivo de base de datos o el archivo está dañado. No se puede cargar la base de datos...",
-      "pickFileFR": "Seleccione el archivo de la base de datos usando FileReader. Archivo de Respaldo de la Base de Datos no podrá ser modificada...",
+      "pickFileFR": "Seleccione el archivo de base de datos. Los datos en este archivo no podrán ser modificados...",
       "pickImportFile": "Seleccione el archivo de base de datos que desea importar.",
       "pickFile": "Seleccione un archivo de base de datos...",
       "offline": "No hay conexión a Internet. No se puede sincronizar con la nube.",
@@ -786,7 +787,7 @@ const txtBankObj = {
     "app": {
       "titles": {
         "PL": "Polski",
-        "GB": "English",
+        "EN": "English",
         "FR": "Français",
         "ES": "Español",
         "detDates": "Detalles de Fechas",
@@ -806,15 +807,15 @@ const txtBankObj = {
         "localSync": "Conexión Rápida a la Base de Datos",
         "dbxFileSync": "Conexión a la Base de Datos de Dropbox",
         "oneDriveFileSync": "Conexión a la Base de Datos de oneDriveFile",
-        "localFileSync": "Conexión al Archivo de Respaldo de la Base de Datos",
+        "localFileSync": "Conexión con el archivo de base de datos del dispositivo",
         "newDbLoad": "Crear una Nueva Base de Datos",
         "dbxFileLoad": "Conectar a una Base de Datos de Dropbox Existente o Crear una Nueva en Dropbox",
         "oneDriveFileLoad":  "Conectar a una Base de Datos de OneDrive Existente o Crear una Nueva en OneDrive",
-        "localFileLoad": "Cargar una Base de Datos desde un Archivo de Respaldo Existente",
+        "localFileLoad": "Cargar la Base de Datos desde el archivo del dispositivo",
         "localCred": "Base de Datos de Acceso Rápido",
         "dbxFileCred": "Base de Datos de Dropbox",
         "oneDriveFileCred": "Base de Datos de OneDrive",
-        "localFileCred": "Archivo de Respaldo de la Base de Datos",
+        "localFileCred": "Archivo de Base de Datos del dispositivo",
         "newDb": "Nueva Base de Datos",
         "unlinkDb": "Desconectar la Base de Datos",
         "loadNewDb": "Crear una Nueva Base de Datos",
@@ -859,9 +860,10 @@ const txtBankObj = {
         "local": "Base de Datos de Acceso Rápido",
         "dbxFile": "Base de Datos de Dropbox",
         "oneDriveFile": "Base de Datos de OneDrive",
-        "localFile": "Archivo de Respaldo de la Base de Datos",
+        "localFile": "Archivo de Base de Datos del dispositivo",
         "secreSync": "SecreSync",
-        "share": "Share"
+        "share": "Share",
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -896,8 +898,8 @@ const txtBankObj = {
         "credFormImpPass": "Ingrese la contraseña de la Base de Datos de Importación",
         "credFormPin": "Ingrese su PIN",
         "credFormImportPin": "Ingrese el PIN de la Base de Datos de Importación",
-        "credFormPersist": "Usar solo PIN",
-        "credFormPersistRemove": "Usar contraseña y PIN",
+        "credFormPersist": "Recordar la contraseña",
+        "credFormPersistRemove": "Eliminar la contraseña guardada",
         "credFormPassHint": "Por favor, ingrese una nueva contraseña. Puede tener entre 10 y 32 caracteres y contener cualquier tipo de caracteres.",
         "credFormPinHint": "Por favor, proporcione un nuevo PIN. Puede tener entre 4 y 32 caracteres y contener cualquier tipo de caracteres.",
         "credFormPersistHint": "Guarde de forma segura la contraseña cifrada de la base de datos en el dispositivo para permitir el desbloqueo de la base de datos utilizando solo el PIN. No active esta opción si está utilizando un dispositivo público.",
@@ -995,8 +997,8 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Souhaitez-vous synchroniser l'application avec un fichier de sauvegarde local?",
-          "y": "Oui!<br>Allez-y!",
+          "q": "Voulez-vous synchroniser la base de données de l'application avec le fichier local sur cet appareil?",
+          "y": "Oui!<br>Commencez!",
           "n": "Non, je ne veux pas.<br>Merci.",
           "i": "localFile"
         }
@@ -1021,9 +1023,9 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Vous êtes sur le point de déconnecter le fichier de sauvegarde de la base de données.<br>La base de données de l'application ne sera plus synchronisée avec le fichier de sauvegarde.",
-          "y": "Oui!<br><br>Déconnectez le fichier de sauvegarde!",
-          "n": "Oh non!<br><br>C'était une erreur.",
+          "q": "Vous êtes sur le point de supprimer la connexion avec le fichier de base de données.<br>La base de données de l'application ne sera pas synchronisée avec le fichier de base de données sur cet appareil.",
+          "y": "Supprimer la connexion avec le fichier de base de données.",
+          "n": "Oh, non! C'était une erreur.",
           "i": "localFile"
         }
       },
@@ -1047,22 +1049,22 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Il existe une connexion actuelle avec le fichier de sauvegarde de la base de données. Que faisons-nous ?",
-          "y": "Supprimer la connexion actuelle avec le fichier de sauvegarde.",
-          "n": "Ne pas supprimer la connexion. Je veux l'utiliser",
+          "q": "Une connexion avec le fichier de base de données existe sur l'appareil. Que devons-nous faire?",
+          "y": "Supprimer la connexion avec le fichier.<br><br>Le fichier de base de données restera sur l'appareil.",
+          "n": "Ne pas supprimer la connexion.<br><br>Je veux toujours synchroniser les données avec le fichier.",
           "i": "localFile"
         }
       },
       "localFileLoadOrCreate": {
-        "q": "Avez-vous un fichier de base de données existant ?",
-        "y": "Oui. J'ai déjà un fichier de base de données existant<br><br>Laissez-moi me connecter à celui-ci",
-        "n": "J'ai besoin de créer un nouveau fichier de base de données<br><br>Laissez-moi juste le sauvegarder...",
+        "q": "Avez-vous déjà un fichier avec une copie de la base de données?",
+        "y": "Oui, j'en ai un.<br>Je veux choisir le fichier.",
+        "n": "Non, je n'en ai pas.<br>Je dois créer et enregistrer un nouveau fichier.",
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "Vous ne pouvez pas synchroniser le fichier de base de données de cet appareil.",
-        "y": "Je veux télécharger une copie de la base de données actuelle.<br>",
-        "n": "Je vois. Je ne veux pas télécharger.",
+        "q": "Il n'est pas possible de synchroniser<br>avec le fichier de base de données sur cet appareil.<br><br>Toutefois, vous pouvez télécharger une copie de la base de données de l'application.",
+        "y": "Je veux télécharger une copie<br>de la base de données.",
+        "n": "Je ne veux pas télécharger une copie<br>de la base de données.",
         "i": "localFile"
       },
       "importDb": {
@@ -1220,7 +1222,7 @@ const txtBankObj = {
       "vendorDeleted": "Le compte '${ vName }' a été supprimé avec succès.",
       "exitAppConfirm": "Appuyez à nouveau sur le bouton Retour pour quitter l'application.",
       "noFilePickedErr": "Aucun fichier de base de données n'a été sélectionné, ou le fichier est corrompu.Impossible de charger la base de données...",
-      "pickFileFR": "Sélectionnez le fichier de base de données à l'aide de FileReader. Fichier de Sauvegarde de la Base de Données ne pourra pas être modifiée...",
+      "pickFileFR": "Sélectionnez le fichier de base de données. Les données de ce fichier ne pourront pas être modifiées...",
       "pickImportFile": "Sélectionnez le fichier de base de données que vous souhaitez importer.",
       "pickFile": "Veuillez sélectionner un fichier de base de données...",
       "offline": "Aucune connexion Internet détectée. Impossible de synchroniser avec le cloud.",
@@ -1254,7 +1256,7 @@ const txtBankObj = {
     "app": {
       "titles": {
         "PL": "Polski",
-        "GB": "English",
+        "EN": "English",
         "FR": "Français",
         "ES": "Español",
         "detDates": "Détails des Dates",
@@ -1274,15 +1276,15 @@ const txtBankObj = {
         "localSync": "Connexion Rapide à la Base de Données",
         "dbxFileSync": "Connexion à la Base de Données Dropbox",
         "oneDriveFileSync": "Connexion à la Base de Données oneDriveFile",
-        "localFileSync": "Connexion au Fichier de Sauvegarde de la Base de Données",
+        "localFileSync": "Connexion au fichier de base de données de l’appareil",
         "newDbLoad": "Créer une Nouvelle Base de Données",
         "dbxFileLoad": "Se Connecter à une Base de Données Dropbox Existante ou Créer une Nouvelle dans Dropbox",
         "oneDriveFileLoad":  "Se Connecter à une Base de Données OneDrive Existante ou Créer une Nouvelle dans OneDrive",
-        "localFileLoad": "Charger une Base de Données à partir d'un Fichier de Sauvegarde Existant",
+        "localFileLoad": "Charger la Base de Données à partir du fichier de l’appareil",
         "localCred": "Base de Données d'Accès Rapide",
         "dbxFileCred": "Base de Données Dropbox",
         "oneDriveFileCred": "Base de Données OneDrive",
-        "localFileCred": "Fichier de Sauvegarde de la Base de Données",
+        "localFileCred": "Fichier de Base de Données de l'appareil",
         "newDb": "Nouvelle Base de Données",
         "unlinkDb": "Déconnecter la Base de Données",
         "loadNewDb": "Créer une Nouvelle Base de Données",
@@ -1327,9 +1329,10 @@ const txtBankObj = {
         "local": "Base de Données d'Accès Rapide",
         "dbxFile": "Base de Données Dropbox",
         "oneDriveFile": "Base de Données OneDrive",
-        "localFile": "Fichier de Sauvegarde de la Base de Données",
+        "localFile": "Fichier de base de données de l'appareil",
         "secreSync": "SecreSync",
-        "share": "Share"
+        "share": "Share",
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1364,8 +1367,8 @@ const txtBankObj = {
         "credFormImpPass": "Entrez le Mot de Passe de la Base de Données d'Importation",
         "credFormPin": "Entrez Votre PIN",
         "credFormImportPin": "Entrez le PIN de la Base de Données d'Importation",
-        "credFormPersist": "Utiliser Uniquement le PIN",
-        "credFormPersistRemove": "Utiliser le Mot de Passe et le PIN",
+        "credFormPersist": "Se souvenir du mot de passe",
+        "credFormPersistRemove": "Supprimer le mot de passe enregistré",
         "credFormPassHint": "Veuillez entrer un nouveau mot de passe. Il peut contenir entre 10 et 32 caractères et inclure tout type de caractères.",
         "credFormPinHint": "Veuillez fournir un nouveau PIN. Il peut contenir entre 4 et 32 caractères et inclure tout type de caractères.",
         "credFormPersistHint": "Enregistrez de manière sécurisée le mot de passe de la base de données chiffrée sur l'appareil pour permettre le déverrouillage de la base de données en utilisant uniquement le PIN. Ne pas activer cette option si vous utilisez un appareil public.",
@@ -1463,7 +1466,7 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Czy chcesz zsynchronizowac bazę danych z lokalnym plikiem Zapasowej Kopii Bazy Danych?",
+          "q": "Czy chcesz zsynchronizowac bazę danych aplikacji z lokalnym plikiem na tym urządzeniu?",
           "y": "Tak jest!<br>Zaczynaj!",
           "n": "Nie, nie chce.<br>Dziekuję.",
           "i": "localFile"
@@ -1489,8 +1492,8 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Wlaśnie zamierzasz usunąć połączenie z plikiem Zapasowej Kopii Bazy Danych.<br>Baza danych applikacji nie będzie zsynchronizowana z plikiem Zapasowej Kopii Bazy Danych.",
-          "y": "Usun połączenie z plikiem Zapasowej Kopii Bazy Danych.",
+          "q": "Wlaśnie zamierzasz usunąć połączenie z Plikiem Bazy Danych urządzenia.<br>Baza danych applikacji nie będzie zsynchronizowana z plikiem na urządzeniu.",
+          "y": "Usun połączenie z Plikiem Bazy Danych.",
           "n": "O, nie! To byla pomyłka.",
           "i": "localFile"
         }
@@ -1515,20 +1518,20 @@ const txtBankObj = {
           "i": "oneDriveFile"
         },
         "localFile": {
-          "q": "Połączenie z plikiem Zapasowej Kopii Bazy Danych istnieje na urządzeniu. Co robimy?",
-          "y": "Usun połączenie z plikiem.<br><br>Plik Zapasowej Kopii Bazy Danych pozostanie na urządzeniu.",
+          "q": "Połączenie z Plikiem Bazy Danych istnieje na urządzeniu. Co robimy?",
+          "y": "Usun połączenie z plikiem.<br><br>Plik Bazy Danych pozostanie na urządzeniu.",
           "n": "Nie usuwaj polączenia.<br><br>Wciąż chcę synchronizowac dane z plikiem.",
           "i": "localFile"
         }
       },
       "localFileLoadOrCreate": {
-        "q": "Czy posiadasz juz plik z Zapasową Kopia Bazy Danych?",
+        "q": "Czy posiadasz plik z kopią Bazą Danych?",
         "y": "Tak. Chce wskazać plik.",
         "n": "Nie. Chce stworzyć i zapisać nowy plik.",
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "Nie istnieje możliwość synchronizacji<br>z plikiem Zapasowej Kopii Bazy Danych na tym urządzeniu.<br><br>Możesz natomiast pobrać kopię bazy danych aplikacji.",
+        "q": "Nie istnieje możliwość synchronizacji<br>z Plikiem Bazy Danych na tym urządzeniu.<br><br>Możesz natomiast pobrać kopię bazy danych aplikacji.",
         "y": "Chcę pobrać kopię bazy danych.",
         "n": "Nie chce pobierać kopii bazy danych.",
         "i": "localFile"
@@ -1688,7 +1691,7 @@ const txtBankObj = {
       "vendorDeleted": "Konto '${ vName }' zostało pomyślnie usunięte.",
       "exitAppConfirm": "Naciśnij ponownie przycisk Wstecz, aby wyjść z aplikacji.",
       "noFilePickedErr": "Nie wybrano pliku bazy danych lub plik jest uszkodzony. Nie można załadować bazy danych...",
-      "pickFileFR": "Wybierz plik bazy danych za pomocą FileReader. Zapasowa Kopia Bazy Danych nie będzie mogła być modyfikowana...",
+      "pickFileFR": "Wybierz plik bazy danych. Dane w tym pliku nie będą mogły być modyfikowane...",
       "pickImportFile": "Wybierz plik bazy danych do importu.",
       "pickFile": "Proszę wybrać plik bazy danych...",
       "offline": "Brak połączenia z Internetem. Nie można zsynchronizować z chmurą.",
@@ -1722,7 +1725,7 @@ const txtBankObj = {
     "app": {
       "titles": {
         "PL": "Polski",
-        "GB": "English",
+        "EN": "English",
         "FR": "Français",
         "ES": "Español",
         "detDates": "Szczegóły Dat",
@@ -1742,15 +1745,15 @@ const txtBankObj = {
         "localSync": "Szybkie Połączenie z Bazą Danych",
         "dbxFileSync": "Połączenie z Bazą Danych Dropbox",
         "oneDriveFileSync": "Połączenie z Bazą Danych OneDrive",
-        "localFileSync": "Połączenie z Plikem Kopii Zapasowej Bazy Danych",
+        "localFileSync": "Połączenie z Plikem Bazy Danych Urządzenia",
         "newDbLoad": "Utwórz Nową Bazę Danych",
         "dbxFileLoad": "Połącz z Istniejącą Bazą Danych Dropbox lub Utwórz Nową w Dropbox",
         "oneDriveFileLoad":  "Połącz z Istniejącą Bazą Danych  OneDrive Database lub Utwórz Nową w OneDrive",
-        "localFileLoad": "Załaduj Bazę Danych z Istniejącego Pliku Kopii Zapasowej",
+        "localFileLoad": "Załaduj Bazę Danych z pliku urządzenia",
         "localCred": "Szybka Baza Danych",
         "dbxFileCred": "Baza Danych Dropbox",
         "oneDriveFileCred": "Baza Danych OneDrive",
-        "localFileCred": "Zapasowa Kopia Bazy Danych",
+        "localFileCred": "Baza Danych Urządzenia",
         "newDb": "Nowa Baza Danych",
         "unlinkDb": "Odłącz Bazę Danych",
         "loadNewDb": "Utwórz Nową Bazę Danych",
@@ -1795,9 +1798,10 @@ const txtBankObj = {
         "local": "Szybka Baza Danych",
         "dbxFile": "Baza Danych Dropbox",
         "oneDriveFile": "Baza Danych OneDrive",
-        "localFile": "Zapasowa Kopia Bazy Danych", //bazy danych pliku urządzenia
+        "localFile": "Baza Danych Urządzenia", //bazy danych pliku urządzenia // "Zapasowa Kopia Bazy Danych"
         "secreSync": "SecreSync",
-        "share": "Share"
+        "share": "Share",
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",
@@ -1832,8 +1836,8 @@ const txtBankObj = {
         "credFormImpPass": "Wprowadź hasło bazy danych do importu",
         "credFormPin": "Wprowadź swój PIN",
         "credFormImportPin": "Wprowadź PIN bazy danych do importu",
-        "credFormPersist": "Użyj tylko PIN",
-        "credFormPersistRemove": "Użyj hasła i PIN",
+        "credFormPersist": "Zapamiętaj hasło",
+        "credFormPersistRemove": "Usuń zapisane hasło",
         "credFormPassHint": "Proszę wprowadzić nowe hasło. Może mieć od 10 do 32 znaków i zawierać dowolny rodzaj znaków.",
         "credFormPinHint": "Proszę podać nowy PIN. Może mieć od 4 do 32 znaków i zawierać dowolny rodzaj znaków.",
         "credFormPersistHint": "Bezpiecznie zapisz zaszyfrowane hasło bazy danych na urządzeniu, aby umożliwić odblokowanie bazy danych za pomocą samego PIN-u. Nie aktywuj tej opcji, jeśli korzystasz z publicznego urządzenia.",

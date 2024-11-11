@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.015_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console
@@ -71,7 +71,7 @@ function isURL(string){
 };
 /* ****************************------------------------------------- END isURL -------------------------------------***********************************/
 
-/* ****************************------------------------------------- DOM v_1.1 -------------------------------------***********************************/
+/* ****************************------------------------------------- DOM v_1.2 -------------------------------------***********************************/
 !function(e, t) {
     if (typeof exports === 'object' && typeof module !== 'undefined') {
         // CommonJS (Node.js) environment
@@ -114,7 +114,7 @@ function isURL(string){
             slideIn: _ => el.killClass("elSlideOut"),
             ridKids: (idx = 0) => {while(el.children[idx]) el.removeChild(el.lastChild); return el;},
             on: (type, fn, opt) => {type && fn && el.addEventListener(type, fn, opt); return el;},
-            onClick: (fn, opt) => el.on("click", fn, opt),
+            onClick: (fn, opt) => el.on("click", e => !el.clickCancel && fn && fn(e), opt),
             selfClick: _ => {el.click(); return el;},
             attachTo: parentEl => {parentEl?.appendChild(el); return el;},
             attach: kidEl => {kidEl && el.appendChild(kidEl); return el;},
@@ -146,18 +146,44 @@ function isURL(string){
             const elMethods = new ElMethods(el);
             const protoObj = Object.getPrototypeOf(elMethods); // Object of ElMethods prototypes (as a result of dom.extendElMethods function)
             const protoIsSet = Object.keys(protoObj).length;
-            for (const method in elMethods) el[method] = protoObj[method] || elMethods[method]; //include prototypes - prototypes take priority
-            const toolTipshow = showTooltip => {
-                if(!el.tooltip) return;
-                if(showTooltip){
-                    el.attach(dom.addDiv("toolTip", el.tooltip));
-                }else{
-                    el.kids().forEach(kid => {if(kid.hasClass("toolTip")) kid.kill()});
-                }
-            }
 
-            el.on("mouseenter", _ => toolTipshow(true));
-            el.on("mouseout", _ => toolTipshow(false));
+            for (const method in elMethods) el[method] = protoObj[method] || elMethods[method]; //include prototypes - prototypes take priority
+
+            let toolTipshowTimer;
+            const delay = 400;
+            const toolTipshow = e => {
+                if (!el.title) return;
+
+                const updateToolTipPosition = (top, left) => toolTip.setAttr("style", `left: ${left}px; top: ${top}px;`);
+
+                if (e.type === "pointerdown") {
+                    let [toolTipTop, toolTipLeft] = [e.clientY, e.clientX];
+
+                    updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).attachTo(doc.body);
+                    const { top, height, left, width } = toolTip.getBoundingClientRect();
+                    toolTip.hide();
+                    const bottomOut = top + height + rem > doc.body.clientHeight;
+                    const leftOut = left + width + rem > doc.body.clientWidth;
+
+                    if (bottomOut) toolTipTop -= height + rem;
+                    if (leftOut) toolTipLeft -= width + rem;
+                    if (bottomOut || leftOut) updateToolTipPosition(toolTipTop, toolTipLeft);
+
+                    toolTipshowTimer = setTimeout(() => {
+                        el.clickCancel = true;
+                        toolTip.show();
+                    }, delay);
+                } else {
+                    clearTimeout(toolTipshowTimer);
+                    setTimeout(() => { el.clickCancel = false; }, delay);
+                    toolTip.kill();
+                }
+            };
+
+            el.on("pointerdown", toolTipshow);
+            el.on("pointerup", toolTipshow);
+            el.on("pointerleave", toolTipshow);
+            el.on("pointercancel", toolTipshow);
             return el;
         };
         const create = tag => doc.createElement(tag);
@@ -201,7 +227,11 @@ function isURL(string){
         dom.add = tag => dom(create(tag));
         coreRawTags.forEach(rawTag => addDomHandle(rawTag));
         
+        const toolTip = dom.addDiv("toolTip");
+        const rem = parseInt(getComputedStyle(document.documentElement).fontSize);
+
         [...doc.querySelectorAll('*')].forEach(dom); // domify all the elements present in DOM at the start in the html document
+
         return dom;
     };
 });

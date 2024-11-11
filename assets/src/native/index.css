@@ -1,16 +1,22 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.015_GitHub' */
 
 :root {
     --max-app-width: 600px;
-    --min-app-width: 250px;
+    --min-app-width: 300px;
     
     --min-vList-item-margin: 5vw;
     
-    --db-mod-bar-height: 5mm;
+    --db-mod-bar-height: 1.5rem; /* 5mm; */
     
-    --svgIcon-padding-small: max(2mm, min(5vmin, 5mm));
+/*     --svgIcon-padding-small: max(2mm, min(5vmin, 5mm));
     --svgIcon-padding-medium: max(2mm, min(5vmin, 7mm));
-    --svgIcon-padding-big: max(2mm, min(5vmin, 10mm));
+    --svgIcon-padding-big: max(2mm, min(5vmin, 10mm)); */
+    
+    --svgIcon-padding-smaller: 0.75rem;
+    --svgIcon-padding-small: max(0.75rem, min(4vmin, 5mm));
+    --svgIcon-padding-medium: max(0.75rem, min(5vmin, 7mm));
+/*     --svgIcon-padding-big: max(0.75rem, min(5vmin, 10mm)); */
+    --svgIcon-padding-big: max(0.75rem, min(10vmin, 10mm));
     
     --app-shade-grey-0: #000000; /* rgb(0 0 0); #000000; */
     --app-shade-grey-190: #bebebe; /* rgb(190 190 190); #bebebe; */
@@ -20,7 +26,8 @@
     --app-shade-grey-250: #fafafa; /* rgb(250 250 250); #fafafa; */
     --app-shade-grey-255: #ffffff; /* rgb(255 255 255); #ffffff; */
     
-    --app-bckg: linear-gradient(0deg, var(--app-shade-grey-245), var(--app-shade-grey-240), var(--app-shade-grey-250));
+    /* --app-bckg: linear-gradient(0deg, var(--app-shade-grey-245), var(--app-shade-grey-240), var(--app-shade-grey-250)); */
+    --app-bckg: linear-gradient(0deg, var(--app-shade-grey-250), var(--app-shade-grey-245), var(--app-shade-grey-240), var(--app-shade-grey-250));
     --app-bckg-opaque-80: linear-gradient(0deg, #f5f5f5cc, #f0f0f0cc, #fafafacc);
     --module-bckg: linear-gradient(90deg, var(--app-shade-grey-245), var(--app-shade-grey-255), var(--app-shade-grey-250));
 
@@ -97,8 +104,65 @@ body.invert{
 .spinnerSection.show{
    display:block;
 }
+.spinnerContainer,
+.spinnerContainer2{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vmin;
+    height: 100vmin;
+}
 
-.spinnerContainer{
+.spinnerContainer:after,
+.spinnerContainer:before,
+.spinnerContainer2:after,
+.spinnerContainer2:before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vmin;
+    height: 100vmin;
+    transform: scale(0);
+    border-radius: 50%;
+    /* border: 1px solid #000000; */
+    box-shadow: 0 0 1rem 1rem rgb(222 222 222), 0 0 1rem 0.5rem white inset;
+    /* animation: animloader 2s linear infinite;*/
+}
+.spinnerContainer:before{
+    animation-delay: 0s;
+    animation: animloader 2s linear infinite;
+        background: #ffcbcb0a;
+}
+.spinnerContainer:after{
+  animation-delay: 0.5s;
+  animation: animloader 2s linear infinite;
+  background: #f8ffdc30;
+}
+.spinnerContainer2:before{
+    animation: animloader 2s ease-in-out infinite;
+    animation-delay: 1s;
+        background: #7cc2ff0f;
+}
+.spinnerContainer2:after{
+    animation: animloader 2s ease-in-out infinite;
+  animation-delay: 1.5s;
+  background: #e176e00a;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* .spinnerContainer{
     position: absolute;
     top: 50%;
     left: 50%;
@@ -185,7 +249,7 @@ body.invert{
     100% {
         transform: rotate(360deg) scale(1.05);
     }
-}
+} */
 
 /* --------------------------------------------------------------- SVG Icons and Input Elements ---------------------------------------------------------------------*/
 .svgIcon{
@@ -258,7 +322,7 @@ fieldset{
     border: 1px solid transparent;
     flex-wrap: wrap;
     padding: 0;
-    margin: 1rem 0;
+    margin: 1vh 0;
     position:relative;
 }
 
@@ -266,19 +330,48 @@ fieldset.padded{
     padding: 2vh 2vw;
 }
 
-fieldset:active{
+/* fieldset:active{
     border: var(--trace-gray-240);
-}
+} */
 
 legend{
     font-size:0.75rem;
     font-weight:900;
     text-indent:4em;
-    width:100%;
-    padding-top:3vh;
-    max-height: 1rem;
+    /* width:100%; */
+    /* max-height: 1rem; */
     overflow: hidden;
 }
+legend:before{
+    content: "";
+    position: absolute;
+    margin: calc(-0.5vh + 0.22em) -2.5em;
+    padding: 0.75em;
+    opacity: 0.5;
+    filter: drop-shadow(2px 3px 0px var(--app-shade-grey-220));
+}
+legend.note:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#vNotes);
+}
+legend.tags:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#vTags);
+}
+legend.name:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#accountName);
+}
+legend.log:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#protectDb);
+}
+legend.pass:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#passKey);
+}
+legend.url:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#chainLink);
+}
+
+/* legend.pinInp:before{
+  background-image: url(../../../assets/static/appSvg/sprite.svg#pin);
+} */
 
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
@@ -342,6 +435,7 @@ legend{
     position: absolute;
     top: -1.25rem; /* legend max-height: 1rem; (0.5rem above and below fieldset +0.75rem this padding*/
     padding: 0.75rem;
+    filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
     margin: 0 1rem;
     background-image: url(../../../assets/static/appSvg/sprite.svg#hint);
     opacity: 0.5;
@@ -461,7 +555,9 @@ legend{
 }
 
 .appTitle span{
-    font-size: max(2.3vmin, 0.5em);
+    /* font-size: max(2.3vmin, 0.5em); */
+        font-size: max(min(4vmin, 2rem), 0.5rem);
+        
     width:0.7em;
     display:inline-block;
 }
@@ -574,12 +670,13 @@ legend{
 
 .consent, .noConsent{
     position: sticky;
-    margin: 50vh 1em 3rem;
+    /* margin: 50vh 1em 3rem; */
+    margin: 50vh 1em 3vh;
     padding: 1em;
     width: calc(100% - 2em);
     left: 0;
     box-sizing: border-box;
-    box-shadow: 2px 2px 5px var(app-shade-grey-0);
+    box-shadow: 2px 2px 5px var(--app-shade-grey-0);
     text-align: center;
     line-height: 1.5rem;
     font-weight: 900;
@@ -705,6 +802,7 @@ legend{
     display: flex;
     align-items: center;
     opacity: 0.5;
+    /* background: var(--module-bckg); */
 }
 
 .dbModifiedBar::before{
@@ -847,7 +945,8 @@ body.invert .scrollWrpPrivate:before, body.invert .scrollWrpPastRevision:before{
 /* ********************** App Bars ********************** */
 .appTaskbar, .appMoreTaskbar{
     position: relative; 
-    background: rgb(253 253 253);
+    /* background: rgb(253 253 253); */
+    background: var(--module-bckg);
     height: 100%;
     outline: var(--trace-gray-240);
     z-index:1; 
@@ -969,8 +1068,8 @@ body.invert .langWrp{
     outline: var(--trace-gray-240);
 }
 
-.langGB{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#langGB);
+.langEN{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#langEN);
 }
 
 .langPL{
@@ -1092,7 +1191,7 @@ body.invert .langWrp{
     font-size: 0.9rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
 }
 
 .vEmpty{
@@ -1125,10 +1224,10 @@ body.invert .langWrp{
 }
 
 .vLog::before, .vNote::before, .vTrash::before{
-    padding: 1em;
-    margin: 0.25em -3.5em;
-    padding: 1em;
-    margin: 0.25em -2em; /*left by width of the icon (2em) */
+/*     padding: 1em;
+    margin: 0.25em -3.5em; */
+    padding: 0.75rem;
+    margin: 0.25rem -2em; /*left by width of the icon (2em) */
 }
 
 .vTags::before, .vNotes::before, .vDates::before, .vCr8::before, .vMod::before{
@@ -1201,6 +1300,7 @@ body.invert .langWrp{
     display: flex;
     flex: 2;
     justify-content: center;
+    text-align: center;
     max-height: 2.5em; /* calc(var(--svgIcon-padding-small) * 2); *//* 10mm; */
     padding: 0 1em;
     overflow: auto;
@@ -1210,7 +1310,7 @@ body.invert .langWrp{
     position: relative;
     display: flex;
     justify-content: space-between;
-    margin: 0vh 2vw;
+    margin: 0vh 2vw 2vh;
 }
 
 .recordDate{
@@ -1225,19 +1325,22 @@ body.invert .langWrp{
 
 .vCr8DateLabel{
     background-image: url(../../../assets/static/appSvg/sprite.svg#vCr8);
-    padding:0.75rem;
+    /* padding:0.75rem; */
+    padding: var(--svgIcon-padding-smaller);
     filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
 }
 
 .vModDateLabel{
     background-image: url(../../../assets/static/appSvg/sprite.svg#vMod);
-    padding:0.75rem;
+    /* padding:0.75rem; */
+    padding: var(--svgIcon-padding-smaller);
     filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
 }
 
 .revisionWrp{
     justify-content: flex-end;
     flex-wrap: wrap;
+    margin: -2vh 2vw 1vh;
 }
 
 .revisionScroll{
@@ -1247,16 +1350,20 @@ body.invert .langWrp{
     /* background: pink; */
 }
 .revisionScroll > .svgIcon{
-    padding: 0.75rem;
-    margin: 0 0.5rem;
+    /* padding: 0.75rem; */
+    padding: var(--svgIcon-padding-smaller);
+    filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
+    margin: 0.5em 0.5rem 0;
 }
 .revisionCaption{
-    position: absolute;
     line-height: 1.5rem;
     font-size: 0.75rem;
-    width: 100%;
-    text-align: center;
-    font-weight: 900;
+    text-align: right;
+    background: var(--app-shade-grey-240);
+    border-radius: 0.5em;
+    padding: 0 1em;
+    margin: 0.5em 1em 0;
+    opacity: 0.5;
 }
 
 /* __ Application Form Password Rating __ */
@@ -1384,15 +1491,15 @@ body.invert .langWrp{
     margin-bottom: calc(2vmin + var(--svgIcon-padding-small) * 2);
 }
 
-.appForm .padded:nth-child(4){ /*Last Padded Fieldsed in the Form*/
+/* .appForm .padded:nth-child(4){
     margin-top: 0;
-}
+} */
 
 .formFoot{
     position: fixed;
     display: flex;
     justify-content: space-between;
-    width: var(--max-app-width);
+    width: min(100%, var(--max-app-width));
     bottom: var(--db-mod-bar-height);
     border-top: var(--trace-gray-240);
     background: var(--app-bckg-opaque-80);
@@ -1439,9 +1546,39 @@ body.invert .langWrp{
 .alertChoice:active{
     background: var(--app-shade-grey-245);
 }
+/* Install App */
+.installApp{
+    position: fixed;
+    bottom: 10vh;
+    left: calc((100% - (min(var(--max-app-width), 100%))) / 2);
+    transform: translateX(-50vw);
+    transition: transform 0.5s ease-out;
+    z-index:2;
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appInstall);
+    padding: var(--svgIcon-padding-big);
 
+}
+
+.installApp.in{
+    transform: translateX(0%);
+}
+.installApp.out{
+    transform: translateX(-50vw);
+}
 
 /*GLOBALS -------------------------------- */
+.toolTip{
+    position: fixed;
+    font-size: 0.6rem;
+    background: var(--app-shade-grey-255);
+    padding: 0.5rem;
+    z-index: 1000;
+    white-space: nowrap;
+    margin: 8px;
+    border-radius: 0.6rem;
+    border: 1px solid var(--app-shade-grey-220);
+}
+
 .elDimmed{
     opacity:0.2;
 }

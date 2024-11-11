@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.015_GitHub' */
 function Crypto(){
     "use strict";
     //const encodeText = text => new TextEncoder().encode(text);
@@ -414,7 +414,7 @@ if(developerMode) console.log("persistId = ", persistId, "persistId should be Ar
         //console.log("dbObj.vandors before Updtate", dbObj.vendors);
         this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now(); //!updateMod ? dbObj?.mod : Date.now();
         this.vendors = dbObj?.vendors?.map(vendObj => new Vendor(vendObj)) || [];
-        this.cipher = null;
+        //this.cipher = null;
         //console.log(this.vendors);
     }
     

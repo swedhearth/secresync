@@ -1,4 +1,4 @@
-/* 'core_0.014_GitHub' */
+/* 'core_0.015_GitHub' */
 function Interface(thisApp){
     "use strict";
     if(developerMode) console.log("initiate Interface");
@@ -27,7 +27,7 @@ function Interface(thisApp){
     const getTxtBankAlertTxt = getTxtBankParsedTxt("alert");
     
     // -------------- Helper to get app HTML elements ----------------------------------//
-    const getPaddedFieldset = legendHtml => dom.addFieldset("padded").attach(dom.addLegend("", legendHtml + ":")); 
+    const getFieldsetEl = (legendHtml, beforeIcon, unpadded) => dom.addFieldset(unpadded ? "" : "padded").attach(dom.addLegend(beforeIcon || "", legendHtml)); // + ":"
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
@@ -78,14 +78,14 @@ function Interface(thisApp){
     const appSectionList = dom.addDiv("appSection appList");//.hide();
     const dbModifiedBar = dom.addDiv("dbModifiedBar").hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
-        const spinnerSection = dom.addDiv("spinnerSection show");// make it visible at the start of app
-        const maxRings = 21;
+        const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerContainer")).attach(dom.addDiv("spinnerContainer2"));// make it visible at the start of app
+/*         const maxRings = 21;
         const minRingWitdh = 0.025;
         let ringParent = dom.addDiv("spinnerWrp").attachTo(dom.addDiv("spinnerContainer").attachTo(spinnerSection));
         for(let i = 0; i < maxRings; i++){
             const ringWidth = minRingWitdh + (i > maxRings / 2 ? (maxRings - 1 - i) : i) * minRingWitdh;
             ringParent = dom.addDiv().setAttr("style", "animation: spinnerRing 8s linear infinite; border-width: " + ringWidth +"em;").attachTo(ringParent);
-        }
+        } */
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
         spinnerSection.start = where => {
             //if(developerMode) console.log("spinner.start: ", where);
@@ -131,7 +131,7 @@ function Interface(thisApp){
     const langModule = (thisApp, callback) => {
         const getLangIcon = (lang, onClickFn) => getSvgIcon("lang" + lang, lang, onClickFn);
         const changeLang = lang => _ => lang !== thisApp.lang && thisApp.changeLangTo(lang).then(callback).finally(_ => thisApp.message.langChanged());
-        const langSelectWrp = dom.addDiv("langSelectWrp").attachAry( thisApp.txtBank.languages.map(lang => getLangIcon(lang, changeLang(lang))) );
+        const langSelectWrp = dom.addDiv("langSelectWrp").attachAry( thisApp.languages.map(lang => getLangIcon(lang, changeLang(lang))) );
         const showLangSelectWrp = _ => {
             appLangIcon.replaceWith(langSelectWrp);
             requestAnimationFrame(_ => document.body.onClick(_ => langSelectWrp.replaceWith(appLangIcon), {once: true}));
@@ -202,7 +202,7 @@ function Interface(thisApp){
         const getInputFieldset = inputObject => {
             const pinWrp = inputObject => {
                 const processPastePin = (pinString, pinInputEl, idx = 0) => {
-                    if(idx >= inputObject._inputsMaxCount) return thisApp.message.credFormPinTooLong();//alert ("Pin is too long");
+                    if(idx >= inputObject._inputsMaxCount) return thisApp.message.credFormPinTooLong();
                     const thisPinInpEl = pinInputEl.siblings()[idx];
                     thisPinInpEl.value = pinString[idx];
                     thisPinInpEl.dispatchEvent(new Event('input'));
@@ -214,7 +214,7 @@ function Interface(thisApp){
                     pinInputEl.value ? pinInputEl.addClass("pinCharValue") : pinInputEl.killClass("pinCharValue");
                     inputObject._value = pinInputEl.siblings().map(pinInpEl => pinInpEl.value).join("");
                     if(pinInputEl.siblings().length === inputObject._value.length && inputObject._value.length < inputObject._inputsMaxCount){
-                        pinInputEl.parentElement.attach(getPinInputEl(false));
+                        pinInputEl.parentElement.attach(getPinInputEl(false, inputObject._value.length));
                     }
                     if(!pinInputEl.value && pinInputEl.siblings().length > inputObject._inputsCount){
                         pinInputEl.siblings().forEach(kid => {if(!kid.value && kid !== pinInputEl) kid.kill()});
@@ -223,8 +223,8 @@ function Interface(thisApp){
                         pinInputEl.siblings().filter(pinInpEl => !pinInpEl.value)[0].focus();
                     }
                 };
-                const getPinInputEl = required => getInpEl({...inputObject, ...{required: required, _onInput: inputPin}});
-                const basePinInputElAry = new Array(inputObject._inputsCount).fill(0).map(_ => getPinInputEl(true));
+                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, id: "pinChar_" + idx}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                const basePinInputElAry = new Array(inputObject._inputsCount).fill(0).map((el, idx) => getPinInputEl(true, idx));
                 const pastePin = (e) => {
                     e.preventDefault(); // Prevent input triggered on the last element
                     const pastePinString = (e.clipboardData || window.clipboardData).getData("text");
@@ -249,7 +249,7 @@ function Interface(thisApp){
                 inpWrp.kid(0).focus();
             };
 
-            return getPaddedFieldset(inputObject._labelHtml).attachAry([
+            return getFieldsetEl(inputObject._labelHtml).attachAry([ //, inputObject._isPin ? "pinInp" : ""
                 ...getHintAry(inputObject._hint),
                 getPassEyeIcon(inpWrp),
                 inpWrp,
@@ -275,7 +275,7 @@ function Interface(thisApp){
                 checked: isPersisted, // if not passInputLabel it means that it's only pin - so the key was persisted already, therefore select as default
                 _onInput: repaintPersistLabel 
             }).hide();
-            const presistFieldset = canPersist ? getPaddedFieldset(msgObj.persistLabel).attachAry([
+            const presistFieldset = canPersist ? getFieldsetEl(msgObj.persistLabel).attachAry([
                 ...getHintAry(getTxtBankHtmlTxt(isPersisted ? "credFormPersistRemoveHint" : "credFormPersistHint")),
                 persistCheckboxLabel,
                 persistCheckboxInputEl,
@@ -453,8 +453,9 @@ passHint = credFormPassHint // only new
             return true; //msg Full Archive has been cleared
         };
         
-        const msgToggleFullArchive = _ => {
+        const msgToggleFullArchive = e => {
             if(msgIsFullArchive) return window.history.back(); //will trigger the ui.js's popstate event and run the clearFullArchive
+
             msgIsFullArchive = true;
             msgClearPromise();
             addModalToHistory(true); //force adding to history
@@ -469,8 +470,24 @@ passHint = credFormPassHint // only new
                 )
             ));
         };
-        
+
+        // Swipe msgIsFullArchive on Mobile
+        let touchStart = 0;
+        const swiping = (e) => {
+            const touchY = e.touches[0].clientY;
+            touchStart = (((!msgIsFullArchive && touchY + 32 > document.body.clientHeight) || msgIsFullArchive) && !touchStart) ? touchY : touchStart;
+        };
+
+        const endSwipe = (e) => {
+            const touchY = e.changedTouches[0].clientY;
+            if ((!msgIsFullArchive && touchY < touchStart - 50) || (msgIsFullArchive && touchStart && touchY > touchStart)) {
+                msgToggleFullArchive(e);
+            }
+            touchStart = 0;
+        };
+
         msgModule.onClick(msgToggleFullArchive);
+        document.body.on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
 
         const msgShow = (msgObj, logged) => {
             if(!logged){
@@ -802,7 +819,7 @@ passHint = credFormPassHint // only new
             // Sections
             const passSection = async (labelHtml, inpType = "password") => {
                 const vPass = await vendObj.getCurrentPassword();
-                const passFieldset = getPaddedFieldset(labelHtml);
+                const passFieldset = getFieldsetEl(labelHtml, "pass");
                 const passInpEl = getInpEl({
                     type: inpType,
                     name: "vPass",
@@ -836,7 +853,8 @@ passHint = credFormPassHint // only new
                         rangeInputEl.value = parseInt(rangeInputEl.value) + val;
                         rangeInputEl.dispatchEvent(new Event('input'));
                     };
-                    return dom.addFieldset().attach(dom.addLegend("", rangeLabelHtml)).attachAry([
+                    //return dom.addFieldset().attach(dom.addLegend("", rangeLabelHtml))
+                    return getFieldsetEl(rangeLabelHtml, false, true).attachAry([
                         getSvgIcon("decrease", true, _ => changeRangeInputValue(-1)),
                         rangeInputEl,
                         getSvgIcon("increase", true, _ => changeRangeInputValue(1))
@@ -866,8 +884,8 @@ passHint = credFormPassHint // only new
                     ? [] 
                     : dom.addDiv("passGrade").attachAry([
                         dom.addDiv("passGradeRow passGradeLabelRow").attachAry([
-                            dom.addDiv("", getTxtBankHtmlTxt("formLabelPassEntropy")+ ":"),
-                            dom.addDiv("", getTxtBankHtmlTxt("formLabelPassGrade") + ":")
+                            dom.addDiv("", getTxtBankHtmlTxt("formLabelPassEntropy")), //+ ":"
+                            dom.addDiv("", getTxtBankHtmlTxt("formLabelPassGrade")) // + ":"
                         ]),
                         dom.addDiv("passGradeRow").attachAry([
                             dom.addDiv("", vPass.entropy),
@@ -898,7 +916,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return vendObj.log || !displayMode ? getPaddedFieldset(labelHtml).attachAry([
+                return vendObj.log || !displayMode ? getFieldsetEl(labelHtml, "log").attachAry([
                     getSvgIcon(),
                     logInpEl,
                     displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
@@ -915,13 +933,18 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return vendObj.cPass || !displayMode ? getPaddedFieldset(labelHtml).attachAry([
+                return vendObj.cPass || !displayMode ? getFieldsetEl(labelHtml, "pass").attachAry([
                     getPassEyeIcon(passInpEl),
                     passInpEl,
                     displayMode ? getCopyIcon(passInpEl, "copyPassBtn", "customPassCopied") : getClearInputIcon(_ => clearFormInput(passInpEl))
                  ]) : "";
             };
             
+            const boxNoteFitContent = _ => {
+                boxNoteEl.style.height = "auto"; // Resize boxNote textarea
+                boxNoteEl.style.height = (boxNoteEl.scrollHeight + 5 ) + "px";
+                vForm.scrollTop = vFormScrollTop;
+            };
             const boxNoteEl = dom.addTextarea("boxNote")
                 .setAttrs({
                     name: "note",
@@ -930,21 +953,26 @@ passHint = credFormPassHint // only new
                 })
                 .setAttr(displayMode ? "disabled" : "enabled", true)
                 .on("input", e => {
-                    if(e.isTrusted){
-                        changeVprop(e); // only user input and not the dispatched event
-                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit");
-                    }
+
                     boxNoteEl.style.height = "auto"; // Resize boxNote textarea
                     if(boxNoteEl.scrollHeight <= boxNoteEl.clientHeight){
                         boxNoteEl.killClass("max").rows = "2";
                     }else if(!boxNoteEl.hasClass("max")){
                         boxNoteEl.addClass("max").rows = "1";
                     }
-                    boxNoteEl.style.height = boxNoteEl.scrollHeight + "px"
-                    vForm.scrollTop = vFormScrollTop;
-                });
+                    
+                    if(e.isTrusted){
+                        changeVprop(e); // only user input and not the dispatched event
+                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit");
+                       
+                    }
+                     boxNoteFitContent();
+                })
+                .on("transitionend", boxNoteFitContent); // fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
+            
             boxNoteEl.value = vendObj.note || "";
-            const notesSection = labelHtml => displayMode && !vendObj.note ? [] : getPaddedFieldset(labelHtml).attach(boxNoteEl);
+
+            const notesSection = labelHtml => displayMode && !vendObj.note ? [] : getFieldsetEl(labelHtml, "note").attach(boxNoteEl);
 
             const urlSection = labelHtml => {
                 const urlInpEl = getInpEl({
@@ -953,15 +981,19 @@ passHint = credFormPassHint // only new
                     placeholder: "https://example.com/login",
                     value: vendObj.url,
                     disabled: displayMode,
-                    size: "30",
+                    //size: "30",
                     pattern: "https://.*",
                     _onInput: changeVprop
                 });
 
-                return  displayMode && !vendObj.url ? [] : getPaddedFieldset(labelHtml).attachAry([
+                return  displayMode && !vendObj.url ? [] : getFieldsetEl(labelHtml, "url").attachAry([
                     getSvgIcon(),
                     urlInpEl,
-                    isURL(vendObj.url) && displayMode ? dom.add("a").setAttr("href", vendObj.url).setAttr("target", "_blank").setAttr("rel", "noreferrer").attach(getSvgIcon("openLinkBtn", true)) : getClearInputIcon(_ => clearFormInput(urlInpEl))
+                    isURL(vendObj.url) && displayMode 
+                        ? dom.add("a").setAttr("href", vendObj.url).setAttr("target", "_blank").setAttr("rel", "noreferrer").attach(getSvgIcon("openLinkBtn", true))
+                        : displayMode 
+                            ? getSvgIcon()
+                            : getClearInputIcon(_ => clearFormInput(urlInpEl))
                 ]);
             };
 
@@ -975,7 +1007,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return displayMode && !vendObj[prop] ? [] :  getPaddedFieldset(labelHtml).attachAry([
+                return displayMode && !vendObj[prop] ? [] :  getFieldsetEl(labelHtml, prop).attachAry([
                     getSvgIcon(),
                     inpEl,
                     displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
@@ -1009,7 +1041,8 @@ passHint = credFormPassHint // only new
             const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
                 ? null
                 : dom.addDiv("revisionWrp").attachAry([ 
-                    revisionIdx ? dom.addDiv("revisionCaption", getTxtBankHtmlTxt("revision", {revisionDate: new Date(vendObj.mod).toUKstring()})) : [],
+                    //revisionIdx ? dom.addDiv("revisionCaption", getTxtBankHtmlTxt("revision", {revisionDate: new Date(vendObj.mod).toUKstring()})) : [],
+                    revisionIdx ? dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()) : [],
                     dom.addDiv("revisionScroll").attachAry([
                         revisionIdx && revAry[revisionIdx + 1]
                             ? getSvgIcon("previousVersion", true, _ => paintFormSection(false, revAry[revisionIdx + 1], false, false, false, revAry, revisionIdx + 1)) 
@@ -1249,18 +1282,23 @@ passHint = credFormPassHint // only new
                         lastSearchString = searchInputEl.value;
                         paintList();
                     }
+                    //searchInputEl.blur()
+                    searchInputEl.focus();
                 };
                 const clearSearch = e => {
                     searchInputEl.value = "";
-                    searchInputEl.focus();
                     searchEvent(e)
                 };
                 const hideForm = e => {
                     searchFormEl.addClass("searchFormHide");
                     clearSearch(e);
+                    searchInputEl.blur();
                 };
                 const hideFormEl = getSvgIcon("arrowUp", "hide", hideForm);
-                const searchResetBtn = getClearInputIcon(clearSearch);
+                const searchResetBtn = getClearInputIcon(e => {
+                    clearSearch(e);
+                    //searchInputEl.focus();
+                });
                 const delayInput = e => {
                     clearTimeout(inputTimeout);
                     inputTimeout = setTimeout(_ => searchEvent(e), inputDelay);
@@ -1300,6 +1338,10 @@ passHint = credFormPassHint // only new
             const getListTaskBar = _ => {
                 const vListSortBar = dom.addDiv("vListSortBar");
                 const vListChangeBar = dom.addDiv("vListChangeBar");
+                console.log(ado.sortTypes);
+                const getSortIcons = _ => ado.sortTypes.map(iconName => 
+                    getSvgIcon("sortIcon " + (iconName + adoSorts.sortOrder) + (adoSorts.sortBy === iconName ? "" : " elDimmed"), iconName, e => changeSorts(e.target, iconName))
+                );
                 
                 const changeSorts = (iconEl, iconName) => {
                     iconEl.forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
@@ -1307,9 +1349,7 @@ passHint = credFormPassHint // only new
                     vListSortBar.ridKids().attachAry(getSortIcons());
                     paintList();
                 };
-                const getSortIcons = _ => ["vSortCr8", "vSortMod", "vSortName"].map(iconName => 
-                    getSvgIcon("sortIcon " + (iconName + adoSorts.sortOrder) + (adoSorts.sortBy === iconName ? "" : " elDimmed"), iconName, e => changeSorts(e.target, iconName))
-                );
+
                 
                 const getChangeIcons = _ => {
                     const changeDetails = (iconEl, iconName) => {
@@ -1362,6 +1402,7 @@ passHint = credFormPassHint // only new
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
+                    document.activeElement.blur(); // lose focus on search input element
                     const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = listScrollWrpPrevTopPosition - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
@@ -1391,7 +1432,7 @@ passHint = credFormPassHint // only new
                         Desc: ary => ary.sort((a, b) => b.mod - a.mod)
                     },
                 }[adoSorts.sortBy][adoSorts.sortOrder];
-                
+
 /*                 let vendAllowAry
                 if(!adoDetails.typeNote && !adoDetails.typeLog){ //vNote
                     vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => obj.isTrash));
@@ -1483,7 +1524,7 @@ passHint = credFormPassHint // only new
                     return [nameHitAry, tagHitAry, noteHitAry].flat();
                 })([], [], []);
 
-                vListWrp.ridKids()
+                vListWrp.ridKids();
                 vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");;
             }
 
@@ -1506,6 +1547,11 @@ passHint = credFormPassHint // only new
             appSectionForm.slideOut();
             appSectionList.show();
         };
+        
+        const clearUI = _ => {
+            appSectionForm.ridKids();
+            appSectionList.ridKids();
+        };
 
         const initUI = _ => {
             repaintUI();
@@ -1514,19 +1560,34 @@ passHint = credFormPassHint // only new
         
         return {
             reset: resetUI,
-            init: initUI
+            init: initUI,
+            clear: clearUI
         };
     })();
     /* END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI*/
     
     //const mainGui = new MainGUI();
     this.init = mainGui.init;
+    this.clear = mainGui.clear;
     this.loader = appLoader;
     this.credentials = new Credentials();
     this.alerts = new Alerts();
     this.messages = new Messages();
     this.spinner = spinner;
     this.localiseDbStores = localiseDbStores;
+    
+    this.installApp = _ => new Promise(res => {
+        const killInstallApp = e => {
+            e.preventDefault();
+            e.stopPropagation();
+            installAppEl.addClass("out").on("transitionend", installAppEl.kill);
+            res(e.target === installAppEl);
+        };
+        const installAppEl = dom.addDiv("installApp svgIcon").setAttr("title", getTxtBankTitleTxt("installApp")).onClick(killInstallApp).attachTo(document.body);
+        document.body.onClick(killInstallApp, {once: true});
+        window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
+    });
+
 
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
@@ -1535,7 +1596,7 @@ passHint = credFormPassHint // only new
             modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
         }
     });
-    
+
     // Attach Sections
     document.body.ridKids().attachAry([
         appSectionList, appSectionForm, dbModifiedBar,

@@ -1,4 +1,4 @@
-/* 'core_0.014_GitHub' */
+/* 'core_0.015_GitHub' */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -144,7 +144,6 @@ function App(urlSearchParams){
                         }
                     }
 
-                    
                     this.updateCryptoCredentials(cryptoKey, salt);
 
                     await thisApp.credentials.persist(dbCredentials, cryptoKey);
@@ -313,9 +312,11 @@ function App(urlSearchParams){
     function DisplayOptions(storage){
         const {typeNote, typeLog, sortBy, sortOrder, detDates, detNotes, detTags} = storage;
 
+        this.sortTypes = ["vSortCr8", "vSortMod", "vSortName"];
+        this.sortOrders = ["Asc", "Desc"];
         this.sorts = {
-            sortBy: sortBy || 'vSortName',
-            sortOrder: sortOrder || 'Asc'
+            sortBy: this.sortTypes.find(type => type === sortBy) || 'vSortName',
+            sortOrder: this.sortOrders.find(order => order === sortOrder) || 'Asc'
         };
         
         this.details = {
@@ -342,7 +343,6 @@ function App(urlSearchParams){
     
     function TextBank(lang){
         Object.assign(this, txtBankObj[lang]);
-        this.languages = Object.keys(txtBankObj);
         this.getParsedText = (txtBankPropJoinString, templateObj) => {
             try{
                 return txtBankPropJoinString.split('.').reduce((o, k) => o[k], this).parseTemplate(templateObj);
@@ -365,10 +365,63 @@ function App(urlSearchParams){
 
     this.urlReplace = url => url && location.replace(url);
     this.reload = _ => this.urlReplace(this.URL);
-    this.resetAndReload = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
-    this.fail = _ => this.alert.appFailed().then(_ => document.documentElement.remove());
+    const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
+
+    const logOffApp = async _ => {
+        while (!window.history.state.lastBackExists) {
+            await new Promise(res => {
+                window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
+                window.history.back();
+            });
+        }
+        this.ui.clear();
+        this.start(this.message.loggedOff(), false);
+    };
+
     this.online = navigator.onLine;
 
+    this.connectivitychange = e => {
+        this.online = e.type !== "offline";
+        this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
+        this.message[e.type](); // message.online : message.offline
+    };
+
+    this.visibilityChange = e => {
+        if(!this.dbObj) return;
+        const reloadBy = "reloadAppBy";
+        if(document.visibilityState === "hidden"){
+            this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
+        }else{
+            if(this.sessionStorage.get(reloadBy) < Date.now()){
+                logOffApp();
+            }
+            this.sessionStorage.delete(reloadBy);
+        }
+    };
+
+    this.resetLogOutTimer = (_ => { // self invoking
+        let inactivityTimer;
+        return _ => {
+            if(!this.dbObj) return;
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(logOffApp, 600000);//600000 ms = 10 minutes 
+        }
+    })();
+
+    this.uninstallServiceWorker = async _ => { // NOT USED YET!!!!!!!!
+        try {
+            const keys = await caches.keys();
+            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
+             if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
+
+            const regs = await navigator.serviceWorker.getRegistrations();
+            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
+             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
+        } catch (err) {
+             if(developerMode) console.error("Error during service worker unregistration:", err);
+        }
+    };
+    
     this.clearAllStorage = _ => {
         this.localStorage.clear();
         this.sessionStorage.clear();
@@ -388,35 +441,6 @@ function App(urlSearchParams){
         this.init();
     };
 
-    this.connectivitychange = e => {
-        this.online = e.type !== "offline";
-        this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
-        this.message[e.type](); // message.online : message.offline
-    };
-
-    this.resetLogOutTimer = (_ => { // self invoking
-        let inactivityTimer;
-        return _ => {
-            if(!this.dbObj) return;
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(_ => this.start(this.message.loggedOff(), false), 600000);//600000 ms = 10 minutes 
-        }
-    })();
-
-    this.uninstallServiceWorker = async _ => { // NOT USED YET!!!!!!!!
-        try {
-            const keys = await caches.keys();
-            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
-             if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
-
-            const regs = await navigator.serviceWorker.getRegistrations();
-            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
-             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
-        } catch (err) {
-             if(developerMode) console.error("Error during service worker unregistration:", err);
-        }
-    };
-
     /* idxDbErrorHandler*/
     const idxDbErrorHandler = async (errMsg, error) => {
         if(developerMode) console.error(errMsg, error); // Developer
@@ -428,11 +452,12 @@ function App(urlSearchParams){
     /* Initiate App*/
     this.init = async function(){
         this.consent = !!window.localStorage.getItem("consent");
-        this.localStorage = new Storage(window.localStorage, this);
-        this.sessionStorage = new Storage(window.sessionStorage, this); // Unable to Use Dropbox if not available
+        this.localStorage = new Storage(window.localStorage, this);;//new Storage(window.localStorage, this);
+        this.sessionStorage = new Storage(window.sessionStorage, this); // Unable to use Cloud if not available
         this.displayOptions = new DisplayOptions(this.localStorage);
-        this.lang = this.lang || this.localStorage.get("lang") || window.sessionStorage.getItem("lang") || "GB";
-        this.txtBank = new TextBank(this.lang);
+        this.languages = Object.keys(txtBankObj);
+        this.lang = this.languages.find(validLang => validLang === (this.lang || this.localStorage.get("lang") || window.sessionStorage.getItem("lang") || navigator.language.split("-")[0].toUpperCase())) || "EN";
+        this.txtBank = new TextBank(this.lang); //txtBankObj
         this.crypto = new Crypto();
         this.credentials = new Credentials(this);
         this.idxDb = this.consent ? await new IdxDb("SecreSync", 1, "assets", "name", "value", idxDbErrorHandler) : new Storage(null);
@@ -510,7 +535,7 @@ function App(urlSearchParams){
                 }
             }catch(err){
                 if (developerMode) console.log(err);
-                if (appStartFailCount > maxAppStartFails - 1)  return this.resetAndReload();
+                if (appStartFailCount > maxAppStartFails - 1)  return resetAndReloadApp();
                 switch (err) {
                     case "OperationError":
                         if(!this.dbStore.objectsExist()) redirectedStoreObj.tempHandlePlain = redirectedStoreObj.handlePlain; // assign Object's tempHandlePlain as the handlePlain would be reset when getResetObjects
@@ -525,7 +550,7 @@ function App(urlSearchParams){
                     case "BackButtonPressed":
                         return this.start(null, false, ++appStartFailCount);
                     case "noDbObj":
-                        return await this.alert.noDbObjError() ? this.resetAndReload() : this.reload();
+                        return await this.alert.noDbObjError() ? resetAndReloadApp() : this.reload();
                     case "noFilePickedErr":
                         this.message.noFilePickedErr();
                         return this.start(false, false);
@@ -543,7 +568,8 @@ function App(urlSearchParams){
                 return this.makePrivate();
             }
             if(developerMode) console.error(globalError);
-            this.fail();
+            //this.fail();
+            this.alert.appFailed().then(_ => document.documentElement.remove());
         }
     };
 }

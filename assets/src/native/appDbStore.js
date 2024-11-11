@@ -1,4 +1,4 @@
-/* 'core_0.010_GitHub' */
+/* 'core_0.015_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -78,8 +78,10 @@ function AppDbStore(thisApp){
             storeObj.syncIcon.killClass("storeSyncing"); 
         };
         storeObj.handleUpdate = async data => {
+            
             storeObj.handle = await data;
             await thisApp.idxDb.set(storeObj.key, storeObj.handle);
+            console.log("Updating Handle for: ", storeObj.name, "handlePlain = ", storeObj.handle);
             storeObj.handlePlain = null;
         };
         storeObj.handleRemove = async (noMoreSync, forceRemove) => {
