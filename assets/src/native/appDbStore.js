@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -78,10 +78,8 @@ function AppDbStore(thisApp){
             storeObj.syncIcon.killClass("storeSyncing"); 
         };
         storeObj.handleUpdate = async data => {
-            
             storeObj.handle = await data;
             await thisApp.idxDb.set(storeObj.key, storeObj.handle);
-            console.log("Updating Handle for: ", storeObj.name, "handlePlain = ", storeObj.handle);
             storeObj.handlePlain = null;
         };
         storeObj.handleRemove = async (noMoreSync, forceRemove) => {
@@ -154,6 +152,7 @@ function AppDbStore(thisApp){
         };
 
         if(!storeObj.getHandleFromRedirect) return;
+        
         // storeObj is remote
         let dbObjExistingSync = null;
 
@@ -235,7 +234,6 @@ function AppDbStore(thisApp){
                 }
                 return null;
             }
-
         };
 
         storeObj.remoteRead = async (getEncryptedFileData, handlePlainMustBeRefreshed) => {
@@ -313,7 +311,10 @@ function AppDbStore(thisApp){
         
         storeObj.remoteUpdate = async updateStore => {
             const alreadyUpdated = storeObj.dbMod === thisApp.dbObj.mod;
-            if(!thisApp.online || !storeObj.canAlter() || storeObj.dontSync || storeObj.syncPaused || alreadyUpdated) return alreadyUpdated;
+            if(!thisApp.dbObj || !thisApp.online || !storeObj.canAlter() || storeObj.dontSync || storeObj.syncPaused || alreadyUpdated){
+                storeObj.iconOpacity(alreadyUpdated, true);
+                return alreadyUpdated;
+            }
             storeObj.syncStart();
             await updateStore(await thisApp.cryptoHandle.getDbFileBlob());
             return storeObj.connect(thisApp.dbObj);
@@ -432,6 +433,7 @@ function AppDbStore(thisApp){
             }).then(response => response.json());
 
             oneDriveAccessToken = tokenResponse.access_token; // undefined if not obtained?
+            console.log("OneDrive tokenResponse = ", tokenResponse);
             return tokenResponse;
         };
         
@@ -480,9 +482,10 @@ function AppDbStore(thisApp){
                 new Promise((resolve, reject) => setTimeout(_ =>  reject(new Error("timeout")), timeoutMsec)), 
                 getAccessToken(refreshTokenRequestObj(refreshToken))
             ]);
+
             if(tokenResponse.access_token){
                 this.handlePlain = tokenResponse.refresh_token;
-                thisApp.localStorage.set("oneDriveFileRefreshBy", getRefreshTokenTime());
+                thisApp.localStorage.set("oneDriveFileRefreshBy", getRefreshTokenTime(tokenResponse.expires_in));
                 const oneDriveFileResponse = await getOneDriveFile().catch(_ => null); //now the OneDriveFile Store Object's global variable:'oneDriveAccessToken' equals the 'tokenResponse.access_token';
                 return oneDriveFileResponse?.ok ? oneDriveFileResponse.arrayBuffer() : null;
             }else if(tokenResponse.error === "invalid_grant"){

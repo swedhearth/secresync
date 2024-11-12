@@ -1,7 +1,7 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 
 :root {
-    --max-app-width: 600px;
+    --max-app-width: 900px;
     --min-app-width: 300px;
     
     --min-vList-item-margin: 5vw;
@@ -72,6 +72,9 @@ body{
     background: var(--app-bckg-opaque-80);
     overflow-x: hidden;
     overscroll-behavior: contain;
+    
+display: flex;
+    justify-content: center;
 }
 
 body *{
@@ -95,6 +98,7 @@ body.invert{
     transition: opacity 0.2s linear;
     display: none;
     background: rgb(0 0 0 / 10%);
+
 }
 
 .spinnerSection.fade{
@@ -126,9 +130,9 @@ body.invert{
     height: 100vmin;
     transform: scale(0);
     border-radius: 50%;
-    /* border: 1px solid #000000; */
     box-shadow: 0 0 1rem 1rem rgb(222 222 222), 0 0 1rem 0.5rem white inset;
-    /* animation: animloader 2s linear infinite;*/
+    
+    backdrop-filter: blur(10px);
 }
 .spinnerContainer:before{
     animation-delay: 0s;
@@ -162,94 +166,7 @@ body.invert{
   }
 }
 
-/* .spinnerContainer{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 9.5rem;
-    height: 9.5rem;
-    border-radius: 50%;
-    box-shadow: 0.7rem 0.7rem 0.5rem 0.1rem rgb(150 150 150);
-    padding: 0.5rem;
-    outline: 5rem rgb(160 160 160 / 15%) double;
-    background: radial-gradient(circle at 30% 30%, #ffffff, rgb(144 139 175));
-    animation: spinnerContainer 3s linear infinite;
-}
 
-.spinnerContainer:before{
-    content: "";
-    position: fixed;
-    top: -2rem;
-    left: -2rem;
-    padding: 0.5rem;
-    background: var(--app-shade-grey-255);
-    border-radius: 50%;
-    box-shadow: 0rem 0rem 2rem 2rem var(--app-shade-grey-255);
-}
-
-@keyframes spinnerContainer {
-    0% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-    50% {
-        transform: translate(-50%, -50%) rotate(180deg);
-    }
-    100% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-}
-
-.spinnerWrp{
-    position: relative;
-    top: 50%;
-    transform:translateY(-50%);
-    border-radius: 50%;
-    margin: auto;
-    animation: spinnerWrp 4s ease-in-out infinite alternate;
-}
-
-.spinnerWrp *{
-    position: absolute;
-    box-sizing: border-box;
-    width: 98%;
-    height: 98%;
-    margin: 1%;
-    border-radius: 50%;
-    border: double;
-    border-color: #ffffff40 #ffffff #ffffff40 #ffffff;
-}
-
-@keyframes spinnerWrp {
-    0% {
-        height: 8rem;
-        width: 8rem;
-    }
-    25% {
-        height: 0rem;
-        width: 9rem;
-    }
-    50% {
-        height: 9rem;
-        width: 0rem;
-    }
-    100% {
-        height: 8rem;
-        width: 8rem;
-    }
-}
-
-@keyframes spinnerRing {
-    0% {
-        transform: rotate(0deg) scale(1.05);
-    }
-    50% {
-        transform: rotate(180deg) scale(1);
-    }
-    100% {
-        transform: rotate(360deg) scale(1.05);
-    }
-} */
 
 /* --------------------------------------------------------------- SVG Icons and Input Elements ---------------------------------------------------------------------*/
 .svgIcon{
@@ -701,7 +618,7 @@ legend.url:before{
 .msgModule{
     position: fixed;
     bottom: 0;
-    left: 0;
+    /* left: 0; */
     width: 100%;
     background: var(--app-shade-grey-255);
     text-indent: 1em;
@@ -712,6 +629,8 @@ legend.url:before{
     box-shadow: 0 0 4em var(--app-shade-grey-255) inset;
     font-size: 0.75rem;
     line-height: 2;
+    min-width: var(--min-app-width);
+    max-width: var(--max-app-width);
 }
 
 .msgModule::before{
@@ -759,6 +678,7 @@ legend.url:before{
     box-shadow: 1px 1px 0px var(--app-shade-grey-190) inset, 1px 1px 0px var(--app-shade-grey-190);
     background: var(--module-bckg);
     word-break: break-word;
+    
 }
 
 .msgHistoryRow:before{
@@ -787,7 +707,18 @@ legend.url:before{
     font-weight: 900;
     padding-right: 1em;
 }
+.msgHistoryRow.title{
+    position: sticky;
+    top:0;
+    padding: 0;
+    justify-content: space-between;
+}
 
+.closeFullArchive{
+    padding: 0.75em;
+    margin: 0.75em;
+    background-image: url(../../../assets/static/appSvg/sprite.svg#cross);
+}
 /* ------------------------------------------------------ Database Modification Date Bar ----------------------------------------------------------*/
 .dbModifiedBar{
     position: fixed;
@@ -1546,24 +1477,43 @@ body.invert .langWrp{
 .alertChoice:active{
     background: var(--app-shade-grey-245);
 }
-/* Install App */
-.installApp{
+/* Install App, Update App */
+.installApp, .updateApp{
     position: fixed;
     bottom: 10vh;
     left: calc((100% - (min(var(--max-app-width), 100%))) / 2);
     transform: translateX(-50vw);
     transition: transform 0.5s ease-out;
     z-index:2;
-    background-image: url(../../../assets/static/appSvg/sprite.svg#appInstall);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#installApp);
     padding: var(--svgIcon-padding-big);
-
 }
 
-.installApp.in{
+.installApp{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#installApp);
+}
+
+.updateApp{
+    bottom: 20vh;
+    background-image: url(../../../assets/static/appSvg/sprite.svg#updateApp);
+}
+
+.installApp.in, .updateApp.in{
     transform: translateX(0%);
 }
-.installApp.out{
+
+.installApp.out, .updateApp.out{
     transform: translateX(-50vw);
+}
+
+.uiBlur{
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(10px);
+    z-index:2;
 }
 
 /*GLOBALS -------------------------------- */

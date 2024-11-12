@@ -1,7 +1,7 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 function Crypto(){
     "use strict";
-    //const encodeText = text => new TextEncoder().encode(text);
+
     const decodeText = u8Ary => new TextDecoder().decode(u8Ary);
     
     const bufferFromIterable = (...iterables) => new Blob(iterables).arrayBuffer(); //iterable object such as an Array, ArrayBuffers, TypedArrays, DataViews, Blobs, strings, or a mix of any of such elements
@@ -239,7 +239,6 @@ function Crypto(){
         }); // Let it throw if error
         
         const persistId = credential.rawId;
-if(developerMode) console.log("persistId must be ArrayBuffer, and is: ", persistId);
         const res = credential.response;
         const clientData = JSON.parse(decodeText(res.clientDataJSON));
         const authenticatorData = res.getAuthenticatorData(); // ArrayBuffer
@@ -274,7 +273,7 @@ if(developerMode) console.log("persistId must be ArrayBuffer, and is: ", persist
         const flagsByte = u8AryFrom(res.authenticatorData)[32];
         
         await verifyAuth(clientData.challenge, randomChallenge, flagsByte);
-if(developerMode) console.log("persistId = ", persistId, "persistId should be ArrayBuffer and should be equal to the credential.rawId, which is: ", credential.rawId);
+
         // It's not recommended for using the credential.response.userHandle as an encryption key because it'll can be disclosed without user verification...how?
         const cryptoKeyCipherPass = await digestFromIterable(credential.rawId, userHandle, rpIdHash, plainPinString); //(returns ArrayBuffer)
         return getDecryptedCryptoKey(cryptoKeyCipher, cryptoKeyCipherPass); //Returns Crypto Key Object object's promise
@@ -384,14 +383,13 @@ if(developerMode) console.log("persistId = ", persistId, "persistId should be Ar
         vO.c = b64FromTimeInt(this.cr8);
         vO.m = b64FromTimeInt(this.mod);
         const { base, cr8, mod, ...vendorRest } = vO;
-        //console.log("prepareForSend vendorRest = ", vendorRest);
         return vendorRest;
-    }
+    };
     
     Vendor.prototype.prepareForShare = async function(plainPinString = false){ // TO DOOOOOOOOOOOOOOOOOOOOO
         const {plainString} = await this.getCurrentPassword();
         const vO = JSON.stringify({
-            ps: plainString,  // why not just: ps: await this.getCurrentPassword(), ???????????????????
+            ps: plainString,
             nm: this.name,
             lg: this.log,
             nt: this.note,
@@ -407,15 +405,12 @@ if(developerMode) console.log("persistId = ", persistId, "persistId should be Ar
         if(developerMode) console.log("cipher = ", cipher);
         const trimmedB64cipher = trimmedB64FromU8Ary(cipher);
         return [hexFrom(persistId), trimmedB64cipher];
-    }
+    };
 
     /* -------------------------------------------- New DB Object ------------------------------------------------------- */
     function DatabaseObject(dbObj, doUpdateMod){
-        //console.log("dbObj.vandors before Updtate", dbObj.vendors);
-        this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now(); //!updateMod ? dbObj?.mod : Date.now();
+        this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now();
         this.vendors = dbObj?.vendors?.map(vendObj => new Vendor(vendObj)) || [];
-        //this.cipher = null;
-        //console.log(this.vendors);
     }
     
     DatabaseObject.prototype.reset = function(){

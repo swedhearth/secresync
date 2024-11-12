@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 function Interface(thisApp){
     "use strict";
     if(developerMode) console.log("initiate Interface");
@@ -453,14 +453,26 @@ passHint = credFormPassHint // only new
             return true; //msg Full Archive has been cleared
         };
         
-        const msgToggleFullArchive = e => {
-            if(msgIsFullArchive) return window.history.back(); //will trigger the ui.js's popstate event and run the clearFullArchive
+const paintHistory = _ =>  msgModule.ridKids().killAttr("title")
+    .attach(dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":").attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())))
+    .attachAry(Object.keys(msgHistory).map(timestamp => 
+        dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
+        .attach(
+            dom.addDiv("msgBody")
+            .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
+            .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
+        )
+    ));
+
+        const msgOpenFullArchive = e => {
+            if(msgIsFullArchive) return;
 
             msgIsFullArchive = true;
             msgClearPromise();
             addModalToHistory(true); //force adding to history
-            msgModule.ridKids().addClass("fullArchive").killAttr("title")
-            .attach(dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":"))
+            paintHistory().addClass("fullArchive");
+/*             msgModule.ridKids().addClass("fullArchive").killAttr("title")
+            .attach(dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":").attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())))
             .attachAry(Object.keys(msgHistory).map(timestamp => 
                 dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
                 .attach(
@@ -468,26 +480,40 @@ passHint = credFormPassHint // only new
                     .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
                     .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
                 )
-            ));
+            )); */
         };
 
         // Swipe msgIsFullArchive on Mobile
         let touchStart = 0;
         const swiping = (e) => {
             const touchY = e.touches[0].clientY;
-            touchStart = (((!msgIsFullArchive && touchY + 32 > document.body.clientHeight) || msgIsFullArchive) && !touchStart) ? touchY : touchStart;
+            if(!msgIsFullArchive && touchStart && touchY < touchStart){
+                const translateBy = (100 - ((touchStart- touchY) * 100) / document.body.clientHeight);
+                if(translateBy < 65) {
+                    msgModule.ridKids();
+                    msgOpenFullArchive(e);
+                    msgModule.killAttr("style");
+                    return;
+                }
+                msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);")
+
+                return;
+            }
+            
+            touchStart = (((!msgIsFullArchive && touchY + window.POINTER_SIZE * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
+            
+            if(touchStart) paintHistory();
         };
 
         const endSwipe = (e) => {
-            const touchY = e.changedTouches[0].clientY;
-            if ((!msgIsFullArchive && touchY < touchStart - 50) || (msgIsFullArchive && touchStart && touchY > touchStart)) {
-                msgToggleFullArchive(e);
-            }
+            if(!touchStart || msgIsFullArchive) return;
+            msgModule.killAttr("style");
             touchStart = 0;
+            msgModule.ridKids();
         };
 
-        msgModule.onClick(msgToggleFullArchive);
-        document.body.on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+        msgModule.onClick(msgOpenFullArchive);
+        document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
 
         const msgShow = (msgObj, logged) => {
             if(!logged){
@@ -569,6 +595,13 @@ passHint = credFormPassHint // only new
         
         this.noSessionStorage = _ => msgErr("noSessionStorage");//appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("noSessionStorage"), sKey: "secreSync"});
         this.remoteRedirectError = err => msgErr("remoteRedirectError", null, err);//appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("remoteRedirectError"), sKey});
+        
+        
+        //temps
+        this.tempAppInstalled = _ => msgShow(new MsgObj("_TEMP_ Application has already been installed on this device", "flash"));
+        this.tempPleaseDoInstallApp = doInstal => msgShow(new MsgObj("_TEMP_ Application has not yet been installed on this device. Will the install prompt be displayed?: " + doInstal.toString(), "flash"));
+        this.tempOnlineChangeWhileAppHidden = appOnline => msgShow(new MsgObj("_TEMP_ Application connectivity has changed while the app was hidden. Is the app online?: " + appOnline.toString(), "flash"));
+        this.tempVisibilityChange = appHidden => msgShow(new MsgObj("_TEMP_ Application visibility has changed. Is the app hidden?: " + appHidden.toString(), "flash"));
 
     };
 
@@ -630,7 +663,10 @@ passHint = credFormPassHint // only new
             const boxNoteElMaxLen = 10000;
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
-            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => vFormScrollTop = e.target.scrollTop);
+            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
+                vFormScrollTop = e.target.scrollTop;
+                document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
+            });
             if(addHistory) addModalToHistory();
             if (count) getCvs(); count = null; // REMOVE FROM FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             let isNew = !vendObj || vendObj.isNew || false;
@@ -1576,17 +1612,23 @@ passHint = credFormPassHint // only new
     this.spinner = spinner;
     this.localiseDbStores = localiseDbStores;
     
-    this.installApp = _ => new Promise(res => {
+    this.installApp = isUpdate => new Promise(res => {
+        const title = isUpdate ? "updateApp" : "installApp";
         const killInstallApp = e => {
             e.preventDefault();
             e.stopPropagation();
             installAppEl.addClass("out").on("transitionend", installAppEl.kill);
             res(e.target === installAppEl);
         };
-        const installAppEl = dom.addDiv("installApp svgIcon").setAttr("title", getTxtBankTitleTxt("installApp")).onClick(killInstallApp).attachTo(document.body);
+        const installAppEl = dom.addDiv(title + " svgIcon").setAttr("title", getTxtBankTitleTxt(title)).onClick(killInstallApp).attachTo(document.body);
         document.body.onClick(killInstallApp, {once: true});
         window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
     });
+    
+    this.blur = (_ => {
+        const uiBlurEl = dom.addDiv("uiBlur");
+        return willBlur => willBlur ? document.body.attach(uiBlurEl) : uiBlurEl.kill();
+    })();
 
 
     // Add Popstate Listener
@@ -1598,6 +1640,7 @@ passHint = credFormPassHint // only new
     });
 
     // Attach Sections
+    console.log(document.body.kids());
     document.body.ridKids().attachAry([
         appSectionList, appSectionForm, dbModifiedBar,
         modalSection,

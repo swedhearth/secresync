@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console

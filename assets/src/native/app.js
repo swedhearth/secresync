@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -382,6 +382,10 @@ function App(urlSearchParams){
 
     this.connectivitychange = e => {
         this.online = e.type !== "offline";
+        if(this.hidden){
+            this.message.tempOnlineChangeWhileAppHidden(this.online);
+            //return;
+        }
         this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
         this.message[e.type](); // message.online : message.offline
     };
@@ -389,7 +393,10 @@ function App(urlSearchParams){
     this.visibilityChange = e => {
         if(!this.dbObj) return;
         const reloadBy = "reloadAppBy";
-        if(document.visibilityState === "hidden"){
+        this.hidden = document.visibilityState === "hidden";
+        this.ui.blur(this.hidden);
+        this.message.tempVisibilityChange(this.hidden);
+        if(this.hidden){
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){

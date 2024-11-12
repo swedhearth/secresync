@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -393,7 +393,8 @@ const txtBankObj = {
         "localFile": "Device Database File", //Device Database File.
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
+        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -863,7 +864,8 @@ const txtBankObj = {
         "localFile": "Archivo de Base de Datos del dispositivo",
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
+        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -1332,7 +1334,8 @@ const txtBankObj = {
         "localFile": "Fichier de base de données de l'appareil",
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
+        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1801,7 +1804,8 @@ const txtBankObj = {
         "localFile": "Baza Danych Urządzenia", //bazy danych pliku urządzenia // "Zapasowa Kopia Bazy Danych"
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu"
+        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
+        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",

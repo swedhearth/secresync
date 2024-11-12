@@ -1,4 +1,4 @@
-/* 'core_0.015_GitHub' */
+/* 'core_0.017_GitHub' */
 "use strict";
 console.log("index core_0.015_GitHub");
 /* 
@@ -14,8 +14,8 @@ TO DO:
  
 DONE - Theme to white.
 DONE - Link section out of order
-Log-off tied to visibility change
-Local file database change textBank
+DONE - Log-off tied to visibility change
+DONE - Local file database change textBank
 DONE!!!  -Icons before sections headers - icons ::before name, log, link, note, etc
 
 DONE - Scroll event tied to el.focus() - search input to lose focus
@@ -63,6 +63,7 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
     return Object.fromEntries(new URLSearchParams(locationSearch));
     
 })().then(urlSearchParams => {
+
     console.log("urlSearchParams", urlSearchParams);
     if(!urlSearchParams){
         setTimeout(_ =>{
@@ -85,24 +86,38 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
         window.addEventListener('offline', thisApp.connectivitychange);
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
-        
-        
-        let appInstalled = false;
 
-        window.addEventListener("appinstalled", () => {appInstalled = true});
-        window.addEventListener("beforeinstallprompt", async (event) => {
-        event.preventDefault();
+        let appInstalled = false;
+        window.addEventListener("appinstalled", () => {{
+            thisApp.message.tempAppInstalled();
+            appInstalled = true;
+        }});
+        window.addEventListener("beforeinstallprompt", async e => {
+            e.preventDefault();
             if(appInstalled) return;
-            const doInstal = await thisApp.ui.installApp();
-            console.log(doInstal);
-            const result = await event.prompt();
+            const doInstal = await thisApp.ui.installApp(false);
+            thisApp.message.tempPleaseDoInstallApp(doInstal);
+            if(doInstal){
+                const result = await e.prompt();
+            }
         });
         
 /* setTimeout(async _ => {
             const doInstal = await thisApp.ui.installApp();
             console.log(doInstal);
 }, 3000); */
-        
+
+
+
+window.addEventListener('pointerdown', function onFirstPointer(e) {
+  window.POINTER_SIZE = e.height;
+  window.removeEventListener('pointerdown', onFirstPointer, false);
+}, false);
+
+/* window.addEventListener('touchstart', function onFirstTouch() {
+  window.USER_IS_TOUCHING = true;
+  window.removeEventListener('touchstart', onFirstTouch, false);
+}, false); */
 /* return; */
         // Install Service Worker
         if (!navigator.serviceWorker || !navigator.onLine || !location.host) {
@@ -129,7 +144,8 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
                             break;
                         case "activated":
                             if (developerMode) console.log('Service worker activated');
-                            //if (await thisApp.alert.newVersion()) thisApp.reload();
+                            const doUpdate = await thisApp.ui.installApp(true);
+                            if(doUpdate) thisApp.reload();
                     }
                 });
             });
