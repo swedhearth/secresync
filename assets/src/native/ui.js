@@ -1,5 +1,7 @@
-/* 'frequent_0.018_GitHub' */
+/* 'frequent_0.019_GitHub' */
+
 function Interface(thisApp){
+    let tempVer = "frequent_0.019_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1587,7 +1589,7 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         const repaintUI = _ => {
-            dbModifiedBar.txt(new Date(thisApp.dbObj.mod).toUKstring()).show();
+            dbModifiedBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
             paintListSection();
         };
         

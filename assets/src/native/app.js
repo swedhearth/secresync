@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub */
+/* 'frequent_0.019_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -517,6 +517,7 @@ function App(urlSearchParams){
         const maxAppStartFails = 4;
         this.cryptoHandle = new CryptoHandle(this);
         try{
+            mobileDebug("In this.start. Will await this.dbStore.getResetObjects()");
             const {savedStoreObjs, redirectedStoreObj, refreshExpiredStoreObjs} = await this.dbStore.getResetObjects();
             //if stores have expired handles refresh them. Exception is when they have expired in a extremaly short time while redirection happens for another remote store (prioritise processing of the redirected store)
             if(refreshExpiredStoreObjs.length && !redirectedStoreObj){ 

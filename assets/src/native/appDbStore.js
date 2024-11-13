@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub' */
+/* 'frequent_0.019_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -317,7 +317,7 @@ function AppDbStore(thisApp){
                 mobileDebug("In storeObj.remoteUpdate Will return without updating. alreadyUpdated = ", alreadyUpdated);
                 return alreadyUpdated;
             }
-            mobileDebug("In storeObj.remoteUpdate Will Update the storeObj.key = ", storeObj.key);
+            mobileDebug("In storeObj.remoteUpdate Will Update the storeObj.key = ", storeObj.key, "apparently the thisApp.dbObj exists now = ", JSON.stringify(thisApp.dbObj));
             storeObj.syncStart();
             await updateStore(await thisApp.cryptoHandle.getDbFileBlob());
             return storeObj.connect(thisApp.dbObj);

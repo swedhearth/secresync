@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub' */
+/* 'frequent_0.019_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -671,7 +671,7 @@ legend.url:before{
 }
 .msgHistoryContentWrp{
     overflow:auto;
-        height: 100%;
+        height: 80%;
 }
 
 .msgModule.slideDown{
