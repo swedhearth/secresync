@@ -1,4 +1,4 @@
-/* 'frequent_0.019_GitHub' */
+/* 'frequent_0.020_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -310,21 +310,21 @@ function AppDbStore(thisApp){
         };
         
         storeObj.remoteUpdate = async updateStore => {
-            mobileDebug("In storeObj.remoteUpdate Start The storeObj.key = ", storeObj.key);
-            const alreadyUpdated = storeObj.dbMod === thisApp.dbObj.mod;
+            mobileDebug("In storeObj.remoteUpdate Start. The storeObj.key = ", storeObj.key);
+            const alreadyUpdated = storeObj.dbMod === thisApp.dbObj?.mod;
             if(!thisApp.dbObj || !thisApp.online || !storeObj.canAlter() || storeObj.dontSync || storeObj.syncPaused || alreadyUpdated){
                 storeObj.iconOpacity(alreadyUpdated, true);
-                mobileDebug("In storeObj.remoteUpdate Will return without updating. alreadyUpdated = ", alreadyUpdated);
+                //mobileDebug("In storeObj.remoteUpdate Will return without updating. alreadyUpdated = ", alreadyUpdated);
                 return alreadyUpdated;
             }
-            mobileDebug("In storeObj.remoteUpdate Will Update the storeObj.key = ", storeObj.key, "apparently the thisApp.dbObj exists now = ", JSON.stringify(thisApp.dbObj));
+            //mobileDebug("In storeObj.remoteUpdate Will Update the storeObj.key = ", storeObj.key, "apparently the thisApp.dbObj exists now = ", JSON.stringify(thisApp.dbObj));
             storeObj.syncStart();
             await updateStore(await thisApp.cryptoHandle.getDbFileBlob());
             return storeObj.connect(thisApp.dbObj);
         };
         
         storeObj.switchConnection = async _ => {
-            mobileDebug("In storeObj.switchConnection Start The storeObj.key = ", storeObj.key);
+            mobileDebug("In storeObj.switchConnection Start. The storeObj.key = ", storeObj.key);
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
             
             storeObj.syncPaused = false;
