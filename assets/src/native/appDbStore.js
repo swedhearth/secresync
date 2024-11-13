@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -310,23 +310,29 @@ function AppDbStore(thisApp){
         };
         
         storeObj.remoteUpdate = async updateStore => {
+            mobileDebug("In storeObj.remoteUpdate Start The storeObj.key = ", storeObj.key);
             const alreadyUpdated = storeObj.dbMod === thisApp.dbObj.mod;
             if(!thisApp.dbObj || !thisApp.online || !storeObj.canAlter() || storeObj.dontSync || storeObj.syncPaused || alreadyUpdated){
                 storeObj.iconOpacity(alreadyUpdated, true);
+                mobileDebug("In storeObj.remoteUpdate Will return without updating. alreadyUpdated = ", alreadyUpdated);
                 return alreadyUpdated;
             }
+            mobileDebug("In storeObj.remoteUpdate Will Update the storeObj.key = ", storeObj.key);
             storeObj.syncStart();
             await updateStore(await thisApp.cryptoHandle.getDbFileBlob());
             return storeObj.connect(thisApp.dbObj);
         };
         
         storeObj.switchConnection = async _ => {
+            mobileDebug("In storeObj.switchConnection Start The storeObj.key = ", storeObj.key);
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
             
             storeObj.syncPaused = false;
             if(storeObj.canAlter()){
+                mobileDebug("In storeObj.switchConnection storeObj.canAlter - will update the store.");
                 storeObj.update().catch(storeObj.catchUpdate);
             }else{
+                mobileDebug("In storeObj.switchConnection storeObj.canAlter is false - will read the store (storeObj.remoteRead).");
                 try{
                     await storeObj.read().then(thisApp.paint).catch(storeObj.catchLoad); 
                 }catch(err){ //would be one of the following: "OperationError", "DeleteDatabase", "BackButtonPressed","noFilePickedErr" - neither can really happen

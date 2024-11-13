@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 "use strict";
 console.log("index core_0.015_GitHub");
 /* 
@@ -35,11 +35,17 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
 */
 
 // get url search parameters
+mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.stringify(window.history.state));
 (async _ =>{
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
     if(locationSearch){
+        mobileDebug("In Index. locationSearch is present. window.location.search = ", locationSearch);
         const wasHistoryLength = window.sessionStorage?.getItem("historyLength");
+        mobileDebug("In Index. wasHistoryLength = ", wasHistoryLength);
+        mobileDebug("In Index. window.history.length = ", window.history.length);
+        
         if(wasHistoryLength){
+            mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 500));//wait until disk is flushed 500ms,
             window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
@@ -47,16 +53,18 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
         }
         locationSearch = "";
     }
-    
+    mobileDebug("In Index. after if(locationSearch). window.history.state = ", JSON.stringify(window.history.state));
     window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
     
+    let loop = 0;
     while (!window.history.state.lastBackExists) {
+        mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
         await new Promise(res => {
             window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
             window.history.back();
         });
     }
-    
+    mobileDebug("In Index. after while loop - the final current history.state", JSON.stringify(window.history.state));
     locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
     window.sessionStorage?.removeItem("locationSearch");
     
@@ -67,6 +75,7 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
     console.log("urlSearchParams", urlSearchParams);
     if(!urlSearchParams){
         setTimeout(_ =>{
+            mobileDebug("!!! IN INDEX - !!! This has been caught when no urlSearchParams and 5 seconds ellapsed. WILL RELOAD. history.state", JSON.stringify(window.history.state));
             alert("urlSearchParams returned null and 5 seconds has passed. reload the app");
             window.location.replace(window.location.origin + window.location.pathname);
         }, 5000);
@@ -86,6 +95,8 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
         window.addEventListener('offline', thisApp.connectivitychange);
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
+        
+        window.addEventListener('blur', thisApp.ui.blur);
 
         let appInstalled = false;
         window.addEventListener("appinstalled", () => {{
@@ -101,18 +112,16 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
                 const result = await e.prompt();
             }
         });
-        
-/* setTimeout(async _ => {
-            const doInstal = await thisApp.ui.installApp();
-            console.log(doInstal);
-}, 3000); */
+
+
+        window.addEventListener('pointerdown', function onFirstPointer(e) {
+          window.POINTER_SIZE = e.height;
+          mobileDebug("pointer size = ", e.height);
+          window.removeEventListener('pointerdown', onFirstPointer, false);
+        }, false);
 
 
 
-window.addEventListener('pointerdown', function onFirstPointer(e) {
-  window.POINTER_SIZE = e.height;
-  window.removeEventListener('pointerdown', onFirstPointer, false);
-}, false);
 
 /* window.addEventListener('touchstart', function onFirstTouch() {
   window.USER_IS_TOUCHING = true;

@@ -1,8 +1,9 @@
 const appCaches = [
     {
-        name: 'core_0.017_GitHub',
+        name: 'frequent_0.018_GitHub',
         urls: [
             "./",
+            "./secresync.webmanifest",
             "./index.html",
             "./assets/src/native/app.js",
             "./assets/src/native/appDbStore.js",
@@ -11,14 +12,14 @@ const appCaches = [
             "./assets/src/native/index.js",
             "./assets/src/native/txtBank.js",
             "./assets/src/native/ui.js",
-            "./assets/src/native/index.css"
+            "./assets/src/native/index.css",
+            "./assets/static/appSvg/sprite.svg"
         ]
     },
     {
-        name: 'static_0.017_GitHub',
+        name: 'rare_0.001_GitHub',
         urls: [
             "./favicon.ico",
-            "./secresync.webmanifest",
             "./browserconfig.xml",
             
             "./assets/src/aquired/dbx.min.js",
@@ -27,9 +28,7 @@ const appCaches = [
             "./assets/static/@fonts/century-gothic/cg.woff2",
             "./assets/static/@fonts/century-gothic/cg.woff",
             "./assets/static/@fonts/CenturyGothic/CenturyGothic.ttf",
-            
-            "./assets/static/appSvg/sprite.svg",
-            
+
             "./assets/static/favicons/android-chrome-192x192.png",
             "./assets/static/favicons/apple-touch-icon.png",
             "./assets/static/favicons/apple-touch-icon-60x60.png",

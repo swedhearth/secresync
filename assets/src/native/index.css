@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -6,7 +6,8 @@
     
     --min-vList-item-margin: 5vw;
     
-    --db-mod-bar-height: 1.5rem; /* 5mm; */
+    /* --db-mod-bar-height: 1.5rem; /* 5mm; */ 
+    --db-mod-bar-height: 3rem;
     
 /*     --svgIcon-padding-small: max(2mm, min(5vmin, 5mm));
     --svgIcon-padding-medium: max(2mm, min(5vmin, 7mm));
@@ -633,8 +634,18 @@ legend.url:before{
     max-width: var(--max-app-width);
 }
 
-.msgModule::before{
+/* .msgModule::before{
     content: "";
+    position: absolute;
+    top: calc(0mm - var(--db-mod-bar-height));
+    left: calc(min(100%, calc(50% + (var(--max-app-width) / 2))) - var(--db-mod-bar-height) * 1.5);
+    padding: calc(var(--db-mod-bar-height) / 2);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+} */
+.beforeMsgModule{
     position: absolute;
     top: calc(0mm - var(--db-mod-bar-height)); /* 5mm; */
     left: calc(min(100%, calc(50% + (var(--max-app-width) / 2))) - var(--db-mod-bar-height) * 1.5);
@@ -656,7 +667,11 @@ legend.url:before{
     transform:unset;
     transition: all 0.2s ease-out;
     backdrop-filter: blur(10px);
+    /* overflow:auto; */
+}
+.msgHistoryContentWrp{
     overflow:auto;
+        height: 100%;
 }
 
 .msgModule.slideDown{
@@ -703,6 +718,10 @@ legend.url:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#tickGreen);
 }
 
+.msgHistoryRow.dev:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
+}
+
 .msgHistoryRow .msgDate, .title{
     font-weight: 900;
     padding-right: 1em;
@@ -715,9 +734,13 @@ legend.url:before{
 }
 
 .closeFullArchive{
-    padding: 0.75em;
-    margin: 0.75em;
+    
+    padding: 1.5em;
+
     background-image: url(../../../assets/static/appSvg/sprite.svg#cross);
+    background-size: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 /* ------------------------------------------------------ Database Modification Date Bar ----------------------------------------------------------*/
 .dbModifiedBar{

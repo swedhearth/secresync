@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 function Crypto(){
     "use strict";
 

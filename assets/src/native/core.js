@@ -1,7 +1,12 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console
+
+const mobileDebugAry = [];
+const mobileDebug = (...msg) => {
+    mobileDebugAry.push([new Date().toISOString(), msg.join(", ")]);
+};
 
 // Native prototypes
 Date.prototype.toUKstring = function(){
@@ -149,17 +154,27 @@ function isURL(string){
 
             for (const method in elMethods) el[method] = protoObj[method] || elMethods[method]; //include prototypes - prototypes take priority
 
-            let toolTipshowTimer;
+            let toolTipShowTimer;
+            let toolTipCloseTimer;
+            let toolTip;
             const delay = 400;
             const toolTipshow = e => {
                 if (!el.title) return;
-
-                const updateToolTipPosition = (top, left) => toolTip.setAttr("style", `left: ${left}px; top: ${top}px;`);
+                    clearTimeout(toolTipCloseTimer);
+                    clearTimeout(toolTipShowTimer);
 
                 if (e.type === "pointerdown") {
+
+                    if(toolTip) toolTip.kill();
+                    
+                    toolTip = dom.addDiv("toolTip").attachTo(doc.body);
+
+                    
+                    const updateToolTipPosition = (top, left) => toolTip.setAttr("style", `left: ${left}px; top: ${top}px;`);
+                    
                     let [toolTipTop, toolTipLeft] = [e.clientY, e.clientX];
 
-                    updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).attachTo(doc.body);
+                    updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).show();
                     const { top, height, left, width } = toolTip.getBoundingClientRect();
                     toolTip.hide();
                     const bottomOut = top + height + rem > doc.body.clientHeight;
@@ -169,14 +184,16 @@ function isURL(string){
                     if (leftOut) toolTipLeft -= width + rem;
                     if (bottomOut || leftOut) updateToolTipPosition(toolTipTop, toolTipLeft);
 
-                    toolTipshowTimer = setTimeout(() => {
+                    toolTipShowTimer = setTimeout(() => {
                         el.clickCancel = true;
                         toolTip.show();
                     }, delay);
                 } else {
-                    clearTimeout(toolTipshowTimer);
                     setTimeout(() => { el.clickCancel = false; }, delay);
-                    toolTip.kill();
+
+                    toolTipCloseTimer = setTimeout(() => {
+                        if(toolTip) toolTip.kill();
+                    }, delay * 3);
                 }
             };
 
@@ -227,7 +244,10 @@ function isURL(string){
         dom.add = tag => dom(create(tag));
         coreRawTags.forEach(rawTag => addDomHandle(rawTag));
         
-        const toolTip = dom.addDiv("toolTip");
+/*         const toolTip = dom.addDiv("toolTip");
+        setTimeout(_ => {
+            toolTip.attachTo(doc.body)
+        }, 1000); */
         const rem = parseInt(getComputedStyle(document.documentElement).fontSize);
 
         [...doc.querySelectorAll('*')].forEach(dom); // domify all the elements present in DOM at the start in the html document

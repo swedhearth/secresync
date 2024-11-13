@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub' */
 function Interface(thisApp){
     "use strict";
     if(developerMode) console.log("initiate Interface");
@@ -427,9 +427,11 @@ passHint = credFormPassHint // only new
         let msgHistory = {};
         let msgIsFullArchive = false;
         
+        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory")).attachTo(msgModule);
+        
         const msgModulePopUp = (css, txt) => msgModule.addClass("popUp").attach(dom.addDiv(`msgHistoryRow ${css}`, txt)); //popUp 
         const msgModuleSlideDown = _ => msgModule.addClass("slideDown");
-        const msgModuleReset = _ => msgModule.cssName("msgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory")).ridKids();
+        const msgModuleReset = _ => msgModule.cssName("msgModule").ridKids(1);//.setAttr("title", getTxtBankHtmlTxt("msgHistory"));
         const msgClearPromise = _ => {
             clearTimeout(timerHide);
             msgPromise = null;
@@ -445,49 +447,59 @@ passHint = credFormPassHint // only new
         };
 
         this.clearFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
-            if(!msgIsFullArchive) return false;
+            //console.log("msgModule.hasClass('fullArchive') = ", msgModule.hasClass("fullArchive"));
+            //if(!msgIsFullArchive) return false;
+            if(!msgModule.hasClass("fullArchive")) return;
+            //console.log("will make the msgIsFullArchive FALSE");
             msgClearPromise();
             msgModuleSlideDown();
             setTimeout(msgModuleReset, msgTransitionTime);
-            msgIsFullArchive = false;
+            //msgIsFullArchive = false;
             return true; //msg Full Archive has been cleared
         };
         
-const paintHistory = _ =>  msgModule.ridKids().killAttr("title")
-    .attach(dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":").attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())))
-    .attachAry(Object.keys(msgHistory).map(timestamp => 
-        dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
-        .attach(
-            dom.addDiv("msgBody")
-            .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
-            .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
-        )
-    ));
+const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
+    .attach(
+        dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":")
+        .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back()))
+    )
+    .attach(
+        dom.addDiv("msgHistoryContentWrp")
+        .attachAry(Object.keys(msgHistory).map(timestamp => 
+            dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
+            .attach(
+                dom.addDiv("msgBody")
+                .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
+                .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
+            )
+        ))
+        .attachAry(mobileDebugAry.map(msgAry => 
+            dom.addDiv("msgHistoryRow dev")
+            .attach(
+                dom.addDiv("msgBody")
+                .attach(dom.addSpan("msgDate", msgAry[0]))
+                .attach(dom.addSpan("msgText", msgAry[1]))
+            )
+        ))
+    );
 
         const msgOpenFullArchive = e => {
-            if(msgIsFullArchive) return;
+            //console.log("msgOpenFullArchive clicked. e.target = ", e.target, "msgIsFullArchive = ", msgIsFullArchive);
+            //if(msgIsFullArchive) return;
+            
+            if(msgModule.hasClass("fullArchive")) return;
 
-            msgIsFullArchive = true;
+            //msgIsFullArchive = true;
             msgClearPromise();
             addModalToHistory(true); //force adding to history
             paintHistory().addClass("fullArchive");
-/*             msgModule.ridKids().addClass("fullArchive").killAttr("title")
-            .attach(dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":").attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())))
-            .attachAry(Object.keys(msgHistory).map(timestamp => 
-                dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
-                .attach(
-                    dom.addDiv("msgBody")
-                    .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
-                    .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
-                )
-            )); */
         };
 
         // Swipe msgIsFullArchive on Mobile
         let touchStart = 0;
         const swiping = (e) => {
             const touchY = e.touches[0].clientY;
-            if(!msgIsFullArchive && touchStart && touchY < touchStart){
+            if(!msgModule.hasClass("fullArchive") && touchStart && touchY < touchStart){
                 const translateBy = (100 - ((touchStart- touchY) * 100) / document.body.clientHeight);
                 if(translateBy < 65) {
                     msgModule.ridKids();
@@ -500,20 +512,20 @@ const paintHistory = _ =>  msgModule.ridKids().killAttr("title")
                 return;
             }
             
-            touchStart = (((!msgIsFullArchive && touchY + window.POINTER_SIZE * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
+            touchStart = (((!msgModule.hasClass("fullArchive") && touchY + window.POINTER_SIZE * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
             
             if(touchStart) paintHistory();
         };
 
         const endSwipe = (e) => {
-            if(!touchStart || msgIsFullArchive) return;
+            if(!touchStart || msgModule.hasClass("fullArchive")) return;
             msgModule.killAttr("style");
             touchStart = 0;
             msgModule.ridKids();
         };
 
-        msgModule.onClick(msgOpenFullArchive);
-        document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+        msgTitleIcon.onClick(msgOpenFullArchive);
+        //document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
 
         const msgShow = (msgObj, logged) => {
             if(!logged){
@@ -1625,10 +1637,21 @@ const paintHistory = _ =>  msgModule.ridKids().killAttr("title")
         window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
     });
     
-    this.blur = (_ => {
+/*     this.blur = (_ => {
         const uiBlurEl = dom.addDiv("uiBlur");
         return willBlur => willBlur ? document.body.attach(uiBlurEl) : uiBlurEl.kill();
-    })();
+    })(); */
+
+    this.blur = _ => {
+        if(!this.blured && thisApp.dbObj){
+            //console.log("blur");
+            this.blured = dom.addDiv("uiBlur").onClick(e => {
+                this.blured.kill();
+                this.blured = false;
+            }).attachTo(document.body);
+            
+        }
+    };
 
 
     // Add Popstate Listener

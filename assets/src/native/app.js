@@ -1,4 +1,4 @@
-/* 'core_0.017_GitHub' */
+/* 'frequent_0.018_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -368,34 +368,47 @@ function App(urlSearchParams){
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
 
     const logOffApp = async _ => {
+        mobileDebug("logOffApp Start = window.history.state = ", JSON.stringify(window.history.state));
+        let loop = 0;
         while (!window.history.state.lastBackExists) {
+            mobileDebug("In logOffApp. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
             await new Promise(res => {
                 window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
                 window.history.back();
             });
         }
+        mobileDebug("In logOffApp. after while loop - the final current history.state", JSON.stringify(window.history.state));
         this.ui.clear();
+        /* Change This!!!!!!!!!!!!!!!!!!!!!!!!!*/
+        this.ui.blured.kill();
+        this.ui.blured = null;
+        /* Change This!!!!!!!!!!!!!!!!!!!!!!!!!*/
         this.start(this.message.loggedOff(), false);
+        mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
     };
 
     this.online = navigator.onLine;
 
     this.connectivitychange = e => {
         this.online = e.type !== "offline";
-        if(this.hidden){
+        mobileDebug("connectivitychange e.type = ", e.type);
+        mobileDebug("connectivitychange, document.visibilityState = ", document.visibilityState);
+/*         if(this.hidden){
             this.message.tempOnlineChangeWhileAppHidden(this.online);
             //return;
-        }
+        } */
         this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
         this.message[e.type](); // message.online : message.offline
     };
 
     this.visibilityChange = e => {
         if(!this.dbObj) return;
+        //console.log("visibilityChange");
+        mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
         this.hidden = document.visibilityState === "hidden";
-        this.ui.blur(this.hidden);
-        this.message.tempVisibilityChange(this.hidden);
+        /* this.ui.blur(this.hidden); */
+        //this.message.tempVisibilityChange(this.hidden);
         if(this.hidden){
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
@@ -405,6 +418,10 @@ function App(urlSearchParams){
             this.sessionStorage.delete(reloadBy);
         }
     };
+    
+    // this.focusChange = e => {
+        // this.ui.blur(e.type === "blur");
+    // }
 
     this.resetLogOutTimer = (_ => { // self invoking
         let inactivityTimer;
