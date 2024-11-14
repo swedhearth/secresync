@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub' */
+/* 'frequent_0.021_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console
@@ -157,7 +157,7 @@ function isURL(string){
             let toolTipShowTimer;
             let toolTipCloseTimer;
             let toolTip;
-            const delay = 400;
+            const delay = 800;
             const toolTipshow = e => {
                 if (!el.title) return;
                     clearTimeout(toolTipCloseTimer);
@@ -177,11 +177,11 @@ function isURL(string){
                     updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).show();
                     const { top, height, left, width } = toolTip.getBoundingClientRect();
                     toolTip.hide();
-                    const bottomOut = top + height + rem > doc.body.clientHeight;
-                    const leftOut = left + width + rem > doc.body.clientWidth;
+                    const bottomOut = top + height + REM > doc.body.clientHeight;
+                    const leftOut = left + width + REM > doc.body.clientWidth;
 
-                    if (bottomOut) toolTipTop -= height + rem;
-                    if (leftOut) toolTipLeft -= width + rem;
+                    if (bottomOut) toolTipTop -= height + REM;
+                    if (leftOut) toolTipLeft -= width + REM;
                     if (bottomOut || leftOut) updateToolTipPosition(toolTipTop, toolTipLeft);
 
                     toolTipShowTimer = setTimeout(() => {
@@ -248,7 +248,7 @@ function isURL(string){
         setTimeout(_ => {
             toolTip.attachTo(doc.body)
         }, 1000); */
-        const rem = parseInt(getComputedStyle(document.documentElement).fontSize);
+        window.REM = parseInt(getComputedStyle(document.documentElement).fontSize);
 
         [...doc.querySelectorAll('*')].forEach(dom); // domify all the elements present in DOM at the start in the html document
 

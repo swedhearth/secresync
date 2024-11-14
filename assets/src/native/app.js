@@ -1,4 +1,4 @@
-/* 'frequent_0.019_GitHub */
+/* 'frequent_0.021_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -379,10 +379,20 @@ function App(urlSearchParams){
         }
         mobileDebug("In logOffApp. after while loop - the final current history.state", JSON.stringify(window.history.state));
         this.ui.clear();
-        /* Change This!!!!!!!!!!!!!!!!!!!!!!!!!*/
-        this.ui.blured.kill();
-        this.ui.blured = null;
-        /* Change This!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
+        
+        // now we don't want to this.start if the connectivity has not been refreshed / or certain time has passed/ bout only on visibility change and not on the resetLogOutTimer
+        
+        if(this.wasHidden) { // connectivity has not been restored yet // wait for connectivity before starting app // wait 500 second
+            //if(this.appSwitched){ // connectivity was attempted to change while offline
+                
+                
+            await new Promise(res => setTimeout(res, 300)); // that should be enough
+            //}
+            
+            this.wasHidden = false;
+        }
+        
         this.start(this.message.loggedOff(), false);
         mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
     };
@@ -390,6 +400,17 @@ function App(urlSearchParams){
     this.online = navigator.onLine;
 
     this.connectivitychange = e => {
+        if(this.hidden) {
+            //this.appSwitched = true;
+            return;
+        }
+        if(this.wasHidden){ // app is was hidden and now visible (
+            this.wasHidden = false;
+            if((e.type !== "offline") === this.online){ // was online (this.online = true). e.type is "online", "online" !== "offline" (true)
+                return;
+            }// else - change connectivity
+        }
+        
         this.online = e.type !== "offline";
         mobileDebug("connectivitychange e.type = ", e.type);
         mobileDebug("connectivitychange, document.visibilityState = ", document.visibilityState);
@@ -397,6 +418,9 @@ function App(urlSearchParams){
             this.message.tempOnlineChangeWhileAppHidden(this.online);
             //return;
         } */
+        
+        
+        
         this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
         this.message[e.type](); // message.online : message.offline
     };
@@ -412,9 +436,27 @@ function App(urlSearchParams){
         if(this.hidden){
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
+            this.wasHidden = true;
+            
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                logOffApp();
+                logOffApp(); //this will clear this.wasHidden in await
+            }else{
+                // the visibility changed quickly, we need to remove this.wasHidden - 2 scenarion: 
+                //1. The app was hidden and the websocket remained (internet connection was not broken)
+                //2. the app was switched to another and the connection has been broken
+                
+                //this.appSwitched = false;
+                //if(this.appSwitched){
+                    //this.appSwitched = false;
+                    // we can assume that the connectivity should be restored and the this.wasHidden should clear
+                    setTimeout(_ => {
+                        // if still this.wasHidden it's either the scenario 1 (it didn't loose connectivity) or the connectivity has not been restored
+                        this.wasHidden = false;
+                    }, 300);
+                //}
+                
             }
+            
             this.sessionStorage.delete(reloadBy);
         }
     };

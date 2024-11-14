@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub' */
+/* 'frequent_0.021_GitHub' */
 "use strict";
 console.log("index core_0.015_GitHub");
 /* 
@@ -30,7 +30,9 @@ DONE!!! - redo the vdertical alignment in typeLog and typeNote
 
 DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:tt
 
+Change the remember password hint and the checkbox text to: remember password. Password is remembered. / Remove the remembered password.... maybe make it in the unrolled hint
 
+Make hint for new Password 
 
 */
 
@@ -94,9 +96,9 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.addEventListener('online', thisApp.connectivitychange);
         window.addEventListener('offline', thisApp.connectivitychange);
         
-        document.addEventListener('visibilitychange', thisApp.visibilityChange);
+        document.addEventListener('visibilitychange', thisApp.visibilityChange, {capture: true});
         
-        window.addEventListener('blur', thisApp.ui.blur);
+        window.addEventListener('blur', thisApp.ui.blur, {capture: true});
 
         let appInstalled = false;
         window.addEventListener("appinstalled", () => {{
@@ -114,19 +116,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         });
 
 
-        window.addEventListener('pointerdown', function onFirstPointer(e) {
-          window.POINTER_SIZE = e.height;
-          mobileDebug("pointer size = ", e.height);
-          window.removeEventListener('pointerdown', onFirstPointer, false);
-        }, false);
 
 
-
-
-/* window.addEventListener('touchstart', function onFirstTouch() {
-  window.USER_IS_TOUCHING = true;
-  window.removeEventListener('touchstart', onFirstTouch, false);
-}, false); */
 /* return; */
         // Install Service Worker
         if (!navigator.serviceWorker || !navigator.onLine || !location.host) {

@@ -1,4 +1,4 @@
-/* 'frequent_0.018_GitHub */
+/* 'frequent_0.021_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {

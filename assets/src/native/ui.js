@@ -1,4 +1,4 @@
-/* 'frequent_0.020_GitHub' */
+/* 'frequent_0.021_GitHub' */
 
 function Interface(thisApp){
     let tempVer = "frequent_0.020_GitHub";
@@ -80,7 +80,7 @@ function Interface(thisApp){
     const appSectionList = dom.addDiv("appSection appList");//.hide();
     const dbModifiedBar = dom.addDiv("dbModifiedBar").hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
-        const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerContainer")).attach(dom.addDiv("spinnerContainer2"));// make it visible at the start of app
+        const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerContainer"));// make it visible at the start of app
 /*         const maxRings = 21;
         const minRingWitdh = 0.025;
         let ringParent = dom.addDiv("spinnerWrp").attachTo(dom.addDiv("spinnerContainer").attachTo(spinnerSection));
@@ -99,6 +99,7 @@ function Interface(thisApp){
         };
         return spinnerSection;
     })();
+    const uiBlur = dom.addDiv("uiBlur").hide().onClick(e => e.target.hide());
 
     // Add modalSection Promise handler and Show
     const modalSectionPromise = ((resolve, choice, promise) => ({ //returns modalSectionPromise object
@@ -449,18 +450,14 @@ passHint = credFormPassHint // only new
         };
 
         this.clearFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
-            //console.log("msgModule.hasClass('fullArchive') = ", msgModule.hasClass("fullArchive"));
-            //if(!msgIsFullArchive) return false;
-            if(!msgModule.hasClass("fullArchive")) return;
-            //console.log("will make the msgIsFullArchive FALSE");
+            if(!msgModule.hasClass("fullArchive")) return false;
             msgClearPromise();
             msgModuleSlideDown();
             setTimeout(msgModuleReset, msgTransitionTime);
-            //msgIsFullArchive = false;
             return true; //msg Full Archive has been cleared
         };
         
-const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
+const paintHistory = _ => msgModuleReset()//.killAttr("title")
     .attach(
         dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":")
         .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back()))
@@ -486,12 +483,6 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
     );
 
         const msgOpenFullArchive = e => {
-            //console.log("msgOpenFullArchive clicked. e.target = ", e.target, "msgIsFullArchive = ", msgIsFullArchive);
-            //if(msgIsFullArchive) return;
-            
-            if(msgModule.hasClass("fullArchive")) return;
-
-            //msgIsFullArchive = true;
             msgClearPromise();
             addModalToHistory(true); //force adding to history
             paintHistory().addClass("fullArchive");
@@ -504,18 +495,17 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
             if(!msgModule.hasClass("fullArchive") && touchStart && touchY < touchStart){
                 const translateBy = (100 - ((touchStart- touchY) * 100) / document.body.clientHeight);
                 if(translateBy < 65) {
-                    msgModule.ridKids();
+                    touchStart = 0;
                     msgOpenFullArchive(e);
                     msgModule.killAttr("style");
                     return;
                 }
                 msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);")
-
                 return;
             }
-            
-            touchStart = (((!msgModule.hasClass("fullArchive") && touchY + window.POINTER_SIZE * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
-            
+
+            touchStart = (((!msgModule.hasClass("fullArchive") && touchY + REM * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
+
             if(touchStart) paintHistory();
         };
 
@@ -523,11 +513,11 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
             if(!touchStart || msgModule.hasClass("fullArchive")) return;
             msgModule.killAttr("style");
             touchStart = 0;
-            msgModule.ridKids();
+            msgModuleReset();
         };
 
         msgTitleIcon.onClick(msgOpenFullArchive);
-        //document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+        document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
 
         const msgShow = (msgObj, logged) => {
             if(!logged){
@@ -1601,7 +1591,14 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
         const clearUI = _ => {
             appSectionForm.ridKids();
             appSectionList.ridKids();
+            uiBlur.hide();
         };
+        
+        
+        
+        const blurUI = _ => {
+            thisApp.dbObj && uiBlur.show();
+        }
 
         const initUI = _ => {
             repaintUI();
@@ -1611,7 +1608,8 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
         return {
             reset: resetUI,
             init: initUI,
-            clear: clearUI
+            clear: clearUI,
+            blur: blurUI
         };
     })();
     /* END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI ------------------ END MainGUI*/
@@ -1619,6 +1617,7 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
     //const mainGui = new MainGUI();
     this.init = mainGui.init;
     this.clear = mainGui.clear;
+    this.blur = mainGui.blur;
     this.loader = appLoader;
     this.credentials = new Credentials();
     this.alerts = new Alerts();
@@ -1638,22 +1637,6 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
         document.body.onClick(killInstallApp, {once: true});
         window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
     });
-    
-/*     this.blur = (_ => {
-        const uiBlurEl = dom.addDiv("uiBlur");
-        return willBlur => willBlur ? document.body.attach(uiBlurEl) : uiBlurEl.kill();
-    })(); */
-
-    this.blur = _ => {
-        if(!this.blured && thisApp.dbObj){
-            //console.log("blur");
-            this.blured = dom.addDiv("uiBlur").onClick(e => {
-                this.blured.kill();
-                this.blured = false;
-            }).attachTo(document.body);
-            
-        }
-    };
 
 
     // Add Popstate Listener
@@ -1670,7 +1653,8 @@ const paintHistory = _ =>  msgModule.ridKids(1)//.killAttr("title")
         appSectionList, appSectionForm, dbModifiedBar,
         modalSection,
         msgModule,
-        spinner
+        spinner,
+        uiBlur
     ]);
 }
 

@@ -1,4 +1,4 @@
-/* 'frequent_0.020_GitHub' */
+/* 'frequent_0.021_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
