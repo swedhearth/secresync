@@ -49,7 +49,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         if(wasHistoryLength){
             mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
-            await new Promise(res => setTimeout(res, 500));//wait until disk is flushed 500ms,
+            await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
             window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
             return null;
         }
@@ -60,7 +60,9 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     
     let loop = 0;
     while (!window.history.state.lastBackExists) {
-        mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
+         mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
+/*        console.log("In Index. Promise number: " + loop + ". window.history.state = " + JSON.stringify(window.history.state))
+        await new Promise(res => setTimeout(res, 300)); // Allow  History to reload. 300ms should be enough */
         await new Promise(res => {
             window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
             window.history.back();
@@ -98,7 +100,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange, {capture: true});
         
-        window.addEventListener('blur', thisApp.ui.blur, {capture: true});
+       // window.addEventListener('blur', thisApp.ui.blur, {capture: true});
 
         let appInstalled = false;
         window.addEventListener("appinstalled", () => {{

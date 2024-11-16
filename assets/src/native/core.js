@@ -176,13 +176,15 @@ function isURL(string){
 
                     updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).show();
                     const { top, height, left, width } = toolTip.getBoundingClientRect();
-                    toolTip.hide();
+                    
                     const bottomOut = top + height + REM > doc.body.clientHeight;
                     const leftOut = left + width + REM > doc.body.clientWidth;
 
                     if (bottomOut) toolTipTop -= height + REM;
                     if (leftOut) toolTipLeft -= width + REM;
                     if (bottomOut || leftOut) updateToolTipPosition(toolTipTop, toolTipLeft);
+                    
+                    toolTip.hide();
 
                     toolTipShowTimer = setTimeout(() => {
                         el.clickCancel = true;

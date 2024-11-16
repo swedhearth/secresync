@@ -83,6 +83,9 @@ function AppDbStore(thisApp){
             storeObj.handlePlain = null;
         };
         storeObj.handleRemove = async (noMoreSync, forceRemove) => {
+            if(confirm("Something has called the handleRemove ?????????????. Do we examin? = TRUE or Skip = FALSE?")){
+                await new Promise(res => setTimeout(res, 3000000));
+            }
             if(await thisApp.credentials.persisted.exist() && this.objectsExist() === 1 && this.getObjectsWithHandles()[0] === storeObj){
                 if(forceRemove || await thisApp.alert.removePersistedLastStoreDisconnect()){
                     await thisApp.credentials.persisted.delete();

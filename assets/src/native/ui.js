@@ -81,13 +81,6 @@ function Interface(thisApp){
     const dbModifiedBar = dom.addDiv("dbModifiedBar").hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
         const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerContainer"));// make it visible at the start of app
-/*         const maxRings = 21;
-        const minRingWitdh = 0.025;
-        let ringParent = dom.addDiv("spinnerWrp").attachTo(dom.addDiv("spinnerContainer").attachTo(spinnerSection));
-        for(let i = 0; i < maxRings; i++){
-            const ringWidth = minRingWitdh + (i > maxRings / 2 ? (maxRings - 1 - i) : i) * minRingWitdh;
-            ringParent = dom.addDiv().setAttr("style", "animation: spinnerRing 8s linear infinite; border-width: " + ringWidth +"em;").attachTo(ringParent);
-        } */
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
         spinnerSection.start = where => {
             //if(developerMode) console.log("spinner.start: ", where);
@@ -117,11 +110,11 @@ function Interface(thisApp){
             fulfill: async e => { //e=true, value, function, false, null, popstate
                 if(!promise) return;
                 if(e?.type === "popstate"){
+                    promise = null;
                     modalSection.ridKids().killClass("zIndex2").slideOut();
                     await new Promise(res => setTimeout(res, 100));
                     resolve(choice);
-                    resolve = promise = choice = null;
-
+                    resolve = choice = null;
                 }else{
                     choice = e;
                     window.history.back();
@@ -430,11 +423,11 @@ passHint = credFormPassHint // only new
         let msgHistory = {};
         let msgIsFullArchive = false;
         
-        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory")).attachTo(msgModule);
+        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory")).onClick(_ => this.openFullArchive()).attachTo(msgModule);
         
         const msgModulePopUp = (css, txt) => msgModule.addClass("popUp").attach(dom.addDiv(`msgHistoryRow ${css}`, txt)); //popUp 
         const msgModuleSlideDown = _ => msgModule.addClass("slideDown");
-        const msgModuleReset = _ => msgModule.cssName("msgModule").ridKids(1);//.setAttr("title", getTxtBankHtmlTxt("msgHistory"));
+
         const msgClearPromise = _ => {
             clearTimeout(timerHide);
             msgPromise = null;
@@ -446,78 +439,56 @@ passHint = credFormPassHint // only new
                     msgModuleSlideDown();// start sliding down
                     timerHide = setTimeout(_ => res(msgClearPromise()), msgTransitionTime)// finish sliding down
                 }, msgVisibleTime)
-            }).then(msgModuleReset);
+            }).then(_ => this.resetFullArchive());
         };
-
-        this.clearFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
-            if(!msgModule.hasClass("fullArchive")) return false;
+        
+        this.resetFullArchive = _ => {
+            msgIsFullArchive = false;
+            return msgModule.cssName("msgModule").killAttr("style").ridKids(1);
+        };
+        
+        this.closeFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
+            if(!msgIsFullArchive) return false;
             msgClearPromise();
             msgModuleSlideDown();
-            setTimeout(msgModuleReset, msgTransitionTime);
+            setTimeout(_ => this.resetFullArchive(), msgTransitionTime);
             return true; //msg Full Archive has been cleared
         };
         
-const paintHistory = _ => msgModuleReset()//.killAttr("title")
-    .attach(
-        dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":")
-        .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back()))
-    )
-    .attach(
-        dom.addDiv("msgHistoryContentWrp")
-        .attachAry(Object.keys(msgHistory).map(timestamp => 
-            dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
+        this.paintFullArchive = _ => this.resetFullArchive()
             .attach(
-                dom.addDiv("msgBody")
-                .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
-                .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
+                dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":")
+                .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back()))
             )
-        ))
-        .attachAry(mobileDebugAry.map(msgAry => 
-            dom.addDiv("msgHistoryRow dev")
             .attach(
-                dom.addDiv("msgBody")
-                .attach(dom.addSpan("msgDate", msgAry[0]))
-                .attach(dom.addSpan("msgText", msgAry[1]))
-            )
-        ))
-    );
+                dom.addDiv("msgHistoryContentWrp")
+                .attachAry(Object.keys(msgHistory).map(timestamp => 
+                    dom.addDiv(`msgHistoryRow ${msgHistory[timestamp].css}`)
+                    .attach(
+                        dom.addDiv("msgBody")
+                        .attach(dom.addSpan("msgDate", new Date(parseInt(timestamp)).toUKstring()))
+                        .attach(dom.addSpan("msgText", msgHistory[timestamp].txt))
+                    )
+                ))
+                .attachAry(mobileDebugAry.map(msgAry => 
+                    dom.addDiv("msgHistoryRow dev")
+                    .attach(
+                        dom.addDiv("msgBody")
+                        .attach(dom.addSpan("msgDate", msgAry[0]))
+                        .attach(dom.addSpan("msgText", msgAry[1]))
+                    )
+                ))
+            );
 
-        const msgOpenFullArchive = e => {
+        this.openFullArchive = _ => {
             msgClearPromise();
             addModalToHistory(true); //force adding to history
-            paintHistory().addClass("fullArchive");
+            this.paintFullArchive().addClass("fullArchive");
+            msgIsFullArchive = true;
         };
-
-        // Swipe msgIsFullArchive on Mobile
-        let touchStart = 0;
-        const swiping = (e) => {
-            const touchY = e.touches[0].clientY;
-            if(!msgModule.hasClass("fullArchive") && touchStart && touchY < touchStart){
-                const translateBy = (100 - ((touchStart- touchY) * 100) / document.body.clientHeight);
-                if(translateBy < 65) {
-                    touchStart = 0;
-                    msgOpenFullArchive(e);
-                    msgModule.killAttr("style");
-                    return;
-                }
-                msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);")
-                return;
-            }
-
-            touchStart = (((!msgModule.hasClass("fullArchive") && touchY + REM * 2 > document.body.clientHeight) || msgIsFullArchive)) ? touchY : touchStart;
-
-            if(touchStart) paintHistory();
-        };
-
-        const endSwipe = (e) => {
-            if(!touchStart || msgModule.hasClass("fullArchive")) return;
-            msgModule.killAttr("style");
-            touchStart = 0;
-            msgModuleReset();
-        };
-
-        msgTitleIcon.onClick(msgOpenFullArchive);
-        document.body.on("touchstart", swiping).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+        
+        this.isFullArchive = _ => msgIsFullArchive;
+        this.isHidden = _ => msgModule.className === "msgModule"
 
         const msgShow = (msgObj, logged) => {
             if(!logged){
@@ -617,48 +588,7 @@ const paintHistory = _ => msgModuleReset()//.killAttr("title")
 
         let listScrollWrpPrevTopPosition = 0;
         
-/////////////////////////////////////////////////////////////////////TEMP/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        function getCvs(){
-            var input = document.createElement('input');
-            input.type = 'file';
-            input.onchange = e => { 
-               // getting a hold of the file reference
-               var file = e.target.files[0]; 
-               // setting up the reader
-               var reader = new FileReader();
-               reader.readAsText(file,'UTF-8');
-               // here we tell the reader what to do when it's done reading...
-               reader.onload = readerEvent => {
-                  var content = readerEvent.target.result; // this is the content!
-                  const vendAry = JSON.parse(content);
-                  const amendedVendary = vendAry.map((vObj, idx) => {
-                      
-                      const amendedVendObj = {
-                          id: idx + 1,
-                          name: vObj.name,
-                          log: vObj.log,
-                          note: vObj.note,
-                          url: vObj.url,
-                          tags: vObj.tags,
-                          cr8: new Date(vObj.cr8).getTime(),
-                          mod: new Date(vObj.mod).getTime(),
-                          cPass: vObj.plainPass,
-                          isNote: vObj.isNote,
-                      }
-                      
-                      return new thisApp.crypto.Vendor(amendedVendObj);
-                         
-                  });
-                  thisApp.dbObj.vendors = amendedVendary;
-                  //paintList();
-                  console.log(amendedVendary);
-               }
-            }
-            console.log("isInput clicked?");
-            input.click();
-        }
-        let count = false;
-////////////////////////////////////////////////////////////////////END TEMP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
@@ -672,7 +602,7 @@ const paintHistory = _ => msgModuleReset()//.killAttr("title")
                 document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
             });
             if(addHistory) addModalToHistory();
-            if (count) getCvs(); count = null; // REMOVE FROM FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
             let isNew = !vendObj || vendObj.isNew || false;
             
             if(submitForm){
@@ -1588,17 +1518,15 @@ const paintHistory = _ => msgModuleReset()//.killAttr("title")
             appSectionList.show();
         };
         
+        const blurUI = doBlur => {
+            doBlur ? thisApp.dbObj && uiBlur.show() : uiBlur.hide();
+        }
+        
         const clearUI = _ => {
             appSectionForm.ridKids();
             appSectionList.ridKids();
-            uiBlur.hide();
+            blurUI(false);
         };
-        
-        
-        
-        const blurUI = _ => {
-            thisApp.dbObj && uiBlur.show();
-        }
 
         const initUI = _ => {
             repaintUI();
@@ -1641,14 +1569,97 @@ const paintHistory = _ => msgModuleReset()//.killAttr("title")
 
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-        if(!this.messages.clearFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
+        if(!this.messages.closeFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
             mainGui.reset(); //resetUI - hide form, show list
             modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
         }
     });
+    
+    
+    // Touch EventHandlers
+    
+        // Swipe msgIsFullArchive on Mobile
+        let touchStartY = 0;
+        let touchStartX = 0;
+        
+        const startSwipe = e => {
+            const touchY = e.touches[0].clientY;
+            const touchX = e.touches[0].clientX;
+            
+            if(this.messages.isHidden() && touchY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
+                touchStartY = touchY;
+                this.messages.paintFullArchive();
+            }else if(this.messages.isFullArchive()){
+                if(!msgModule.lastChild.scrollTop){
+                    touchStartY = touchY;
+                }
+            }else if(!appSectionForm.hasClass("elSlideOut")){
+                touchStartX = e.touches[0].clientX;
+            }
+
+        };
+        
+        const swiping = (e) => {
+            const touchY = e.touches[0].clientY;
+            const touchX = e.touches[0].clientX;
+            
+            if(this.messages.isHidden() && touchStartY && touchY < touchStartY){
+                const translateBy = (100 - ((touchStartY- touchY) * 100) / document.body.clientHeight);
+                if(translateBy < 65) {
+                    touchStartY = 0;
+                    this.messages.openFullArchive();
+                }else{
+                    msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                }
+            }
+            if(this.messages.isFullArchive() && touchStartY && touchY > touchStartY){
+                const translateBy = (((touchY - touchStartY) * 100) / document.body.clientHeight);
+                if(translateBy > 35) {
+                    touchStartY = 0;
+                    msgModule.killAttr("style");
+                    this.messages.closeFullArchive();
+                }else{
+                    msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                }
+            }
+            
+            
+            if(!appSectionForm.hasClass("elSlideOut") && touchStartX && touchX < touchStartX){
+                const translateBy = (((touchStartX- touchX) * 100) / document.body.clientWidth);
+                if(translateBy > 40) {
+                    touchStartX = 0;
+                    appSectionForm.killAttr("style");
+                    history.back();
+                }else{
+                    appSectionForm.setAttr("style", "transition: unset; transform: translateX(" + (-translateBy) + "%);");
+                }
+                
+            }
+        };
+
+        const endSwipe = (e) => {
+            if(touchStartY){
+                if(this.messages.isFullArchive()){
+                    touchStartY = 0;
+                    msgModule.killAttr("style");
+                }else{
+                    touchStartY = 0;
+                    this.messages.resetFullArchive();
+                }
+            }else if(touchStartX){
+                touchStartX = 0;
+                
+                if(!appSectionForm.hasClass("elSlideOut")){
+                    appSectionForm.killAttr("style");
+                }
+            }
+        };
+
+        //make it general
+        document.body.on("touchstart", startSwipe).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+    
 
     // Attach Sections
-    console.log(document.body.kids());
     document.body.ridKids().attachAry([
         appSectionList, appSectionForm, dbModifiedBar,
         modalSection,
@@ -1656,6 +1667,18 @@ const paintHistory = _ => msgModuleReset()//.killAttr("title")
         spinner,
         uiBlur
     ]);
+    
+    document.body.attach(
+        dom.addDiv("removeDrop").onClick(_ => {
+            document.body.kidsByClass("svgIcon").forEach(svgIcon => {
+                svgIcon.toggleClass("noDrop");
+            });
+        })
+    );
+    
+    // add touch eventListeners
+    
+    
 }
 
     // --------------------------supportDonate TO DO!!!---------------------------------------

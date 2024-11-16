@@ -367,9 +367,18 @@ function App(urlSearchParams){
     this.reload = _ => this.urlReplace(this.URL);
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
 
-    const logOffApp = async _ => {
+    const logOffApp = async type => {
+        console.log("logOffApp", type);
         mobileDebug("logOffApp Start = window.history.state = ", JSON.stringify(window.history.state));
+        if(this.hidden){
+            mobileDebug("logOffApp Start = the timeOut fired. Will return. type = ", type);
+            return;
+        }
         let loop = 0;
+        if(!window.history.state) {
+            alert("WTF? No History State in logOffApp!!!");
+            return;
+        }
         while (!window.history.state.lastBackExists) {
             mobileDebug("In logOffApp. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
             await new Promise(res => {
@@ -378,21 +387,19 @@ function App(urlSearchParams){
             });
         }
         mobileDebug("In logOffApp. after while loop - the final current history.state", JSON.stringify(window.history.state));
-        this.ui.clear();
 
-        
         // now we don't want to this.start if the connectivity has not been refreshed / or certain time has passed/ bout only on visibility change and not on the resetLogOutTimer
-        
         if(this.wasHidden) { // connectivity has not been restored yet // wait for connectivity before starting app // wait 500 second
-            //if(this.appSwitched){ // connectivity was attempted to change while offline
-                
+            mobileDebug("In logOffApp. this.wasHidden, will wait 300ms for the connectivitychange to fire");
                 
             await new Promise(res => setTimeout(res, 300)); // that should be enough
-            //}
-            
+
+            mobileDebug("In logOffApp. this.wasHidden, After the 300ms wait. Will manually change the this.wasHidden to FALSE and start the app. Has the connectivitychange fired? Current this.wasHidden = ", this.wasHidden.toString());
             this.wasHidden = false;
         }
         
+        this.ui.clear();
+
         this.start(this.message.loggedOff(), false);
         mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
     };
@@ -401,7 +408,6 @@ function App(urlSearchParams){
 
     this.connectivitychange = e => {
         if(this.hidden) {
-            //this.appSwitched = true;
             return;
         }
         if(this.wasHidden){ // app is was hidden and now visible (
@@ -414,63 +420,50 @@ function App(urlSearchParams){
         this.online = e.type !== "offline";
         mobileDebug("connectivitychange e.type = ", e.type);
         mobileDebug("connectivitychange, document.visibilityState = ", document.visibilityState);
-/*         if(this.hidden){
-            this.message.tempOnlineChangeWhileAppHidden(this.online);
-            //return;
-        } */
-        
-        
-        
+
         this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
         this.message[e.type](); // message.online : message.offline
     };
 
     this.visibilityChange = e => {
         if(!this.dbObj) return;
-        //console.log("visibilityChange");
         mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
         this.hidden = document.visibilityState === "hidden";
-        /* this.ui.blur(this.hidden); */
-        //this.message.tempVisibilityChange(this.hidden);
+
         if(this.hidden){
+            this.ui.blur(true);
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
             this.wasHidden = true;
             
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                logOffApp(); //this will clear this.wasHidden in await
+                logOffApp("visibilityChange"); //this will clear this.wasHidden in await
             }else{
                 // the visibility changed quickly, we need to remove this.wasHidden - 2 scenarion: 
-                //1. The app was hidden and the websocket remained (internet connection was not broken)
-                //2. the app was switched to another and the connection has been broken
-                
-                //this.appSwitched = false;
-                //if(this.appSwitched){
-                    //this.appSwitched = false;
-                    // we can assume that the connectivity should be restored and the this.wasHidden should clear
-                    setTimeout(_ => {
-                        // if still this.wasHidden it's either the scenario 1 (it didn't loose connectivity) or the connectivity has not been restored
-                        this.wasHidden = false;
-                    }, 300);
-                //}
-                
+                //1. The app was hidden and the websocket remained (internet connection was not lost)
+                //2. the app was switched to another and the connection has been lost
+
+                // if connection was not lost, we can assume that the connectivity should be restored shortly and the this.wasHidden should clear before this timeout fires
+                setTimeout(_ => {
+                    // if still this.wasHidden it's either the scenario 1 (it didn't loose connectivity) or the connectivity has not been restored for some reason
+                    this.wasHidden = false;
+                }, 300);
+                setTimeout(_ => {
+                    this.ui.blur(false);
+                }, 500);
             }
             
             this.sessionStorage.delete(reloadBy);
         }
     };
-    
-    // this.focusChange = e => {
-        // this.ui.blur(e.type === "blur");
-    // }
 
     this.resetLogOutTimer = (_ => { // self invoking
         let inactivityTimer;
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(logOffApp, 600000);//600000 ms = 10 minutes 
+            inactivityTimer = setTimeout(_ => logOffApp("setTimeout"), 600000);//600000 ms = 10 minutes 
         }
     })();
 
