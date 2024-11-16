@@ -1,4 +1,4 @@
-/* 'frequent_0.021_GitHub */
+/* 'frequent_0.022_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
