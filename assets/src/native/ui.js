@@ -1,4 +1,4 @@
-/* 'frequent_0.024_GitHub' */
+/* 'frequent_0.025_GitHub' */
 
 function Interface(thisApp){
     let tempVer = "frequent_0.024_GitHub";
@@ -119,6 +119,9 @@ function Interface(thisApp){
                     choice = e;
                     window.history.back();
                 }
+            },
+            clear: _ => {
+                promise = resolve = choice = null;
             }
         })
     )(null, null,null);
@@ -1526,6 +1529,7 @@ passHint = credFormPassHint // only new
             appSectionForm.ridKids();
             appSectionList.ridKids();
             blurUI(false);
+            modalSectionPromise.clear();
         };
 
         const initUI = _ => {
@@ -1672,7 +1676,7 @@ passHint = credFormPassHint // only new
                         startTime && touchX && touchY
                         && ((Date.now() - startTime) < allowedTime) 
                         && (Math.abs(touchX - moveVerticalStartX) <= leeway)
-                        && (Math.abs(touchY - touchStartY) >= threshold)
+                        && (touchY - touchStartY >= threshold)
                     ) {
                         this.messages.closeFullArchive();
                     }
