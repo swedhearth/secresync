@@ -1,7 +1,7 @@
-/* 'frequent_0.023_GitHub' */
+/* 'frequent_0.024_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.023_GitHub";
+    let tempVer = "frequent_0.024_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1585,7 +1585,7 @@ passHint = credFormPassHint // only new
         let moveHorizontalStartY = 0; 
         let startTime = 0;
         const leeway = 100; // 100px of tolerance of movement on a perpendicular axis
-        const threshold = 150; // 150 px minimum travel distance for swipe
+        const threshold = 100; // 100 px minimum travel distance for swipe
         const allowedTime = 300;// 300 ms for swipe
         
         const startSwipe = e => {
@@ -1603,10 +1603,10 @@ passHint = credFormPassHint // only new
                 }
             }else if(!appSectionForm.hasClass("elSlideOut")){
                
-                if(!e.target.placeholder){ // not input element
+               // if(!e.target.placeholder){ // not input element
                     touchStartX = e.touches[0].clientX;
                     moveHorizontalStartY = touchY;
-                }
+               // }
             }
             
             startTime = touchStartY || touchStartX ? Date.now() : 0;
@@ -1619,7 +1619,7 @@ passHint = credFormPassHint // only new
             
             if(this.messages.isHidden() && touchStartY && touchY < touchStartY){
                 const translateBy = (100 - ((touchStartY- touchY) * 100) / document.body.clientHeight);
-                if(translateBy < 65) {
+                if(translateBy < 50) {
                     touchStartY = 0;
                     moveVerticalStartX = 0;
                     startTime = 0;
@@ -1630,7 +1630,7 @@ passHint = credFormPassHint // only new
             }
             if(this.messages.isFullArchive() && touchStartY && touchY > touchStartY){
                 const translateBy = (((touchY - touchStartY) * 100) / document.body.clientHeight);
-                if(translateBy > 35) {
+                if(translateBy > 50) {
                     touchStartY = 0;
                     moveVerticalStartX = 0;
                     startTime = 0;
@@ -1642,9 +1642,9 @@ passHint = credFormPassHint // only new
             }
             
             
-            if(!appSectionForm.hasClass("elSlideOut") && touchStartX && touchX < touchStartX){
+            if(!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder && touchStartX && touchX < touchStartX){
                 const translateBy = (((touchStartX- touchX) * 100) / document.body.clientWidth);
-                if(translateBy > 40) {
+                if(translateBy > 50) {
                     touchStartX = 0;
                     moveHorizontalStartY = 0;
                     startTime = 0;

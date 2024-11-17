@@ -1,4 +1,4 @@
-/* 'frequent_0.023_GitHub */
+/* 'frequent_0.024_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -369,11 +369,16 @@ function App(urlSearchParams){
 
     const logOffApp = async type => {
         console.log("logOffApp", type);
+         mobileDebug("logOffApp Start. type = ", type);
+        if(!this.dbObj){
+            mobileDebug("logOffApp Start. NO this.dbObj!!!!!! Will return. type = ", type);
+            return;
+        }
         this.ui.clear();
-        mobileDebug("logOffApp Start. Cleared UI (and unblured) window.history.state = ", JSON.stringify(window.history.state));
+        this.dbObj = null;
+        mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
         if(this.hidden){
-            mobileDebug("logOffApp Start = App is Hidden and the timeOut fired. Will make dbObj = null. Will return. type = ", type);
-            this.dbObj = null;
+            mobileDebug("logOffApp Start = App is Hidden and the timeOut fired. Will return. type = ", type);
             return;
         }
         let loop = 0;
