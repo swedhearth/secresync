@@ -1,7 +1,7 @@
-/* 'frequent_0.022_GitHub' */
+/* 'frequent_0.023_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.022_GitHub";
+    let tempVer = "frequent_0.023_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1580,7 +1580,13 @@ passHint = credFormPassHint // only new
     
         // Swipe msgIsFullArchive on Mobile
         let touchStartY = 0;
+        let moveVerticalStartX = 0; 
         let touchStartX = 0;
+        let moveHorizontalStartY = 0; 
+        let startTime = 0;
+        const leeway = 100; // 100px of tolerance of movement on a perpendicular axis
+        const threshold = 150; // 150 px minimum travel distance for swipe
+        const allowedTime = 300;// 300 ms for swipe
         
         const startSwipe = e => {
             const touchY = e.touches[0].clientY;
@@ -1588,14 +1594,22 @@ passHint = credFormPassHint // only new
             
             if(this.messages.isHidden() && touchY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
                 touchStartY = touchY;
+                moveVerticalStartX = touchX;
                 this.messages.paintFullArchive();
             }else if(this.messages.isFullArchive()){
                 if(!msgModule.lastChild.scrollTop){
                     touchStartY = touchY;
+                    moveVerticalStartX = touchX;
                 }
             }else if(!appSectionForm.hasClass("elSlideOut")){
-                touchStartX = e.touches[0].clientX;
+               
+                if(!e.target.placeholder){ // not input element
+                    touchStartX = e.touches[0].clientX;
+                    moveHorizontalStartY = touchY;
+                }
             }
+            
+            startTime = touchStartY || touchStartX ? Date.now() : 0;
 
         };
         
@@ -1607,6 +1621,8 @@ passHint = credFormPassHint // only new
                 const translateBy = (100 - ((touchStartY- touchY) * 100) / document.body.clientHeight);
                 if(translateBy < 65) {
                     touchStartY = 0;
+                    moveVerticalStartX = 0;
+                    startTime = 0;
                     this.messages.openFullArchive();
                 }else{
                     msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
@@ -1616,6 +1632,8 @@ passHint = credFormPassHint // only new
                 const translateBy = (((touchY - touchStartY) * 100) / document.body.clientHeight);
                 if(translateBy > 35) {
                     touchStartY = 0;
+                    moveVerticalStartX = 0;
+                    startTime = 0;
                     msgModule.killAttr("style");
                     this.messages.closeFullArchive();
                 }else{
@@ -1628,6 +1646,8 @@ passHint = credFormPassHint // only new
                 const translateBy = (((touchStartX- touchX) * 100) / document.body.clientWidth);
                 if(translateBy > 40) {
                     touchStartX = 0;
+                    moveHorizontalStartY = 0;
+                    startTime = 0;
                     appSectionForm.killAttr("style");
                     history.back();
                 }else{
@@ -1638,26 +1658,164 @@ passHint = credFormPassHint // only new
         };
 
         const endSwipe = (e) => {
+            //console.log(e);
+            const touchY = e.changedTouches[0].clientY;
+            const touchX = e.changedTouches[0].clientX;
+            
             if(touchStartY){
+                
                 if(this.messages.isFullArchive()){
-                    touchStartY = 0;
                     msgModule.killAttr("style");
+                    
+                    
+                    if(
+                        startTime && touchX && touchY
+                        && ((Date.now() - startTime) < allowedTime) 
+                        && (Math.abs(touchX - moveVerticalStartX) <= leeway)
+                        && (Math.abs(touchY - touchStartY) >= threshold)
+                    ) {
+                        this.messages.closeFullArchive();
+                    }
+
+                    
                 }else{
-                    touchStartY = 0;
-                    this.messages.resetFullArchive();
+                    if(
+                        startTime && touchX && touchY
+                        && ((Date.now() - startTime) < allowedTime) 
+                        && (Math.abs(touchX - moveVerticalStartX) <= leeway)
+                        && (Math.abs(touchY - touchStartY) >= threshold)
+                    ){
+                        this.messages.openFullArchive();
+                    }else{
+                        this.messages.resetFullArchive();
+                    }
                 }
+
+                
             }else if(touchStartX){
-                touchStartX = 0;
+
                 
                 if(!appSectionForm.hasClass("elSlideOut")){
+                    
                     appSectionForm.killAttr("style");
+                    
+                    if(
+                        startTime && touchX && touchY
+                        && ((Date.now() - startTime) < allowedTime)
+                        && (Math.abs(touchY - moveHorizontalStartY) <= leeway)
+                        && (touchStartX - touchX >= threshold)
+                    ){
+                        
+                        history.back();
+                        
+                    }
                 }
             }
+            touchStartX = 0;
+            touchStartY = 0;
+            startTime = 0;
+            moveVerticalStartX = 0
+            moveHorizontalStartY = 0;
         };
 
         //make it general
         document.body.on("touchstart", startSwipe).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+
+//COPILOT AI Optimisation
+// Swipe msgIsFullArchive on Mobile
+/* let touchStartY = 0;
+let touchStartX = 0;
+let startTime = 0;
+const leeway = 100; // 100px tolerance
+const threshold = 150; // 150px minimum travel distance
+const allowedTime = 300; // 300ms for swipe
+
+const startSwipe = (e) => {
+    const touchY = e.touches[0].clientY;
+    const touchX = e.touches[0].clientX;
+
+    if (this.messages.isHidden() && touchY + REM * 2 > document.body.clientHeight) {
+        touchStartY = touchY;
+        this.messages.paintFullArchive();
+    } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
+        touchStartY = touchY;
+    } else if (!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder) {
+        touchStartX = touchX;
+    }
     
+    startTime = touchStartY || touchStartX ? Date.now() : 0;
+};
+
+const swiping = (e) => {
+    const touchY = e.touches[0].clientY;
+    const touchX = e.touches[0].clientX;
+
+    if (this.messages.isHidden() && touchStartY && touchY < touchStartY) {
+        const translateBy = (100 - ((touchStartY - touchY) * 100) / document.body.clientHeight);
+        if (translateBy < 65) {
+            this.messages.openFullArchive();
+        }
+        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+    }
+
+    if (this.messages.isFullArchive() && touchStartY && touchY > touchStartY) {
+        const translateBy = ((touchY - touchStartY) * 100) / document.body.clientHeight;
+        if (translateBy > 35) {
+            this.messages.closeFullArchive();
+        }
+        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+    }
+
+    if (!appSectionForm.hasClass("elSlideOut") && touchStartX && touchX < touchStartX) {
+        const translateBy = ((touchStartX - touchX) * 100) / document.body.clientWidth;
+        if (translateBy > 40) {
+            history.back();
+        }
+        appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
+    }
+};
+
+const endSwipe = (e) => {
+    const touchY = e.changedTouches[0].clientY;
+    const touchX = e.changedTouches[0].clientX;
+
+    if (touchStartY) {
+        msgModule.killAttr("style");
+        const isSwipeValid = startTime && ((Date.now() - startTime) < allowedTime) && (Math.abs(touchX - touchStartX) <= leeway);
+        if (this.messages.isFullArchive() && isSwipeValid && Math.abs(touchY - touchStartY) >= threshold) {
+            this.messages.closeFullArchive();
+        } else if (isSwipeValid && Math.abs(touchY - touchStartY) >= threshold) {
+            this.messages.openFullArchive();
+        } else {
+            this.messages.resetFullArchive();
+        }
+    } else if (touchStartX) {
+        appSectionForm.killAttr("style");
+        if (startTime && ((Date.now() - startTime) < allowedTime) && (Math.abs(touchY - touchStartY) <= leeway) && (touchStartX - touchX >= threshold)) {
+            history.back();
+        }
+    }
+
+    touchStartX = 0;
+    touchStartY = 0;
+    startTime = 0;
+};
+
+document.body
+    .addEventListener("touchstart", startSwipe)
+    .addEventListener("touchmove", swiping)
+    .addEventListener("touchend", endSwipe)
+    .addEventListener("touchcancel", endSwipe); */
+
+
+// END COPILOT AI OPTIMISATION.
+
+
+
+
+// END CHAT GPT
+
+
 
     // Attach Sections
     document.body.ridKids().attachAry([

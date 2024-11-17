@@ -1,4 +1,4 @@
-/* 'frequent_0.022_GitHub */
+/* 'frequent_0.023_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -369,9 +369,11 @@ function App(urlSearchParams){
 
     const logOffApp = async type => {
         console.log("logOffApp", type);
-        mobileDebug("logOffApp Start = window.history.state = ", JSON.stringify(window.history.state));
+        this.ui.clear();
+        mobileDebug("logOffApp Start. Cleared UI (and unblured) window.history.state = ", JSON.stringify(window.history.state));
         if(this.hidden){
-            mobileDebug("logOffApp Start = the timeOut fired. Will return. type = ", type);
+            mobileDebug("logOffApp Start = App is Hidden and the timeOut fired. Will make dbObj = null. Will return. type = ", type);
+            this.dbObj = null;
             return;
         }
         let loop = 0;
@@ -398,7 +400,7 @@ function App(urlSearchParams){
             this.wasHidden = false;
         }
         
-        this.ui.clear();
+        //this.ui.clear();
 
         this.start(this.message.loggedOff(), false);
         mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
@@ -408,6 +410,7 @@ function App(urlSearchParams){
 
     this.connectivitychange = e => {
         if(this.hidden) {
+            mobileDebug("connectivitychange Was about to be triggered while the app is hidden. Will return.");
             return;
         }
         if(this.wasHidden){ // app is was hidden and now visible (
@@ -416,7 +419,9 @@ function App(urlSearchParams){
                 return;
             }// else - change connectivity
         }
-        
+        if(!this.dbObj){
+            mobileDebug("connectivitychange Was about to be triggered while no dbObj. Will return.");
+        }
         this.online = e.type !== "offline";
         mobileDebug("connectivitychange e.type = ", e.type);
         mobileDebug("connectivitychange, document.visibilityState = ", document.visibilityState);

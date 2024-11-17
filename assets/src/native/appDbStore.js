@@ -1,4 +1,4 @@
-/* 'frequent_0.022_GitHub' */
+/* 'frequent_0.023_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -7,6 +7,8 @@ function AppDbStore(thisApp){
             console.log(err);
             console.log(err.name);
             console.log(err.message);
+            
+            
 
             let errMsg = null;
             if(err.name === "OperationError") errMsg = "OperationError";
@@ -14,6 +16,8 @@ function AppDbStore(thisApp){
             if(err === "BackButtonPressed") errMsg = "BackButtonPressed";
             if(err === "noFilePickedErr" || err.name === "AbortError") errMsg = "noFilePickedErr";
             storeObj.syncStop();
+            
+            mobileDebug("In handleCatch ERROR!!!!. storeObj.key = ", storeObj.key, " ERROR = ", errMsg || err.message || err);
             return  errMsg || err.message || err;
         };
         storeObj.catchLoad = async err => {
@@ -335,7 +339,7 @@ function AppDbStore(thisApp){
                 mobileDebug("In storeObj.switchConnection storeObj.canAlter - will update the store.");
                 storeObj.update().catch(storeObj.catchUpdate);
             }else{
-                mobileDebug("In storeObj.switchConnection storeObj.canAlter is false - will read the store (storeObj.remoteRead).");
+                mobileDebug("In storeObj.switchConnection storeObj.canAlter is false - will read the store (storeObj.remoteRead). Is the thisApp.dbObj? = ", JSON.stringify(thisApp.dbObj));
                 try{
                     await storeObj.read().then(thisApp.paint).catch(storeObj.catchLoad); 
                 }catch(err){ //would be one of the following: "OperationError", "DeleteDatabase", "BackButtonPressed","noFilePickedErr" - neither can really happen
