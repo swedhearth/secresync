@@ -1,4 +1,4 @@
-/* 'frequent_0.022_GitHub' */
+/* 'frequent_0.026_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -125,8 +125,12 @@ body.invert{
     background-size: min(20vmin, 60px);
 }
 .spinnerSection:before{
+/*     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
+    filter: drop-shadow(2px 2px 1px rgb(255, 255, 255)) invert(0.9787); */
+    
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
-    filter: drop-shadow(2px 2px 1px rgb(255, 255, 255)) invert(0.9787);
+    filter: drop-shadow(2px 2px 2px rgb(215 177 165)) invert(1);
+    
 }
 
 
@@ -134,7 +138,7 @@ body.invert{
 
 .spinnerContainer:after,
 .spinnerContainer:before{
-content: "";
+/*     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -142,7 +146,18 @@ content: "";
     border-radius: 50%;
     transform: translate(-50%, -50%);
     box-shadow: -2px -2px 1px 0px #00b400;
-    filter: drop-shadow(1px 1px 1px rgb(100,100,100));
+    filter: drop-shadow(1px 1px 1px rgb(100,100,100)); */
+    
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: min(20vmin, 60px);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: -2px -2px 1px 0px rgb(54 111 142);
+    filter: drop-shadow(1px 1px 1px rgb(50 90 110));
+    box-shadow: -2px -2px 1px 0px rgb(30 100 130);
 
 }
 
@@ -432,7 +447,7 @@ legend.url:before{
     padding: 1em;
     font-size: 0.9em;
     
-    margin: 1vh 1vw 0vh;
+    margin: 1vh 1vw;
     border-radius: 0.5rem;
 }
 
@@ -631,6 +646,7 @@ legend.url:before{
 .loadIcon {
     display: inline-block;
     padding: var(--svgIcon-padding-big);
+    margin-top: var(--svgIcon-padding-small);
 }
 
 .dbxFileIcon{
@@ -1238,6 +1254,7 @@ body.invert .langWrp{
 }
 .vLog, .vNote, .vTrash, .vName, .vTags, .vNotes, .vDates, .vCr8, .vMod{
     font-size: 0.9em;
+    padding: 0.5em 2.5em;
 }
 
 .vEmpty, .vLog, .vNote, .vTrash{
@@ -1281,6 +1298,13 @@ body.invert .langWrp{
     position: absolute;
     font-size: 0.9em;
 }
+
+.vEntry > div > .inpEl:not(.inpEl:last-child){
+    /* background: pink; */
+    border-bottom: var(--trace-gray-240);
+    border-radius: 0;
+}
+
 
 .vLog::before, .vNote::before, .vTrash::before{
 /*     padding: 1em;
@@ -1666,6 +1690,7 @@ position: fixed;
 
 .elDimmed{
     opacity:0.2;
+    filter: unset;
 }
 
 .elNoDisplay{

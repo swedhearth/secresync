@@ -110,17 +110,17 @@ function Interface(thisApp){
             fulfill: async e => { //e=true, value, function, false, null, popstate
                 if(!promise) return;
                 if(e?.type === "popstate"){
-                    promise = null;
                     modalSection.ridKids().killClass("zIndex2").slideOut();
                     await new Promise(res => setTimeout(res, 100));
                     resolve(choice);
-                    resolve = choice = null;
+                    resolve = choice = promise = null;
                 }else{
                     choice = e;
                     window.history.back();
                 }
             },
             clear: _ => {
+                modalSection.ridKids().killClass("zIndex2").slideOut();
                 promise = resolve = choice = null;
             }
         })
@@ -260,7 +260,16 @@ function Interface(thisApp){
             const getPersistCheckboxLabel = checked => 
                 dom.add("label").setAttr("for", "persistCheckbox").addClass("credInpWrp")
                 .attach(getSvgIcon(checked ? "checked" : "checked unchecked", checked ? "credChecked" : "credUnchecked", _=> null))
-                .attach(dom.addSpan("checkboxLabelSpan", getTxtBankHtmlTxt(checked ? "credChecked" : "credUnchecked")))
+                .attach(dom.addSpan("checkboxLabelSpan", getTxtBankHtmlTxt(
+                    checked
+                        ? isPersisted 
+                            ? "credCheckedPersisted" 
+                            : "credChecked"
+                            
+                        : isPersisted
+                            ? "credUncheckedPersisted" 
+                            : "credUnchecked"
+                )))
                 .attach(getSvgIcon());
             let persistCheckboxLabel = getPersistCheckboxLabel(isPersisted);
             const repaintPersistLabel = e => {
@@ -390,6 +399,7 @@ passHint = credFormPassHint // only new
         this.importDb = _ => appAlert("importDb");
         this.importDbPickFile = _ => appAlert("importDbPickFile");
         this.emergDbDownload = _ => appAlert("emergDbDownload");
+        this.changePassword = _ => appAlert("changePassword");
 
         const catchObj = (storeKey, err) => ({sName: getTxtBankTitleTxt(storeKey), sKey: storeKey, cErr: err});
         this.catchLoad = storeKey => appAlert("catchLoad", catchObj(storeKey)); // no err for load
@@ -447,7 +457,7 @@ passHint = credFormPassHint // only new
         
         this.resetFullArchive = _ => {
             msgIsFullArchive = false;
-            return msgModule.cssName("msgModule").killAttr("style").ridKids(1);
+            return msgModule.cssName("msgModule").ridKids(1); //.killAttr("style")
         };
         
         this.closeFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
@@ -1218,9 +1228,8 @@ passHint = credFormPassHint // only new
             const downloadCopyDB = async _ => await thisApp.alert.downloadDbCopy() && thisApp.dbStore.localFile.download();
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getChangePassword = async _ => {
-                 thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
-            };
+            const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
+
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -- BARS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
             
@@ -1573,6 +1582,8 @@ passHint = credFormPassHint // only new
 
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
+
+        mobileDebug("IN Main UI POPSTATE. e.state = ", JSON.stringify(e.state));
         if(!this.messages.closeFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
             mainGui.reset(); //resetUI - hide form, show list
             modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
@@ -1582,15 +1593,17 @@ passHint = credFormPassHint // only new
     
     // Touch EventHandlers
     
-        // Swipe msgIsFullArchive on Mobile
+/*         // Swipe msgIsFullArchive on Mobile
         let touchStartY = 0;
         let moveVerticalStartX = 0; 
         let touchStartX = 0;
         let moveHorizontalStartY = 0; 
         let startTime = 0;
-        const leeway = 100; // 100px of tolerance of movement on a perpendicular axis
+        const leeway = 50; // 100px of tolerance of movement on a perpendicular axis
         const threshold = 100; // 100 px minimum travel distance for swipe
         const allowedTime = 300;// 300 ms for swipe
+        
+
         
         const startSwipe = e => {
             const touchY = e.touches[0].clientY;
@@ -1639,14 +1652,21 @@ passHint = credFormPassHint // only new
                     moveVerticalStartX = 0;
                     startTime = 0;
                     msgModule.killAttr("style");
-                    this.messages.closeFullArchive();
+                    //this.messages.closeFullArchive();
+                    history.back();
                 }else{
                     msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
                 }
             }
-            
-            
+
             if(!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder && touchStartX && touchX < touchStartX){
+                if(Math.abs(touchY - moveHorizontalStartY) >= leeway){
+                    touchStartX = 0;
+                    startTime = 0;
+                    moveHorizontalStartY = 0;
+                    appSectionForm.killAttr("style");
+                    return;
+                }
                 const translateBy = (((touchStartX- touchX) * 100) / document.body.clientWidth);
                 if(translateBy > 50) {
                     touchStartX = 0;
@@ -1662,7 +1682,6 @@ passHint = credFormPassHint // only new
         };
 
         const endSwipe = (e) => {
-            //console.log(e);
             const touchY = e.changedTouches[0].clientY;
             const touchX = e.changedTouches[0].clientX;
             
@@ -1678,7 +1697,8 @@ passHint = credFormPassHint // only new
                         && (Math.abs(touchX - moveVerticalStartX) <= leeway)
                         && (touchY - touchStartY >= threshold)
                     ) {
-                        this.messages.closeFullArchive();
+                        //this.messages.closeFullArchive();
+                        history.back();
                     }
 
                     
@@ -1723,103 +1743,115 @@ passHint = credFormPassHint // only new
         };
 
         //make it general
-        document.body.on("touchstart", startSwipe).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe);
+        document.body.on("touchstart", startSwipe).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe); */
 
-//COPILOT AI Optimisation
-// Swipe msgIsFullArchive on Mobile
-/* let touchStartY = 0;
-let touchStartX = 0;
-let startTime = 0;
-const leeway = 100; // 100px tolerance
-const threshold = 150; // 150px minimum travel distance
-const allowedTime = 300; // 300ms for swipe
+        // Touch EventHandlers
+    const touchEventHandlers = (_ => {
+        const leeway = 50; // 100px of tolerance of movement on a perpendicular axis
+        const threshold = 100; // 100 px minimum travel distance for swipe
+        const allowedTime = 300;// 300 ms for swipe
+        let movingVertical = 0;
+        let movingHorizontal = 0;
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let startTime = 0;
 
-const startSwipe = (e) => {
-    const touchY = e.touches[0].clientY;
-    const touchX = e.touches[0].clientX;
-
-    if (this.messages.isHidden() && touchY + REM * 2 > document.body.clientHeight) {
-        touchStartY = touchY;
-        this.messages.paintFullArchive();
-    } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
-        touchStartY = touchY;
-    } else if (!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder) {
-        touchStartX = touchX;
-    }
-    
-    startTime = touchStartY || touchStartX ? Date.now() : 0;
-};
-
-const swiping = (e) => {
-    const touchY = e.touches[0].clientY;
-    const touchX = e.touches[0].clientX;
-
-    if (this.messages.isHidden() && touchStartY && touchY < touchStartY) {
-        const translateBy = (100 - ((touchStartY - touchY) * 100) / document.body.clientHeight);
-        if (translateBy < 65) {
-            this.messages.openFullArchive();
+        const resetSwipe = _ => {
+            msgModule.killAttr("style");
+            appSectionForm.killAttr("style");
+            movingVertical = movingHorizontal = touchStartY = touchStartX = startTime = 0;
         }
-        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
-    }
 
-    if (this.messages.isFullArchive() && touchStartY && touchY > touchStartY) {
-        const translateBy = ((touchY - touchStartY) * 100) / document.body.clientHeight;
-        if (translateBy > 35) {
-            this.messages.closeFullArchive();
+        const startSwipe = e => {
+/*             touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX; */
+            [touchStartX, touchStartY] = [e.touches[0]?.clientX, e.touches[0]?.clientY];
+            
+            if(this.messages.isHidden() && touchStartY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
+                movingVertical = true;
+                this.messages.paintFullArchive();
+            }else if(this.messages.isFullArchive() && !msgModule.lastChild.scrollTop){
+                movingVertical = true;
+            }else if(!appSectionForm.hasClass("elSlideOut")){
+               movingHorizontal = true;
+            }
+            
+            startTime = movingHorizontal || movingVertical ? Date.now() : 0;
+        };
+        
+        const swiping = (e) => {
+            const [touchX, touchY] = [e.touches[0]?.clientX, e.touches[0]?.clientY];
+
+            if(movingVertical){
+                if(this.messages.isHidden() && touchY < touchStartY){
+                    const translateBy = 100 - ((touchStartY - touchY) * 100) / document.body.clientHeight;
+                    if(translateBy < 50) {
+                        resetSwipe();
+                        this.messages.openFullArchive();
+                    }else{
+                        msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                    }
+                }else if(this.messages.isFullArchive() && touchY > touchStartY){
+                    const translateBy = ((touchY - touchStartY) * 100) / document.body.clientHeight;
+                    if(translateBy > 50) {
+                        resetSwipe();
+                        history.back();
+                    }else{
+                        msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                    }
+                }
+            }
+
+            if(!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder && movingHorizontal && touchX < touchStartX){
+                if(Math.abs(touchY - touchStartY) >= leeway){
+                    resetSwipe();
+                    return;
+                }
+                const translateBy = ((touchStartX - touchX) * 100) / document.body.clientWidth;
+                if(translateBy > 50) {
+                    resetSwipe();
+                    history.back();
+                }else{
+                    appSectionForm.setAttr("style", "transition: unset; transform: translateX(" + (-translateBy) + "%);");
+                }
+            }
+        };
+
+        const endSwipe = e => {
+            const [touchX, touchY] = [e.changedTouches[0]?.clientX, e.changedTouches[0]?.clientY];
+            const checkSwipe = closeArchive => {
+                const [mainNow, perpNow, mainStart, perpStart] = movingVertical 
+                    ? [touchY, touchX, touchStartY, touchStartX] 
+                    : [touchX, touchY, touchStartX, touchStartY];
+
+                return (Date.now() - startTime) < allowedTime && Math.abs(perpNow - perpStart) <= leeway && (closeArchive ? mainNow - mainStart : mainStart - mainNow) >= threshold;
+            };
+            
+            if(startTime && touchX && touchY){
+                if(movingVertical){
+                    if(this.messages.isFullArchive()){
+                        if(checkSwipe(true)) history.back();
+                    }else{
+                        checkSwipe(false) ? this.messages.openFullArchive() : this.messages.resetFullArchive();
+                    }
+                }else if(movingHorizontal){
+                    if(checkSwipe(false)) history.back();
+                }
+            }
+            
+            resetSwipe();
+        };
+        
+        return{
+            startSwipe: startSwipe,
+            swiping: swiping,
+            endSwipe: endSwipe
         }
-        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
-    }
+    })();
+        //make it general
+        document.body.on("touchstart", touchEventHandlers.startSwipe).on("touchmove", touchEventHandlers.swiping).on("touchend", touchEventHandlers.endSwipe).on("touchcancel", touchEventHandlers.endSwipe);
 
-    if (!appSectionForm.hasClass("elSlideOut") && touchStartX && touchX < touchStartX) {
-        const translateBy = ((touchStartX - touchX) * 100) / document.body.clientWidth;
-        if (translateBy > 40) {
-            history.back();
-        }
-        appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
-    }
-};
-
-const endSwipe = (e) => {
-    const touchY = e.changedTouches[0].clientY;
-    const touchX = e.changedTouches[0].clientX;
-
-    if (touchStartY) {
-        msgModule.killAttr("style");
-        const isSwipeValid = startTime && ((Date.now() - startTime) < allowedTime) && (Math.abs(touchX - touchStartX) <= leeway);
-        if (this.messages.isFullArchive() && isSwipeValid && Math.abs(touchY - touchStartY) >= threshold) {
-            this.messages.closeFullArchive();
-        } else if (isSwipeValid && Math.abs(touchY - touchStartY) >= threshold) {
-            this.messages.openFullArchive();
-        } else {
-            this.messages.resetFullArchive();
-        }
-    } else if (touchStartX) {
-        appSectionForm.killAttr("style");
-        if (startTime && ((Date.now() - startTime) < allowedTime) && (Math.abs(touchY - touchStartY) <= leeway) && (touchStartX - touchX >= threshold)) {
-            history.back();
-        }
-    }
-
-    touchStartX = 0;
-    touchStartY = 0;
-    startTime = 0;
-};
-
-document.body
-    .addEventListener("touchstart", startSwipe)
-    .addEventListener("touchmove", swiping)
-    .addEventListener("touchend", endSwipe)
-    .addEventListener("touchcancel", endSwipe); */
-
-
-// END COPILOT AI OPTIMISATION.
-
-
-
-
-// END CHAT GPT
-
-
+/*************************************/
 
     // Attach Sections
     document.body.ridKids().attachAry([

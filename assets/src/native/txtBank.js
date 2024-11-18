@@ -1,4 +1,4 @@
-/* 'frequent_0.022_GitHub */
+/* 'frequent_0.026_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -133,6 +133,12 @@ const txtBankObj = {
         "y": "I want to import data.<br>",
         "n": "I do not want to import data.",
         "i": "impDb"
+      },
+      "changePassword": {
+        "q": "The password and PIN of the application, which secure all connected databases, will be changed.<br><br>After the change, it will not be possible to unlock the database using the previous login credentials.",
+        "y": "Yes, I want to change the login credentials.",
+        "n": "No, I don't want to change anything now.",
+        "i": "secreSync"
       },
       "importDbPickFile": {
         "q": "Data from the selected SecreSync file will be imported into the application database.<br><br>Please select the SecreSync database file and unlock it using the password and PIN for the database to be imported.",
@@ -393,8 +399,8 @@ const txtBankObj = {
         "localFile": "Device Database File", //Device Database File.
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
-        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
+        "installApp": "Install SecreSync on this device",
+        "updateApp": "A new version of SecreSync is available. Update the application"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -445,8 +451,10 @@ const txtBankObj = {
           "tagsFound": "'<i>${ searchStr }</i>' found in Tags. Accounts number: ${ hits }.",
           "notesFound": "'<i>${ searchStr }</i>' found in Notes. Accounts number: ${ hits }."
         },
-        "credChecked": "PIN-only login is enabled.",
-        "credUnchecked": "PIN-only login is disabled.",
+        "credChecked": "Save the password on the device",
+        "credUnchecked": "Do not save the password on the device",
+        "credCheckedPersisted": "The password is saved on the device",
+        "credUncheckedPersisted": "The saved password will be removed from the device",
         "unlockDb": "Unlock Database",
         "protectDb": "Protect Database",
         "withConsent": "The app has access to the device storage.",
@@ -603,6 +611,12 @@ const txtBankObj = {
         "y": "Sí. Quiero importar los datos.<br>",
         "n": "No, cambié de opinión.",
         "i": "impDb"
+      },
+      "changePassword": {
+        "q": "La contraseña y el PIN de la aplicación, que protegen todas las bases de datos conectadas, serán cambiados.<br><br>Después del cambio, no será posible desbloquear la base de datos utilizando las credenciales anteriores.",
+        "y": "Sí, quiero cambiar las credenciales.",
+        "n": "No, no quiero cambiar nada ahora.",
+        "i": "secreSync"
       },
       "importDbPickFile": {
         "q": "Los datos del archivo SecreSync seleccionado se importarán a la base de datos de la aplicación.<br><br>Por favor, seleccione el archivo de base de datos SecreSync y desbloquéelo utilizando la contraseña y el PIN de la base de datos que se va a importar.",
@@ -864,8 +878,8 @@ const txtBankObj = {
         "localFile": "Archivo de Base de Datos del dispositivo",
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
-        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
+        "installApp": "Instala SecreSync en este dispositivo",
+        "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -916,8 +930,10 @@ const txtBankObj = {
           "tagsFound": "'<i>${ searchStr }</i>' encontrado en Etiquetas. Número de cuentas: ${ hits }.",
           "notesFound": "'<i>${ searchStr }</i>' encontrado en Notas. Número de cuentas: ${ hits }."
         },
-        "credChecked": "El inicio de sesión solo con PIN está habilitado.",
-        "credUnchecked": "El inicio de sesión solo con PIN está deshabilitado.",
+        "credChecked": "Guardar la contraseña en el dispositivo",
+        "credUnchecked": "No guardar la contraseña en el dispositivo",
+        "credCheckedPersisted": "La contraseña está guardada en el dispositivo",
+        "credUncheckedPersisted": "La contraseña guardada se eliminará del dispositivo",
         "unlockDb": "Desbloquear Base de Datos",
         "protectDb": "Proteger Base de Datos",
         "withConsent": "La aplicación tiene acceso al almacenamiento del dispositivo.",
@@ -1074,6 +1090,12 @@ const txtBankObj = {
         "y": "Oui. Je veux importer les données.<br>",
         "n": "Non, j'ai changé d'avis.",
         "i": "impDb"
+      },
+      "changePassword": {
+        "q": "Le mot de passe et le PIN de l'application, qui sécurisent toutes les bases de données connectées, seront modifiés.<br><br>Après la modification, il ne sera plus possible de déverrouiller la base de données en utilisant les anciennes informations de connexion.",
+        "y": "Oui, je veux changer les informations de connexion.",
+        "n": "Non, je ne veux rien changer pour le moment.",
+        "i": "secreSync"
       },
       "importDbPickFile": {
         "q": "Les données du fichier SecreSync sélectionné seront importées dans la base de données de l'application.<br><br>Veuillez sélectionner le fichier de base de données SecreSync et le déverrouiller en utilisant le mot de passe et le code PIN de la base de données à importer.",
@@ -1334,8 +1356,8 @@ const txtBankObj = {
         "localFile": "Fichier de base de données de l'appareil",
         "secreSync": "SecreSync",
         "share": "Share",
-        "installApp": "Zainstaluj SecreSync na tym urządzeniu",
-        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
+        "installApp": "Installez SecreSync sur cet appareil",
+        "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1386,8 +1408,10 @@ const txtBankObj = {
           "tagsFound": "'<i>${ searchStr }</i>' trouvé dans les Étiquettes. Numéro de comptes: ${ hits }.",
           "notesFound": "'<i>${ searchStr }</i>' trouvé dans les Notes. Numéro de comptes: ${ hits }."
         },
-        "credChecked": "La connexion uniquement par PIN est activée.",
-        "credUnchecked": "La connexion uniquement par PIN est désactivée.",
+        "credChecked": "Conserver le mot de passe sur l'appareil",
+        "credUnchecked": "Ne pas conserver le mot de passe sur l'appareil",
+        "credCheckedPersisted": "Le mot de passe est enregistré sur l'appareil",
+        "credUncheckedPersisted": "Le mot de passe enregistré sera supprimé de l'appareil",
         "unlockDb": "Déverrouiller la Base de Données",
         "protectDb": "Protéger la Base de Données",
         "withConsent": "L'application a accès au stockage de l'appareil.",
@@ -1544,6 +1568,12 @@ const txtBankObj = {
         "y": "Chcę zaimportować dane.<br>",
         "n": "Nie chcę importować danych.",
         "i": "impDb"
+      },
+      "changePassword": {
+        "q": "Hasło i PIN aplikacji, które zabezpieczają wszystkie podłączone bazy danych, zostaną zmienione.<br><br>Po zmianie, nie będzie można odblokować bazy danych używając poprzednich danych logowania.",
+        "y": "Tak, chcę zmienić dane logowania.",
+        "n": "Nie, nie chcę teraz nic zmieniać.",
+        "i": "secreSync"
       },
       "importDbPickFile": {
         "q": "Dane z wybranego pliku SecreSync zostaną zaimportowane do bazy danych aplikacji.<br><br>Proszę wybrać plik bazy danych SecreSync i odblokować go za pomocą hasła i PIN-u bazy danych, która ma zostać zaimportowana.",
@@ -1856,8 +1886,10 @@ const txtBankObj = {
           "tagsFound": "'<i>${ searchStr }</i>' znaleziono w Tagach. Numer kont: ${ hits }.",
           "notesFound": "'<i>${ searchStr }</i>' znaleziono w Notatkach. Numer kont: ${ hits }."
         },
-        "credChecked": "Logowanie wyłącznie za pomocą PIN-u jest aktywowane.",
-        "credUnchecked": "Logowanie wyłącznie za pomocą PIN-u jest wyłączone.",
+        "credChecked": "Zachowaj hasło na urządzeniu",
+        "credUnchecked": "Nie zachowuj hasła na urządzeniu",
+        "credCheckedPersisted": "Hasło zostało zapisane na urządzeniu",
+        "credUncheckedPersisted": "Zapisane hasło zostanie usunięte z urządzenia",
         "unlockDb": "Odblokuj Bazę Danych",
         "protectDb": "Zabezpiecz Bazę Danych",
         "withConsent": "Aplikacja ma dostęp do pamięci urządzenia.",

@@ -1,4 +1,4 @@
-/* 'frequent_0.023_GitHub' */
+/* 'frequent_0.026_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -333,6 +333,11 @@ function AppDbStore(thisApp){
         storeObj.switchConnection = async _ => {
             mobileDebug("In storeObj.switchConnection Start. The storeObj.key = ", storeObj.key);
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
+            
+            if(!thisApp.dbObj){
+                mobileDebug("In storeObj.switchConnection. The storeObj.key = ", storeObj.key, "NO thisApp.dbObj. Will RETURN!!!");
+                return;
+            }
             
             storeObj.syncPaused = false;
             if(storeObj.canAlter()){

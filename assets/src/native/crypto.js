@@ -1,4 +1,4 @@
-/* 'frequent_0.022_GitHub' */
+/* 'frequent_0.026_GitHub' */
 function Crypto(){
     "use strict";
 

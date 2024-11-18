@@ -1,6 +1,6 @@
-/* 'frequent_0.022_GitHub' */
+/* 'frequent_0.026_GitHub' */
 "use strict";
-console.log("index core_0.015_GitHub");
+console.log("index core_0.026_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -9,7 +9,7 @@ TO DO:
  UserSettings - and or AppDBObjUserSettiings (for app before loading the the db object - then another for after the DBObj has been loaded - e.g. number of revisions stored)make?
  catchSync vs catchLoad vs catchUpdate make correct
  
- alert before getChangePassword !!!!
+DONE - alert before getChangePassword !!!!
  
  
 DONE - Theme to white.
@@ -30,9 +30,9 @@ DONE!!! - redo the vdertical alignment in typeLog and typeNote
 
 DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:tt
 
-Change the remember password hint and the checkbox text to: remember password. Password is remembered. / Remove the remembered password.... maybe make it in the unrolled hint
+DONE!!! Change the remember password hint and the checkbox text to: remember password. Password is remembered. / Remove the remembered password.... maybe make it in the unrolled hint
 
-Make hint for new Password 
+DONE!!! Make hint for new Password 
 
 */
 
