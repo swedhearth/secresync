@@ -1,4 +1,4 @@
-/* 'frequent_0.027_GitHub */
+/* 'frequent_0.028_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -379,15 +379,9 @@ function App(urlSearchParams){
         mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
         if(this.hidden){
             mobileDebug("logOffApp Start = App is Hidden and the timeOut fired. Will NOT return. type = ", type);
-            //return;
         }
         let loop = 0;
-        if(!window.history.state) {
-            alert("WTF? No History State in logOffApp!!!");
-            return;
-        }
-        //this.IsLoggingOff = true;
-        
+
         while (!window.history.state.lastBackExists) {
             mobileDebug("In logOffApp. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
             await new Promise(res => {
@@ -397,50 +391,35 @@ function App(urlSearchParams){
         }
         mobileDebug("In logOffApp. after while loop - the final current history.state", JSON.stringify(window.history.state));
 
-/*         // now we don't want to this.start if the connectivity has not been refreshed / or certain time has passed/ bout only on visibility change and not on the resetLogOutTimer
-        if(this.wasHidden) { // connectivity has not been restored yet // wait for connectivity before starting app // wait 500 second
-            mobileDebug("In logOffApp. this.wasHidden, will wait 300ms for the connectivitychange to fire");
-            await new Promise(res => setTimeout(res, 300)); // that should be enough
-            mobileDebug("In logOffApp. this.wasHidden, After the 300ms wait. Will manually change the this.wasHidden to FALSE and start the app. Has the connectivitychange fired? Current this.wasHidden = ", this.wasHidden.toString());
-            this.wasHidden = false;
-        } */
-        
-
-
         this.start(this.message.loggedOff(), false);
         mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
-        //this.IsLoggingOff = false;
     };
 
     this.online = navigator.onLine;
 
     this.connectivitychange = e => {
-        if(this.hidden) {
+/*         if(this.hidden) {
             mobileDebug("connectivitychange Was about to be triggered while the app is hidden. Will return.");
             return;
         }
-/*         if(this.wasHidden){ // app is was hidden and now visible (
-            mobileDebug("connectivitychange App wasHidden = TRUE, will make = FALSE. Was online before the app was hidden? = ", this.online, " The current e.type = ", e.type);
-            this.wasHidden = false;
-            if((e.type !== "offline") === this.online){ // was online (this.online = true). e.type is "online", "online" !== "offline" (true)
-                return;
-            }// else - change connectivity
-        } */
+
         if(!this.dbObj){
             mobileDebug("connectivitychange Was about to be triggered while no dbObj.");
-        }
+        } */
         
-        if((e.type !== "offline") === this.online){ // was online (this.online = true). e.type is "online", "online" !== "offline" (true)
+/*         if((e.type !== "offline") === this.online){ // was online (this.online = true). e.type is "online", "online" !== "offline" (true)
             mobileDebug("connectivitychange. App was online and now is online too. No need to update anything. Will return.");
             return;
-        }// else - change connectivity
+        }// else - change connectivity */
         
         this.online = e.type !== "offline";
-        mobileDebug("connectivitychange e.type = ", e.type);
-        mobileDebug("connectivitychange, document.visibilityState = ", document.visibilityState);
+        
+        mobileDebug("connectivitychange. e.type = ", e.type);
+        mobileDebug("connectivitychange. Is this.dbObj? = ", !!this.dbObj);
+        mobileDebug("connectivitychange. document.visibilityState = ", document.visibilityState);
 
-        this.dbStore.getRemoteObjects().forEach(dbStore => dbStore.switchConnection()); 
-        this.message[e.type](); // message.online : message.offline
+        this.dbStore.getRemoteObjects().forEach(storeObj => storeObj.switchConnection()); 
+        if(!this.hidden && this.dbObj) this.message[e.type](); // message.online : message.offline
     };
 
     this.visibilityChange = e => {
@@ -453,25 +432,13 @@ function App(urlSearchParams){
             this.ui.blur(true);
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
-            //this.wasHidden = true;
-            
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                logOffApp("visibilityChange"); //this will clear this.wasHidden in await
+                logOffApp("visibilityChange");
             }else{
-                // the visibility changed quickly, we need to remove this.wasHidden - 2 scenarion: 
-                //1. The app was hidden and the websocket remained (internet connection was not lost)
-                //2. the app was switched to another and the connection has been lost
-
-                // if connection was not lost, we can assume that the connectivity should be restored shortly and the this.wasHidden should clear before this timeout fires
-/*                 setTimeout(_ => {
-                    // if still this.wasHidden it's either the scenario 1 (it didn't loose connectivity) or the connectivity has not been restored for some reason
-                    this.wasHidden = false;
-                }, 300); */
                 setTimeout(_ => {
                     this.ui.blur(false);
                 }, 500);
             }
-            
             this.sessionStorage.delete(reloadBy);
         }
     };
@@ -489,7 +456,7 @@ function App(urlSearchParams){
         try {
             const keys = await caches.keys();
             const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
-             if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
+            if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
 
             const regs = await navigator.serviceWorker.getRegistrations();
             const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));

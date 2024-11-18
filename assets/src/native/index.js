@@ -1,6 +1,6 @@
-/* 'frequent_0.027_GitHub' */
+/* 'frequent_0.028_GitHub' */
 "use strict";
-console.log("index core_0.027_GitHub");
+console.log("index core_0.028_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -100,13 +100,15 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange, {capture: true});
         
-       // window.addEventListener('blur', thisApp.ui.blur, {capture: true});
+       //window.addEventListener('blur', thisApp.ui.blur, {capture: true});
+       window.addEventListener('blur', _ => mobileDebug("window BLUR event fired"), {capture: true});
 
         let appInstalled = false;
-        window.addEventListener("appinstalled", () => {{
+        window.addEventListener("appinstalled", () => {
             thisApp.message.tempAppInstalled();
             appInstalled = true;
-        }});
+            mobileDebug("app is Installed")
+        });
         window.addEventListener("beforeinstallprompt", async e => {
             e.preventDefault();
             if(appInstalled) return;
@@ -117,10 +119,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         });
 
-
-
-
-/* return; */
         // Install Service Worker
         if (!navigator.serviceWorker || !navigator.onLine || !location.host) {
             if (developerMode) {
@@ -156,13 +154,21 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         .then(_ => developerMode && console.log("service-worker.js registered and fetched. Will check if update available."))
         .catch(err => {
             if (developerMode) console.error("Service worker registration error:", err);
-            if (window.confirm("Service Worker update failed. Reload app?")) {
+            mobileDebug("In Index. navigator.serviceWorker.register catch error: ", JSON.stringify(err));
+            
+            if(confirm("Service Worker update failed. Reload app?. TRUE = Reload. FALSE = Do not reload, I will examin the error.")){
                 thisApp.reload();
             }
+            
         });
     }).catch(err => {
         console.log(err);
-        document.documentElement.remove()
-        alert("cant't initiate the Application");
+        mobileDebug("In Index.  new App(urlSearchParams).init() catch error: ", JSON.stringify(err));
+        if(confirm("new App(urlSearchParams).init() Failed. TRUE = Remove document and asow alert. FALSE = Do nothing, I will examin the error.")){
+            document.documentElement.remove();
+            alert("cant't initiate the Application");
+        }
+        
+        
     });
 });

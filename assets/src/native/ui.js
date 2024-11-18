@@ -1,7 +1,7 @@
-/* 'frequent_0.027_GitHub' */
+/* 'frequent_0.028_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.027_GitHub";
+    let tempVer = "frequent_0.028_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1580,174 +1580,11 @@ passHint = credFormPassHint // only new
     });
 
 
-    // Add Popstate Listener
-    window.addEventListener('popstate', e => {
 
-        mobileDebug("IN Main UI POPSTATE. e.state = ", JSON.stringify(e.state));
-        if(!this.messages.closeFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
-            mainGui.reset(); //resetUI - hide form, show list
-            modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
-        }
-    });
-    
-    
-    // Touch EventHandlers
-    
-/*         // Swipe msgIsFullArchive on Mobile
-        let touchStartY = 0;
-        let moveVerticalStartX = 0; 
-        let touchStartX = 0;
-        let moveHorizontalStartY = 0; 
-        let startTime = 0;
-        const leeway = 50; // 100px of tolerance of movement on a perpendicular axis
-        const threshold = 100; // 100 px minimum travel distance for swipe
-        const allowedTime = 300;// 300 ms for swipe
-        
-
-        
-        const startSwipe = e => {
-            const touchY = e.touches[0].clientY;
-            const touchX = e.touches[0].clientX;
-            
-            if(this.messages.isHidden() && touchY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
-                touchStartY = touchY;
-                moveVerticalStartX = touchX;
-                this.messages.paintFullArchive();
-            }else if(this.messages.isFullArchive()){
-                if(!msgModule.lastChild.scrollTop){
-                    touchStartY = touchY;
-                    moveVerticalStartX = touchX;
-                }
-            }else if(!appSectionForm.hasClass("elSlideOut")){
-               
-               // if(!e.target.placeholder){ // not input element
-                    touchStartX = e.touches[0].clientX;
-                    moveHorizontalStartY = touchY;
-               // }
-            }
-            
-            startTime = touchStartY || touchStartX ? Date.now() : 0;
-
-        };
-        
-        const swiping = (e) => {
-            const touchY = e.touches[0].clientY;
-            const touchX = e.touches[0].clientX;
-            
-            if(this.messages.isHidden() && touchStartY && touchY < touchStartY){
-                const translateBy = (100 - ((touchStartY- touchY) * 100) / document.body.clientHeight);
-                if(translateBy < 50) {
-                    touchStartY = 0;
-                    moveVerticalStartX = 0;
-                    startTime = 0;
-                    this.messages.openFullArchive();
-                }else{
-                    msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
-                }
-            }
-            if(this.messages.isFullArchive() && touchStartY && touchY > touchStartY){
-                const translateBy = (((touchY - touchStartY) * 100) / document.body.clientHeight);
-                if(translateBy > 50) {
-                    touchStartY = 0;
-                    moveVerticalStartX = 0;
-                    startTime = 0;
-                    msgModule.killAttr("style");
-                    //this.messages.closeFullArchive();
-                    history.back();
-                }else{
-                    msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
-                }
-            }
-
-            if(!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder && touchStartX && touchX < touchStartX){
-                if(Math.abs(touchY - moveHorizontalStartY) >= leeway){
-                    touchStartX = 0;
-                    startTime = 0;
-                    moveHorizontalStartY = 0;
-                    appSectionForm.killAttr("style");
-                    return;
-                }
-                const translateBy = (((touchStartX- touchX) * 100) / document.body.clientWidth);
-                if(translateBy > 50) {
-                    touchStartX = 0;
-                    moveHorizontalStartY = 0;
-                    startTime = 0;
-                    appSectionForm.killAttr("style");
-                    history.back();
-                }else{
-                    appSectionForm.setAttr("style", "transition: unset; transform: translateX(" + (-translateBy) + "%);");
-                }
-                
-            }
-        };
-
-        const endSwipe = (e) => {
-            const touchY = e.changedTouches[0].clientY;
-            const touchX = e.changedTouches[0].clientX;
-            
-            if(touchStartY){
-                
-                if(this.messages.isFullArchive()){
-                    msgModule.killAttr("style");
-                    
-                    
-                    if(
-                        startTime && touchX && touchY
-                        && ((Date.now() - startTime) < allowedTime) 
-                        && (Math.abs(touchX - moveVerticalStartX) <= leeway)
-                        && (touchY - touchStartY >= threshold)
-                    ) {
-                        //this.messages.closeFullArchive();
-                        history.back();
-                    }
-
-                    
-                }else{
-                    if(
-                        startTime && touchX && touchY
-                        && ((Date.now() - startTime) < allowedTime) 
-                        && (Math.abs(touchX - moveVerticalStartX) <= leeway)
-                        && (Math.abs(touchY - touchStartY) >= threshold)
-                    ){
-                        this.messages.openFullArchive();
-                    }else{
-                        this.messages.resetFullArchive();
-                    }
-                }
-
-                
-            }else if(touchStartX){
-
-                
-                if(!appSectionForm.hasClass("elSlideOut")){
-                    
-                    appSectionForm.killAttr("style");
-                    
-                    if(
-                        startTime && touchX && touchY
-                        && ((Date.now() - startTime) < allowedTime)
-                        && (Math.abs(touchY - moveHorizontalStartY) <= leeway)
-                        && (touchStartX - touchX >= threshold)
-                    ){
-                        
-                        history.back();
-                        
-                    }
-                }
-            }
-            touchStartX = 0;
-            touchStartY = 0;
-            startTime = 0;
-            moveVerticalStartX = 0
-            moveHorizontalStartY = 0;
-        };
-
-        //make it general
-        document.body.on("touchstart", startSwipe).on("touchmove", swiping).on("touchend", endSwipe).on("touchcancel", endSwipe); */
 
         // Touch EventHandlers
-    const touchEventHandlers = (_ => {
-        const leeway = 50; // 100px of tolerance of movement on a perpendicular axis
+/*     const touchEventHandlers = (_ => {
+        const leeway = 50; // 50px of tolerance of movement on a perpendicular axis
         const threshold = 100; // 100 px minimum travel distance for swipe
         const allowedTime = 300;// 300 ms for swipe
         let movingVertical = 0;
@@ -1760,11 +1597,9 @@ passHint = credFormPassHint // only new
             msgModule.killAttr("style");
             appSectionForm.killAttr("style");
             movingVertical = movingHorizontal = touchStartY = touchStartX = startTime = 0;
-        }
+        };
 
         const startSwipe = e => {
-/*             touchStartY = e.touches[0].clientY;
-            touchStartX = e.touches[0].clientX; */
             [touchStartX, touchStartY] = [e.touches[0]?.clientX, e.touches[0]?.clientY];
             
             if(this.messages.isHidden() && touchStartY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
@@ -1847,20 +1682,148 @@ passHint = credFormPassHint // only new
             swiping: swiping,
             endSwipe: endSwipe
         }
-    })();
-        //make it general
-        document.body.on("touchstart", touchEventHandlers.startSwipe).on("touchmove", touchEventHandlers.swiping).on("touchend", touchEventHandlers.endSwipe).on("touchcancel", touchEventHandlers.endSwipe);
+    })(); */
+    
+    
+const touchEventHandlers = (() => {
+    const leeway = 50; // Tolerance for perpendicular movement (px)
+    const threshold = 100; // Minimum swipe distance (px)
+    const allowedTime = 300; // Maximum swipe time (ms)
+    let isVerticalSwipe = false;
+    let isHorizontalSwipe = false;
+    let touchStart = { x: 0, y: 0, time: 0 };
+
+    const resetSwipe = () => {
+        msgModule.killAttr("style");
+        appSectionForm.killAttr("style");
+        isVerticalSwipe = isHorizontalSwipe = false;
+        touchStart = { x: 0, y: 0, time: 0 };
+    };
+
+    const startSwipe = (e) => {
+        const { clientX, clientY } = e.touches[0];
+        touchStart = { x: clientX, y: clientY, time: Date.now() };
+
+        if (this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
+            isVerticalSwipe = true;
+            this.messages.paintFullArchive();
+        } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
+            isVerticalSwipe = true;
+        } else if (!appSectionForm.hasClass("elSlideOut")) {
+            isHorizontalSwipe = true;
+        }
+    };
+
+    const swiping = (e) => {
+        const { clientX, clientY } = e.touches[0];
+
+        if (isVerticalSwipe) {
+            const deltaY = touchStart.y - clientY;
+            const translateBy = 100 - (Math.abs(deltaY) * 100) / document.body.clientHeight;
+
+            if (this.messages.isHidden() && deltaY > 0) {
+                // Swipe up to open full archive
+                if (translateBy < 50) {
+                    resetSwipe();
+                    this.messages.openFullArchive();
+                } else {
+                    msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+                }
+            } else if (this.messages.isFullArchive() && deltaY < 0) {
+                // Swipe down to close full archive
+                const translateBy = (Math.abs(deltaY) * 100) / document.body.clientHeight;
+                if (translateBy > 50) {
+                    resetSwipe();
+                    history.back();
+                } else {
+                    msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+                }
+            }
+        }
+
+        if (isHorizontalSwipe && !e.target.placeholder && clientX < touchStart.x) {
+            // Swipe left for back navigation
+            if (Math.abs(clientY - touchStart.y) >= leeway) {
+                resetSwipe();
+                return;
+            }
+            const translateBy = ((touchStart.x - clientX) * 100) / document.body.clientWidth;
+            if (translateBy > 50) {
+                resetSwipe();
+                history.back();
+            } else {
+                appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
+            }
+        }
+    };
+
+    const endSwipe = (e) => {
+        // Extract touch coordinates or fallback to undefined
+        const { clientX, clientY } = e.changedTouches?.[0] || {};
+
+        // If no valid touch data, reset and exit
+        if (!touchStart.time || !clientX || !clientY) return resetSwipe();
+
+        // Helper to validate swipe
+        const isValidSwipe = (closeArchive) => {
+            const mainDelta = isVerticalSwipe ? clientY - touchStart.y : clientX - touchStart.x;
+            const perpDelta = isVerticalSwipe ? clientX - touchStart.x : clientY - touchStart.y;
+            const withinTime = Date.now() - touchStart.time < allowedTime;
+
+            return (
+                withinTime &&
+                Math.abs(perpDelta) <= leeway &&
+                (closeArchive ? mainDelta > threshold : -mainDelta > threshold)
+            );
+        };
+
+        // Handle vertical or horizontal swipe based on the state
+        if (isVerticalSwipe) {
+            if (this.messages.isFullArchive()) {
+                if (isValidSwipe(true)) history.back();
+            } else if (isValidSwipe(false)) {
+                this.messages.openFullArchive();
+            } else {
+                this.messages.resetFullArchive();
+            }
+        } else if (isHorizontalSwipe && isValidSwipe(false)) {
+            history.back();
+        }
+
+        // Reset swipe state
+        resetSwipe();
+    };
+
+
+    return {
+        startSwipe,
+        swiping,
+        endSwipe,
+    };
+})();
 
 /*************************************/
-
+    // Add Popstate Listener
+    window.addEventListener('popstate', e => {
+        if(!this.messages.closeFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
+            mainGui.reset(); //resetUI - hide form, show list
+            modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
+        }
+    });
+    
     // Attach Sections
-    document.body.ridKids().attachAry([
+    document.body.ridKids()
+    .attachAry([
         appSectionList, appSectionForm, dbModifiedBar,
         modalSection,
         msgModule,
         spinner,
         uiBlur
-    ]);
+    ])
+    .on("touchstart", touchEventHandlers.startSwipe)
+    .on("touchmove", touchEventHandlers.swiping)
+    .on("touchend", touchEventHandlers.endSwipe)
+    .on("touchcancel", touchEventHandlers.endSwipe);
     
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
@@ -1869,10 +1832,6 @@ passHint = credFormPassHint // only new
             });
         })
     );
-    
-    // add touch eventListeners
-    
-    
 }
 
     // --------------------------supportDonate TO DO!!!---------------------------------------

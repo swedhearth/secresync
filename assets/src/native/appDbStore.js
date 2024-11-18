@@ -1,4 +1,4 @@
-/* 'frequent_0.027_GitHub' */
+/* 'frequent_0.028_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -334,12 +334,13 @@ function AppDbStore(thisApp){
             mobileDebug("In storeObj.switchConnection Start. The storeObj.key = ", storeObj.key);
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
             
+            storeObj.syncPaused = false;
+            
             if(!thisApp.dbObj){
                 mobileDebug("In storeObj.switchConnection. The storeObj.key = ", storeObj.key, "NO thisApp.dbObj. Will RETURN!!!");
                 return;
             }
-            
-            storeObj.syncPaused = false;
+
             if(storeObj.canAlter()){
                 mobileDebug("In storeObj.switchConnection storeObj.canAlter - will update the store.");
                 storeObj.update().catch(storeObj.catchUpdate);
