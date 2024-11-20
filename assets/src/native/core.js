@@ -1,4 +1,4 @@
-/* 'frequent_0.027_GitHub' */
+/* 'frequent_0.029_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console
@@ -246,14 +246,11 @@ function isURL(string){
         dom.add = tag => dom(create(tag));
         coreRawTags.forEach(rawTag => addDomHandle(rawTag));
         
-/*         const toolTip = dom.addDiv("toolTip");
-        setTimeout(_ => {
-            toolTip.attachTo(doc.body)
-        }, 1000); */
-        window.REM = parseInt(getComputedStyle(document.documentElement).fontSize);
-
         [...doc.querySelectorAll('*')].forEach(dom); // domify all the elements present in DOM at the start in the html document
-
+        
+        window.REM = parseInt(getComputedStyle(document.documentElement).fontSize);
+        window.TOUCH_DEVICE = !!navigator.maxTouchPoints || (doc.body.on("touchstart", _ => window.TOUCH_DEVICE = true, {once: true}), false);
+        
         return dom;
     };
 });

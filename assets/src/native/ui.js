@@ -1,7 +1,7 @@
-/* 'frequent_0.028_GitHub' */
+/* 'frequent_0.029_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.028_GitHub";
+    let tempVer = "frequent_0.029_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -29,11 +29,33 @@ function Interface(thisApp){
     const getTxtBankAlertTxt = getTxtBankParsedTxt("alert");
     
     // -------------- Helper to get app HTML elements ----------------------------------//
-    const getFieldsetEl = (legendHtml, beforeIcon, unpadded) => dom.addFieldset(unpadded ? "" : "padded").attach(dom.addLegend(beforeIcon || "", legendHtml)); // + ":"
+    const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml)).on("pointerdown", function(e){
+        
+        if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
+        const isPinFieldset = this.hasClass("pinFieldset");
+        this.killClass("pinFieldset");
+        e.preventDefault();
+        //e.stopPropagation();
+            let firstEmptyInpEl = null;
+            const inpEls = this.kidsByClass("inpEl");
+            inpEls.forEach(el => {
+                if(firstEmptyInpEl) return;
+                if(!el.value || el.type === "range") firstEmptyInpEl = el;// || el.type === "range"
+            });
+            const focusInpEl = firstEmptyInpEl || inpEls[0];
+
+            if(!focusInpEl.disabled) {
+                focusInpEl.focus();
+                window.requestAnimationFrame(_ => focusInpEl.focus()); // let the focus scroll to the element, then refocus after scroll will blur the input
+            }
+
+            if(isPinFieldset) this.addClass("pinFieldset");
+        }, {capture: true});
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
         inpObj._onInput && inpEl.on("input", inpObj._onInput);
+        inpObj._onKeydown && inpEl.on("keydown", inpObj._onKeydown);
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         return inpEl;
     };
@@ -53,7 +75,13 @@ function Interface(thisApp){
         ).addClass(inpType === "text" ? "passEyeHide" : "");
     };
     const getScrollWrpClass = pastRevision => `scrollWrp${pastRevision ? "PastRevision" : thisApp.consent ? "" : 'Private'}`;
-    const toggleScrollBar = e => e.target === e.currentTarget && e.currentTarget.hasClass("scrollWrpOverflow") && document.body.toggleClass("scrollBarVisible");
+    const toggleScrollWrpOverflow = wrap => !TOUCH_DEVICE && wrap[(wrap.scrollHeight > wrap.clientHeight ? "add" : "kill") + "Class"]("scrollWrpOverflow");
+    const toggleScrollBar = e => !TOUCH_DEVICE &&
+        e.target === e.currentTarget && 
+        e.currentTarget.hasClass("scrollWrpOverflow") && 
+        Math.abs(e.offsetX - e.target.clientWidth) < 10 && 
+        document.body.toggleClass("scrollBarVisible");
+
     //  --------------------------------------------------------------- END submodules  / HELPERS --------------------------------------------------------------- */
     
     //add history.state when modal section or mudule is open
@@ -92,7 +120,7 @@ function Interface(thisApp){
         };
         return spinnerSection;
     })();
-    const uiBlur = dom.addDiv("uiBlur").hide().onClick(e => e.target.hide());
+    const uiBlur = dom.addDiv("uiBlur").hide().on("pointerdown", e => e.target.hide());
 
     // Add modalSection Promise handler and Show
     const modalSectionPromise = ((resolve, choice, promise) => ({ //returns modalSectionPromise object
@@ -109,6 +137,7 @@ function Interface(thisApp){
             },
             fulfill: async e => { //e=true, value, function, false, null, popstate
                 if(!promise) return;
+
                 if(e?.type === "popstate"){
                     modalSection.ridKids().killClass("zIndex2").slideOut();
                     await new Promise(res => setTimeout(res, 100));
@@ -180,7 +209,8 @@ function Interface(thisApp){
             this._isPin = isPin,
             this._value = "";
             this._cssAry = isPin ? ["pinInput"] : ["passInput"];
-            this._labelHtml = isPin ? msgObj.pinInputLabel : msgObj.passInputLabel;
+            this._fieldsetCss = "padded" + (isPin ? " pinFieldset" : "");
+            this._legendHtml = isPin ? msgObj.pinInputLabel : msgObj.passInputLabel;
             this._inputsCount = isPin ? 4 : 1;
             this._inputsMaxCount = isPin ? 32 : 1;
             this._hint = isPin ? msgObj.pinHint : msgObj.passHint;
@@ -207,22 +237,40 @@ function Interface(thisApp){
                     thisPinInpEl.dispatchEvent(new Event('input'));
                     if(pinString[++idx]) processPastePin(pinString, pinInputEl, idx);
                 };
+                
                 const inputPin = e => {
-                    const pinInputEl = e.target;
+                    let pinInputEl = e.target;
                     if(pinInputEl.value.length > 1) return processPastePin(pinInputEl.value, pinInputEl);
-                    pinInputEl.value ? pinInputEl.addClass("pinCharValue") : pinInputEl.killClass("pinCharValue");
-                    inputObject._value = pinInputEl.siblings().map(pinInpEl => pinInpEl.value).join("");
-                    if(pinInputEl.siblings().length === inputObject._value.length && inputObject._value.length < inputObject._inputsMaxCount){
-                        pinInputEl.parentElement.attach(getPinInputEl(false, inputObject._value.length));
-                    }
-                    if(!pinInputEl.value && pinInputEl.siblings().length > inputObject._inputsCount){
-                        pinInputEl.siblings().forEach(kid => {if(!kid.value && kid !== pinInputEl) kid.kill()});
-                    }
-                    if(inputObject._value.length < inputObject._inputsMaxCount){
-                        pinInputEl.siblings().filter(pinInpEl => !pinInpEl.value)[0].focus();
+                    
+                    const updatePin = _ => {
+                        pinInputEl[pinInputEl.value ? "addClass" : "killClass"]("pinCharValue");
+                        inputObject._value = pinInputEl.siblings().map(pinInpEl => pinInpEl.value).join("");
+                        !pinInputEl.value && 
+                        pinInputEl.siblings().length > inputObject._inputsCount 
+                        && pinInputEl.siblings().forEach(kid => !kid.value && kid !== pinInputEl && kid.kill());
+                    };
+
+                    if(!pinInputEl.value && e.type === "keydown" && e.key === 'Backspace'){
+                        pinInputEl = pinInputEl.sibling(-1);
+                        if(!pinInputEl) return;
+                        pinInputEl.value = "";
+                        pinInputEl.focus();
+
+                        updatePin();
+
+                    }else if(e.type === "input"){
+                        
+                        updatePin();
+
+                        if(inputObject._value.length === inputObject._inputsMaxCount) return;
+                        
+                        inputObject.type = pinInputEl.forebear(1).sibling(-1).hasClass("passEyeHide") ?  "text" : "password";
+
+                        (pinInputEl.siblings().find(pinInpEl => !pinInpEl.value) || getPinInputEl(false, inputObject._value.length).attachTo(pinInputEl.parentElement)).focus();
                     }
                 };
-                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, id: "pinChar_" + idx}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                
+                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, _onKeydown: inputPin, id: "pinChar_" + idx, placeholder: "*"}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 const basePinInputElAry = new Array(inputObject._inputsCount).fill(0).map((el, idx) => getPinInputEl(true, idx));
                 const pastePin = (e) => {
                     e.preventDefault(); // Prevent input triggered on the last element
@@ -231,7 +279,7 @@ function Interface(thisApp){
                 };
                 return dom.addDiv("credInpWrp pinWrp").attachAry(basePinInputElAry).on("paste", pastePin);
             };
-            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value}})).on("paste", e => {
+            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "* * * * * * * * * * * * * * * * * * * *"}})).on("paste", e => {
                 if((e.clipboardData || window.clipboardData).getData("text").length > inputObject.maxLength) thisApp.message.credFormPassTooLong();
             });
             const inpWrp = inputObject._isPin ? pinWrp(inputObject) : passWrp(inputObject);
@@ -248,7 +296,7 @@ function Interface(thisApp){
                 inpWrp.kid(0).focus();
             };
 
-            return getFieldsetEl(inputObject._labelHtml).attachAry([ //, inputObject._isPin ? "pinInp" : ""
+            return getFieldsetEl(inputObject._fieldsetCss, inputObject._legendHtml).attachAry([ //, inputObject._isPin ? "pinInp" : ""
                 ...getHintAry(inputObject._hint),
                 getPassEyeIcon(inpWrp),
                 inpWrp,
@@ -283,7 +331,7 @@ function Interface(thisApp){
                 checked: isPersisted, // if not passInputLabel it means that it's only pin - so the key was persisted already, therefore select as default
                 _onInput: repaintPersistLabel 
             }).hide();
-            const presistFieldset = canPersist ? getFieldsetEl(msgObj.persistLabel).attachAry([
+            const presistFieldset = canPersist ? getFieldsetEl("padded", msgObj.persistLabel).attachAry([
                 ...getHintAry(getTxtBankHtmlTxt(isPersisted ? "credFormPersistRemoveHint" : "credFormPersistHint")),
                 persistCheckboxLabel,
                 persistCheckboxInputEl,
@@ -802,7 +850,7 @@ passHint = credFormPassHint // only new
             // Sections
             const passSection = async (labelHtml, inpType = "password") => {
                 const vPass = await vendObj.getCurrentPassword();
-                const passFieldset = getFieldsetEl(labelHtml, "pass");
+                const passFieldset = getFieldsetEl("padded", labelHtml, "pass");
                 const passInpEl = getInpEl({
                     type: inpType,
                     name: "vPass",
@@ -814,7 +862,10 @@ passHint = credFormPassHint // only new
                     vendObj.base = null;
                     vendObj = new thisApp.crypto.Vendor(vendObj);
                     vendObj.mod = null;
-                    passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
+                    //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
+                    const newPassFieldset = await passSection(labelHtml, passInpEl.type);
+                    passFieldset.replaceWith(newPassFieldset);
+                    newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
                     thisApp.message.newPassGenerated(vendObj.name);
                 };
 
@@ -822,7 +873,10 @@ passHint = credFormPassHint // only new
                     const changeRangeInput = async e => {
                         e.target.value = parseInt(e.target.value);
                         changeVprop(e);
-                        passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
+                        const newPassFieldset = await passSection(labelHtml, passInpEl.type);
+                        passFieldset.replaceWith(newPassFieldset);
+                        //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
+                        newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
                     };
                     const rangeInputEl = getInpEl({
                         type: "range",
@@ -837,7 +891,7 @@ passHint = credFormPassHint // only new
                         rangeInputEl.dispatchEvent(new Event('input'));
                     };
                     //return dom.addFieldset().attach(dom.addLegend("", rangeLabelHtml))
-                    return getFieldsetEl(rangeLabelHtml, false, true).attachAry([
+                    return getFieldsetEl("", rangeLabelHtml, false).attachAry([
                         getSvgIcon("decrease", true, _ => changeRangeInputValue(-1)),
                         rangeInputEl,
                         getSvgIcon("increase", true, _ => changeRangeInputValue(1))
@@ -899,7 +953,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return vendObj.log || !displayMode ? getFieldsetEl(labelHtml, "log").attachAry([
+                return vendObj.log || !displayMode ? getFieldsetEl("padded", labelHtml, "log").attachAry([
                     getSvgIcon(),
                     logInpEl,
                     displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
@@ -916,7 +970,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return vendObj.cPass || !displayMode ? getFieldsetEl(labelHtml, "pass").attachAry([
+                return vendObj.cPass || !displayMode ? getFieldsetEl("padded", labelHtml, "pass").attachAry([
                     getPassEyeIcon(passInpEl),
                     passInpEl,
                     displayMode ? getCopyIcon(passInpEl, "copyPassBtn", "customPassCopied") : getClearInputIcon(_ => clearFormInput(passInpEl))
@@ -928,7 +982,7 @@ passHint = credFormPassHint // only new
                 boxNoteEl.style.height = (boxNoteEl.scrollHeight + 5 ) + "px";
                 vForm.scrollTop = vFormScrollTop;
             };
-            const boxNoteEl = dom.addTextarea("boxNote")
+            const boxNoteEl = dom.addTextarea("inpEl boxNote")
                 .setAttrs({
                     name: "note",
                     maxlength: boxNoteElMaxLen,
@@ -947,15 +1001,16 @@ passHint = credFormPassHint // only new
                     if(e.isTrusted){
                         changeVprop(e); // only user input and not the dispatched event
                         if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit");
-                       
+                        window.requestAnimationFrame(_ => boxNoteEl.focus()); // refocus if the input event will trigger the scroll event, which blurs the boxNoteEl
                     }
-                     boxNoteFitContent();
+                    
+                    boxNoteFitContent();
                 })
                 .on("transitionend", boxNoteFitContent); // fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
             
             boxNoteEl.value = vendObj.note || "";
 
-            const notesSection = labelHtml => displayMode && !vendObj.note ? [] : getFieldsetEl(labelHtml, "note").attach(boxNoteEl);
+            const notesSection = labelHtml => displayMode && !vendObj.note ? [] : getFieldsetEl("padded", labelHtml, "note").attach(boxNoteEl);
 
             const urlSection = labelHtml => {
                 const urlInpEl = getInpEl({
@@ -969,7 +1024,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return  displayMode && !vendObj.url ? [] : getFieldsetEl(labelHtml, "url").attachAry([
+                return  displayMode && !vendObj.url ? [] : getFieldsetEl("padded", labelHtml, "url").attachAry([
                     getSvgIcon(),
                     urlInpEl,
                     isURL(vendObj.url) && displayMode 
@@ -990,7 +1045,7 @@ passHint = credFormPassHint // only new
                     _onInput: changeVprop
                 });
 
-                return displayMode && !vendObj[prop] ? [] :  getFieldsetEl(labelHtml, prop).attachAry([
+                return displayMode && !vendObj[prop] ? [] :  getFieldsetEl("padded", labelHtml, prop).attachAry([
                     getSvgIcon(),
                     inpEl,
                     displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
@@ -1069,7 +1124,8 @@ passHint = credFormPassHint // only new
             vForm.attach(formHead).attach(recordModWrp).attach(revisionWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());
             //boxNoteEl.value = vendObj.note || "";
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
-            if(vForm.scrollHeight > vForm.clientHeight) vForm.addClass("scrollWrpOverflow");
+            toggleScrollWrpOverflow(vForm);
+            //if(vForm.scrollHeight > vForm.clientHeight) vForm.addClass("scrollWrpOverflow");
         };
         /////////////////////////////////////////////////END MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1444,9 +1500,10 @@ passHint = credFormPassHint // only new
                     requestAnimationFrame(_ => {
                         clearTimeout(stopSpinnerTimout);
                         stopSpinnerTimout = setTimeout(_ => {
-                            vListScrollWrp.scrollHeight > vListScrollWrp.clientHeight 
+/*                             vListScrollWrp.scrollHeight > vListScrollWrp.clientHeight 
                                 ? vListScrollWrp.addClass("scrollWrpOverflow") 
-                                : vListScrollWrp.killClass("scrollWrpOverflow");
+                                : vListScrollWrp.killClass("scrollWrpOverflow"); */
+                            toggleScrollWrpOverflow(vListScrollWrp);
                             spinner.stop("in paintList - requestAnimationFrame");
                         }, stopSpinnerDelay);
                     });
@@ -1531,6 +1588,7 @@ passHint = credFormPassHint // only new
         };
         
         const blurUI = doBlur => {
+            console.log("blurUI -> doBlur = ", doBlur);
             doBlur ? thisApp.dbObj && uiBlur.show() : uiBlur.hide();
         }
         
@@ -1579,228 +1637,121 @@ passHint = credFormPassHint // only new
         window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
     });
 
+    const touchEventHandlers = (() => {
+        const leeway = 50; // Tolerance for perpendicular movement (px)
+        const threshold = 100; // Minimum swipe distance (px)
+        const allowedTime = 300; // Maximum swipe time (ms)
+        let isVerticalSwipe = false;
+        let isHorizontalSwipe = false;
+        let touchStart = { x: 0, y: 0, time: 0 };
 
-
-
-        // Touch EventHandlers
-/*     const touchEventHandlers = (_ => {
-        const leeway = 50; // 50px of tolerance of movement on a perpendicular axis
-        const threshold = 100; // 100 px minimum travel distance for swipe
-        const allowedTime = 300;// 300 ms for swipe
-        let movingVertical = 0;
-        let movingHorizontal = 0;
-        let touchStartY = 0;
-        let touchStartX = 0;
-        let startTime = 0;
-
-        const resetSwipe = _ => {
+        const resetSwipe = () => {
             msgModule.killAttr("style");
             appSectionForm.killAttr("style");
-            movingVertical = movingHorizontal = touchStartY = touchStartX = startTime = 0;
+            isVerticalSwipe = isHorizontalSwipe = false;
+            touchStart = { x: 0, y: 0, time: 0 };
         };
 
-        const startSwipe = e => {
-            [touchStartX, touchStartY] = [e.touches[0]?.clientX, e.touches[0]?.clientY];
-            
-            if(this.messages.isHidden() && touchStartY + REM * 2 > document.body.clientHeight) { // this is start of message swipe
-                movingVertical = true;
+        const startSwipe = (e) => {
+            const { clientX, clientY } = e.touches[0];
+            touchStart = { x: clientX, y: clientY, time: Date.now() };
+
+            if (this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
+                isVerticalSwipe = true;
                 this.messages.paintFullArchive();
-            }else if(this.messages.isFullArchive() && !msgModule.lastChild.scrollTop){
-                movingVertical = true;
-            }else if(!appSectionForm.hasClass("elSlideOut")){
-               movingHorizontal = true;
+            } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
+                isVerticalSwipe = true;
+            } else if (!appSectionForm.hasClass("elSlideOut")) {
+                isHorizontalSwipe = true;
             }
-            
-            startTime = movingHorizontal || movingVertical ? Date.now() : 0;
         };
-        
-        const swiping = (e) => {
-            const [touchX, touchY] = [e.touches[0]?.clientX, e.touches[0]?.clientY];
 
-            if(movingVertical){
-                if(this.messages.isHidden() && touchY < touchStartY){
-                    const translateBy = 100 - ((touchStartY - touchY) * 100) / document.body.clientHeight;
-                    if(translateBy < 50) {
+        const swiping = (e) => {
+            const { clientX, clientY } = e.touches[0];
+
+            if (isVerticalSwipe) {
+                const deltaY = touchStart.y - clientY;
+                const translateBy = 100 - (Math.abs(deltaY) * 100) / document.body.clientHeight;
+
+                if (this.messages.isHidden() && deltaY > 0) {
+                    // Swipe up to open full archive
+                    if (translateBy < 50) {
                         resetSwipe();
                         this.messages.openFullArchive();
-                    }else{
-                        msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                    } else {
+                        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
                     }
-                }else if(this.messages.isFullArchive() && touchY > touchStartY){
-                    const translateBy = ((touchY - touchStartY) * 100) / document.body.clientHeight;
-                    if(translateBy > 50) {
+                } else if (this.messages.isFullArchive() && deltaY < 0) {
+                    // Swipe down to close full archive
+                    const translateBy = (Math.abs(deltaY) * 100) / document.body.clientHeight;
+                    if (translateBy > 50) {
                         resetSwipe();
                         history.back();
-                    }else{
-                        msgModule.setAttr("style", "transition: unset; height: 100%; transform: translateY(" + translateBy + "%);");
+                    } else {
+                        msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
                     }
                 }
             }
 
-            if(!appSectionForm.hasClass("elSlideOut") && !e.target.placeholder && movingHorizontal && touchX < touchStartX){
-                if(Math.abs(touchY - touchStartY) >= leeway){
+            if (isHorizontalSwipe && !e.target.placeholder && clientX < touchStart.x) {
+                // Swipe left for back navigation
+                if (Math.abs(clientY - touchStart.y) >= leeway) {
                     resetSwipe();
                     return;
                 }
-                const translateBy = ((touchStartX - touchX) * 100) / document.body.clientWidth;
-                if(translateBy > 50) {
-                    resetSwipe();
-                    history.back();
-                }else{
-                    appSectionForm.setAttr("style", "transition: unset; transform: translateX(" + (-translateBy) + "%);");
-                }
-            }
-        };
-
-        const endSwipe = e => {
-            const [touchX, touchY] = [e.changedTouches[0]?.clientX, e.changedTouches[0]?.clientY];
-            const checkSwipe = closeArchive => {
-                const [mainNow, perpNow, mainStart, perpStart] = movingVertical 
-                    ? [touchY, touchX, touchStartY, touchStartX] 
-                    : [touchX, touchY, touchStartX, touchStartY];
-
-                return (Date.now() - startTime) < allowedTime && Math.abs(perpNow - perpStart) <= leeway && (closeArchive ? mainNow - mainStart : mainStart - mainNow) >= threshold;
-            };
-            
-            if(startTime && touchX && touchY){
-                if(movingVertical){
-                    if(this.messages.isFullArchive()){
-                        if(checkSwipe(true)) history.back();
-                    }else{
-                        checkSwipe(false) ? this.messages.openFullArchive() : this.messages.resetFullArchive();
-                    }
-                }else if(movingHorizontal){
-                    if(checkSwipe(false)) history.back();
-                }
-            }
-            
-            resetSwipe();
-        };
-        
-        return{
-            startSwipe: startSwipe,
-            swiping: swiping,
-            endSwipe: endSwipe
-        }
-    })(); */
-    
-    
-const touchEventHandlers = (() => {
-    const leeway = 50; // Tolerance for perpendicular movement (px)
-    const threshold = 100; // Minimum swipe distance (px)
-    const allowedTime = 300; // Maximum swipe time (ms)
-    let isVerticalSwipe = false;
-    let isHorizontalSwipe = false;
-    let touchStart = { x: 0, y: 0, time: 0 };
-
-    const resetSwipe = () => {
-        msgModule.killAttr("style");
-        appSectionForm.killAttr("style");
-        isVerticalSwipe = isHorizontalSwipe = false;
-        touchStart = { x: 0, y: 0, time: 0 };
-    };
-
-    const startSwipe = (e) => {
-        const { clientX, clientY } = e.touches[0];
-        touchStart = { x: clientX, y: clientY, time: Date.now() };
-
-        if (this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
-            isVerticalSwipe = true;
-            this.messages.paintFullArchive();
-        } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
-            isVerticalSwipe = true;
-        } else if (!appSectionForm.hasClass("elSlideOut")) {
-            isHorizontalSwipe = true;
-        }
-    };
-
-    const swiping = (e) => {
-        const { clientX, clientY } = e.touches[0];
-
-        if (isVerticalSwipe) {
-            const deltaY = touchStart.y - clientY;
-            const translateBy = 100 - (Math.abs(deltaY) * 100) / document.body.clientHeight;
-
-            if (this.messages.isHidden() && deltaY > 0) {
-                // Swipe up to open full archive
-                if (translateBy < 50) {
-                    resetSwipe();
-                    this.messages.openFullArchive();
-                } else {
-                    msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
-                }
-            } else if (this.messages.isFullArchive() && deltaY < 0) {
-                // Swipe down to close full archive
-                const translateBy = (Math.abs(deltaY) * 100) / document.body.clientHeight;
+                const translateBy = ((touchStart.x - clientX) * 100) / document.body.clientWidth;
                 if (translateBy > 50) {
                     resetSwipe();
                     history.back();
                 } else {
-                    msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+                    appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
                 }
             }
-        }
-
-        if (isHorizontalSwipe && !e.target.placeholder && clientX < touchStart.x) {
-            // Swipe left for back navigation
-            if (Math.abs(clientY - touchStart.y) >= leeway) {
-                resetSwipe();
-                return;
-            }
-            const translateBy = ((touchStart.x - clientX) * 100) / document.body.clientWidth;
-            if (translateBy > 50) {
-                resetSwipe();
-                history.back();
-            } else {
-                appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
-            }
-        }
-    };
-
-    const endSwipe = (e) => {
-        // Extract touch coordinates or fallback to undefined
-        const { clientX, clientY } = e.changedTouches?.[0] || {};
-
-        // If no valid touch data, reset and exit
-        if (!touchStart.time || !clientX || !clientY) return resetSwipe();
-
-        // Helper to validate swipe
-        const isValidSwipe = (closeArchive) => {
-            const mainDelta = isVerticalSwipe ? clientY - touchStart.y : clientX - touchStart.x;
-            const perpDelta = isVerticalSwipe ? clientX - touchStart.x : clientY - touchStart.y;
-            const withinTime = Date.now() - touchStart.time < allowedTime;
-
-            return (
-                withinTime &&
-                Math.abs(perpDelta) <= leeway &&
-                (closeArchive ? mainDelta > threshold : -mainDelta > threshold)
-            );
         };
 
-        // Handle vertical or horizontal swipe based on the state
-        if (isVerticalSwipe) {
-            if (this.messages.isFullArchive()) {
-                if (isValidSwipe(true)) history.back();
-            } else if (isValidSwipe(false)) {
-                this.messages.openFullArchive();
-            } else {
-                this.messages.resetFullArchive();
+        const endSwipe = (e) => {
+            // Extract touch coordinates or fallback to undefined
+            const { clientX, clientY } = e.changedTouches?.[0] || {};
+
+            // If no valid touch data, reset and exit
+            if (!touchStart.time || !clientX || !clientY) return resetSwipe();
+
+            // Helper to validate swipe
+            const isValidSwipe = (closeArchive) => {
+                const mainDelta = isVerticalSwipe ? clientY - touchStart.y : clientX - touchStart.x;
+                const perpDelta = isVerticalSwipe ? clientX - touchStart.x : clientY - touchStart.y;
+                const withinTime = Date.now() - touchStart.time < allowedTime;
+
+                return (
+                    withinTime &&
+                    Math.abs(perpDelta) <= leeway &&
+                    (closeArchive ? mainDelta > threshold : -mainDelta > threshold)
+                );
+            };
+
+            // Handle vertical or horizontal swipe based on the state
+            if (isVerticalSwipe) {
+                if (this.messages.isFullArchive()) {
+                    if (isValidSwipe(true)) history.back();
+                } else if (isValidSwipe(false)) {
+                    this.messages.openFullArchive();
+                } else {
+                    this.messages.resetFullArchive();
+                }
+            } else if (isHorizontalSwipe && isValidSwipe(false)) {
+                history.back();
             }
-        } else if (isHorizontalSwipe && isValidSwipe(false)) {
-            history.back();
-        }
 
-        // Reset swipe state
-        resetSwipe();
-    };
+            // Reset swipe state
+            resetSwipe();
+        };
 
-
-    return {
-        startSwipe,
-        swiping,
-        endSwipe,
-    };
-})();
+        return {
+            startSwipe,
+            swiping,
+            endSwipe,
+        };
+    })();
 
 /*************************************/
     // Add Popstate Listener
@@ -1827,14 +1778,19 @@ const touchEventHandlers = (() => {
     
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
-            document.body.kidsByClass("svgIcon").forEach(svgIcon => {
-                svgIcon.toggleClass("noDrop");
-            });
+            document.body.kidsByClass("svgIcon").forEach(el => { el.toggleClass("noDrop");});
+            document.body.kidsByClass("pinInput").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("padded").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("submitCredentialsLabel").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("unlockDbIcon").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("protectDb").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("vEntry").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("vName").forEach(el => { el.toggleClass("alt"); });
         })
     );
 }
 
-    // --------------------------supportDonate TO DO!!!---------------------------------------
+    // --------------------------supportDonate TO DO!!!--------------------------------------- 
 /*     const supportDonate = (_ => {
         
         function closeDonate(){

@@ -1,4 +1,4 @@
-/* 'frequent_0.028_GitHub' */
+/* 'frequent_0.029_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -7,8 +7,6 @@ function AppDbStore(thisApp){
             console.log(err);
             console.log(err.name);
             console.log(err.message);
-            
-            
 
             let errMsg = null;
             if(err.name === "OperationError") errMsg = "OperationError";
@@ -335,6 +333,7 @@ function AppDbStore(thisApp){
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
             
             storeObj.syncPaused = false;
+            storeObj.iconOpacity(true, false);
             
             if(!thisApp.dbObj){
                 mobileDebug("In storeObj.switchConnection. The storeObj.key = ", storeObj.key, "NO thisApp.dbObj. Will RETURN!!!");

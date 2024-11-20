@@ -1,4 +1,4 @@
-/* 'frequent_0.028_GitHub */
+/* 'frequent_0.029_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -423,13 +423,14 @@ function App(urlSearchParams){
     };
 
     this.visibilityChange = e => {
+        console.log("visibilityChange");
         if(!this.dbObj) return;
         mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
         this.hidden = document.visibilityState === "hidden";
 
         if(this.hidden){
-            this.ui.blur(true);
+            //this.ui.blur(true);
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
