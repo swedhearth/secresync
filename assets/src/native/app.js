@@ -1,4 +1,4 @@
-/* 'frequent_0.029_GitHub */
+/* 'frequent_0.030_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -411,6 +411,7 @@ function App(urlSearchParams){
             mobileDebug("connectivitychange. App was online and now is online too. No need to update anything. Will return.");
             return;
         }// else - change connectivity */
+        const wasOnline = this.online;
         
         this.online = e.type !== "offline";
         
@@ -419,7 +420,7 @@ function App(urlSearchParams){
         mobileDebug("connectivitychange. document.visibilityState = ", document.visibilityState);
 
         this.dbStore.getRemoteObjects().forEach(storeObj => storeObj.switchConnection()); 
-        if(!this.hidden && this.dbObj) this.message[e.type](); // message.online : message.offline
+        if(wasOnline !== this.online && !this.hidden && this.dbObj) this.message[e.type](); // message.online : message.offline
     };
 
     this.visibilityChange = e => {

@@ -1,4 +1,4 @@
-/* 'frequent_0.029_GitHub' */
+/* 'frequent_0.030_GitHub' */
 "use strict";
 
 const developerMode = true; // Global constant for printing console
@@ -146,7 +146,51 @@ function isURL(string){
           };
           Object.entries(elMethods).forEach(([name, method]) => this[name] = method); // to not create a object constructor e.g.: function ElMethods(el) { this.addClass = function(cssClass){this.classList.add(cssClass); return this;}; ...}
         }
+        
+        const handleToolTip = (_ => {
+            let toolTipShowTimer;
+            let toolTipCloseTimer;
+            let toolTip;
+            const toolTipDelay = 800;
+            const toolTipUpdatePosition = (left, top) => toolTip.setAttr("style", `left: ${left}px; top: ${top}px;`);
+            
+            return function(e) {
+                if (!this.title) return;
+                
+                clearTimeout(toolTipCloseTimer);
+                clearTimeout(toolTipShowTimer);
 
+                if (e.type === "pointerdown") {
+                    if(toolTip) toolTip.kill();
+                    let {clientX, clientY} = e;
+                    
+                    toolTip = dom.addDiv("toolTip").attachTo(doc.body);
+                    toolTipUpdatePosition(clientX, clientY).txt(this.title).show();
+                    
+                    const { top, height, left, width } = toolTip.getBoundingClientRect();
+                    const bottomOut = top + height + REM > doc.body.clientHeight;
+                    const leftOut = left + width + REM > doc.body.clientWidth;
+
+                    if (bottomOut) clientY -= height + REM;
+                    if (leftOut) clientX -= width + REM;
+                    if (bottomOut || leftOut) toolTipUpdatePosition(clientX, clientY);
+                    
+                    toolTip.hide();
+                    
+                    toolTipShowTimer = setTimeout(() => {
+                        this.clickCancel = true;
+                        toolTip.show();
+                    }, toolTipDelay);
+                } else {
+                    setTimeout(() => { this.clickCancel = false; }, toolTipDelay);
+
+                    toolTipCloseTimer = setTimeout(() => {
+                        if(toolTip) toolTip.kill();
+                    }, toolTipDelay * 3);
+                }
+            };
+        })();
+        
         const dom = el => {
             const elMethods = new ElMethods(el);
             const protoObj = Object.getPrototypeOf(elMethods); // Object of ElMethods prototypes (as a result of dom.extendElMethods function)
@@ -154,55 +198,10 @@ function isURL(string){
 
             for (const method in elMethods) el[method] = protoObj[method] || elMethods[method]; //include prototypes - prototypes take priority
 
-            let toolTipShowTimer;
-            let toolTipCloseTimer;
-            let toolTip;
-            const delay = 800;
-            const toolTipshow = e => {
-                if (!el.title) return;
-                    clearTimeout(toolTipCloseTimer);
-                    clearTimeout(toolTipShowTimer);
-
-                if (e.type === "pointerdown") {
-
-                    if(toolTip) toolTip.kill();
-                    
-                    toolTip = dom.addDiv("toolTip").attachTo(doc.body);
-
-                    
-                    const updateToolTipPosition = (top, left) => toolTip.setAttr("style", `left: ${left}px; top: ${top}px;`);
-                    
-                    let [toolTipTop, toolTipLeft] = [e.clientY, e.clientX];
-
-                    updateToolTipPosition(toolTipTop, toolTipLeft).txt(el.title).show();
-                    const { top, height, left, width } = toolTip.getBoundingClientRect();
-                    
-                    const bottomOut = top + height + REM > doc.body.clientHeight;
-                    const leftOut = left + width + REM > doc.body.clientWidth;
-
-                    if (bottomOut) toolTipTop -= height + REM;
-                    if (leftOut) toolTipLeft -= width + REM;
-                    if (bottomOut || leftOut) updateToolTipPosition(toolTipTop, toolTipLeft);
-                    
-                    toolTip.hide();
-
-                    toolTipShowTimer = setTimeout(() => {
-                        el.clickCancel = true;
-                        toolTip.show();
-                    }, delay);
-                } else {
-                    setTimeout(() => { el.clickCancel = false; }, delay);
-
-                    toolTipCloseTimer = setTimeout(() => {
-                        if(toolTip) toolTip.kill();
-                    }, delay * 3);
-                }
-            };
-
-            el.on("pointerdown", toolTipshow);
-            el.on("pointerup", toolTipshow);
-            el.on("pointerleave", toolTipshow);
-            el.on("pointercancel", toolTipshow);
+            el.on("pointerdown", handleToolTip);
+            el.on("pointerup", handleToolTip);
+            el.on("pointerleave", handleToolTip);
+            el.on("pointercancel", handleToolTip);
             return el;
         };
         const create = tag => doc.createElement(tag);

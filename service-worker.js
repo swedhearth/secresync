@@ -1,6 +1,6 @@
 const appCaches = [
     {
-        name: 'frequent_0.029_GitHub',
+        name: 'frequent_0.030_GitHub',
         urls: [
             "./",
             "./secresync.webmanifest",

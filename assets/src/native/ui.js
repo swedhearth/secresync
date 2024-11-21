@@ -1,7 +1,7 @@
-/* 'frequent_0.029_GitHub' */
+/* 'frequent_0.030_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.029_GitHub";
+    let tempVer = "frequent_0.030_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -108,7 +108,7 @@ function Interface(thisApp){
     const appSectionList = dom.addDiv("appSection appList");//.hide();
     const dbModifiedBar = dom.addDiv("dbModifiedBar").hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
-        const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerContainer"));// make it visible at the start of app
+        const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerWrp"));// make it visible at the start of app
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
         spinnerSection.start = where => {
             //if(developerMode) console.log("spinner.start: ", where);
@@ -270,7 +270,7 @@ function Interface(thisApp){
                     }
                 };
                 
-                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, _onKeydown: inputPin, id: "pinChar_" + idx, placeholder: "*"}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, _onKeydown: inputPin, id: "pinChar_" + idx, placeholder: "X"}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 const basePinInputElAry = new Array(inputObject._inputsCount).fill(0).map((el, idx) => getPinInputEl(true, idx));
                 const pastePin = (e) => {
                     e.preventDefault(); // Prevent input triggered on the last element
@@ -279,7 +279,7 @@ function Interface(thisApp){
                 };
                 return dom.addDiv("credInpWrp pinWrp").attachAry(basePinInputElAry).on("paste", pastePin);
             };
-            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "* * * * * * * * * * * * * * * * * * * *"}})).on("paste", e => {
+            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "X X X X X * * * * * * * * * * * * * * *"}})).on("paste", e => {
                 if((e.clipboardData || window.clipboardData).getData("text").length > inputObject.maxLength) thisApp.message.credFormPassTooLong();
             });
             const inpWrp = inputObject._isPin ? pinWrp(inputObject) : passWrp(inputObject);
@@ -307,7 +307,7 @@ function Interface(thisApp){
         const getCredentialsBody = (canDelete, canPersist, isPersisted, isPinOnly, isUnlock, msgObj, passInputObj, pinInputObj) => {
             const getPersistCheckboxLabel = checked => 
                 dom.add("label").setAttr("for", "persistCheckbox").addClass("credInpWrp")
-                .attach(getSvgIcon(checked ? "checked" : "checked unchecked", checked ? "credChecked" : "credUnchecked", _=> null))
+                .attach(getSvgIcon(checked ? "checkedIcon" : "uncheckedIcon", checked ? "credChecked" : "credUnchecked", _=> null)) //checked
                 .attach(dom.addSpan("checkboxLabelSpan", getTxtBankHtmlTxt(
                     checked
                         ? isPersisted 
@@ -508,7 +508,7 @@ passHint = credFormPassHint // only new
             return msgModule.cssName("msgModule").ridKids(1); //.killAttr("style")
         };
         
-        this.closeFullArchive = _ => { //property of the Messages object, triggered on the global popstate event
+        this.fullArchiveHasClosed = _ => { //property of the Messages object, triggered on the global popstate event
             if(!msgIsFullArchive) return false;
             msgClearPromise();
             msgModuleSlideDown();
@@ -1293,8 +1293,8 @@ passHint = credFormPassHint // only new
             const getAppMoreTaskbar = _ => dom.addDiv("appMoreTaskbar").attachAry([
                 getSvgIcon("reloadApp", true, thisApp.reload),
                 dom.addDiv("flexIconWrp").attachAry([
-                    getSvgIcon("changeDbPass", true, getChangePassword),
-                    getSvgIcon("donate", "donate", getDonate),
+                    //getSvgIcon("changeDbPass", true, getChangePassword),
+                    //getSvgIcon("donate", "donate", getDonate),
                     getSvgIcon("downDbIcon", "downDb", downloadCopyDB),
                     getSvgIcon("impDbIcon", "impDb", importDb),
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
@@ -1455,6 +1455,7 @@ passHint = credFormPassHint // only new
                 ]);
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            
             const paintList = (searchStr = searchFormEl.getValue()) => {
                 const sortList = {
                     vSortName: {
@@ -1471,24 +1472,12 @@ passHint = credFormPassHint // only new
                     },
                 }[adoSorts.sortBy][adoSorts.sortOrder];
 
-/*                 let vendAllowAry
-                if(!adoDetails.typeNote && !adoDetails.typeLog){ //vNote
-                    vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => obj.isTrash));
-                }else{
-                    vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))));
-                }
-                
-                const vendAllowAry = !adoDetails.typeNote && !adoDetails.typeLog
-                ? sortList(thisApp.dbObj.vendors.filter(obj => obj.isTrash))
-                : sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote)))); */
                 
                 const vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => 
                   obj.isTrash && !adoDetails.typeNote && !adoDetails.typeLog || 
                   !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))
                 ));
 
-
-                //let vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))));
                 const highlightSrchStr = txt => searchStr ? txt.replace(new RegExp(searchStr, 'gi'), match => dom.addSpan("hit", match).outerHTML) : txt; // add highlights to text of found searchStr
                 
                 let elIdx = 0;
@@ -1500,15 +1489,14 @@ passHint = credFormPassHint // only new
                     requestAnimationFrame(_ => {
                         clearTimeout(stopSpinnerTimout);
                         stopSpinnerTimout = setTimeout(_ => {
-/*                             vListScrollWrp.scrollHeight > vListScrollWrp.clientHeight 
-                                ? vListScrollWrp.addClass("scrollWrpOverflow") 
-                                : vListScrollWrp.killClass("scrollWrpOverflow"); */
                             toggleScrollWrpOverflow(vListScrollWrp);
                             spinner.stop("in paintList - requestAnimationFrame");
                         }, stopSpinnerDelay);
                     });
                     elIdx++;
                 };
+                
+                
                 
                 const vEntry = vendObj => dom.addDiv("vEmpty")
                     .onClick(_ => paintFormSection(true, vendObj))
@@ -1637,7 +1625,7 @@ passHint = credFormPassHint // only new
         window.requestAnimationFrame(_ => window.requestAnimationFrame(_ => installAppEl.addClass("in")));
     });
 
-    const touchEventHandlers = (() => {
+    const touchHandler = (() => {
         const leeway = 50; // Tolerance for perpendicular movement (px)
         const threshold = 100; // Minimum swipe distance (px)
         const allowedTime = 300; // Maximum swipe time (ms)
@@ -1752,14 +1740,62 @@ passHint = credFormPassHint // only new
             endSwipe,
         };
     })();
+    
+    
+    
+    /* **************************************************** */
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
+            
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const getDonate = _ => {
+                 console.log("TO DO getDonate");
+            }
+            
+            
+    const contextHandler = (_ => {
+        let settingsSection = null;
+
+        const openSetting = e =>{
+            e.preventDefault();
+            if(settingsSection) return;
+            
+            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", "donate", getDonate), []];
+            
+            settingsSection = dom.addDiv("settingsSection").attach(
+                dom.addDiv("settingsWrp").attachAry(
+                    contextIcons
+                )
+            ).onClick(function(e){
+                if(e.target === e.currentTarget) history.back();
+            }).attachTo(document.body);
+
+            addModalToHistory(true); //force adding to history
+        
+        };
+        
+        const hasClosed = _ =>{
+            if(!settingsSection) return false;
+            settingsSection.kill();
+            settingsSection = null;
+            return true;
+        };
+        
+        return {
+            open: openSetting,
+            hasClosed: hasClosed,
+        };
+    })();
 
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-        if(!this.messages.closeFullArchive()){ // hide the Messages Full Archive if is fullscreen, then return
-            mainGui.reset(); //resetUI - hide form, show list
-            modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
-        }
+        if(contextHandler.hasClosed()) return;
+        if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
+
+        mainGui.reset(); //resetUI - hide form, show list
+        modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
+
     });
     
     // Attach Sections
@@ -1771,10 +1807,11 @@ passHint = credFormPassHint // only new
         spinner,
         uiBlur
     ])
-    .on("touchstart", touchEventHandlers.startSwipe)
-    .on("touchmove", touchEventHandlers.swiping)
-    .on("touchend", touchEventHandlers.endSwipe)
-    .on("touchcancel", touchEventHandlers.endSwipe);
+    .on("touchstart", touchHandler.startSwipe)
+    .on("touchmove", touchHandler.swiping)
+    .on("touchend", touchHandler.endSwipe)
+    .on("touchcancel", touchHandler.endSwipe)
+    .on("contextmenu", contextHandler.open);
     
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {

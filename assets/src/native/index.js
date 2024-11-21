@@ -1,6 +1,6 @@
-/* 'frequent_0.029_GitHub' */
+/* 'frequent_0.30_GitHub' */
 "use strict";
-console.log("index core_0.029_GitHub");
+console.log("index core_0.030_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -100,7 +100,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
-       window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        //window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
 
         let appInstalled = false;

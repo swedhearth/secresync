@@ -1,4 +1,4 @@
-/* 'frequent_0.029_GitHub' */
+/* 'frequent_0.030_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -234,7 +234,11 @@ function AppDbStore(thisApp){
                     thisApp.urlSearchParams = null; //clear the urlSearchParams if it matches thisStoreObj.key regardless of 
                 }
             }else{// this is not the correct storeObj, but check if this storeObj requires a refresh maybe
+                if(refreshExpiredToken && storeObj.handle){
+                    mobileDebug("In storeObj.getTokenFromRedirect. Is OneDrive token due for refresh? ", thisApp.localStorage.get(storeObj.key + "RefreshBy") < Date.now());
+                }
                 if(refreshExpiredToken && storeObj.handle && thisApp.localStorage.get(storeObj.key + "RefreshBy") < Date.now()){
+                    mobileDebug("In storeObj.getTokenFromRedirect. Will set the storeObj.refreshExpiredToken - the OneDrive should refresh");
                     storeObj.refreshExpiredToken = refreshExpiredToken; // add a new storeObj method assigning function that will enable refresh of the handle in the thisApp.start
                 }
                 return null;
