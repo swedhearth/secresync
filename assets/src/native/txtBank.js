@@ -1,4 +1,4 @@
-/* 'frequent_0.027_GitHub */
+/* 'frequent_0.031_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -1888,7 +1888,7 @@ const txtBankObj = {
         },
         "credChecked": "Zachowaj hasło na urządzeniu",
         "credUnchecked": "Nie zachowuj hasła na urządzeniu",
-        "credCheckedPersisted": "Hasło zostało zapisane na urządzeniu",
+        "credCheckedPersisted": "Hasło jest zapisane na urządzeniu",
         "credUncheckedPersisted": "Zapisane hasło zostanie usunięte z urządzenia",
         "unlockDb": "Odblokuj Bazę Danych",
         "protectDb": "Zabezpiecz Bazę Danych",

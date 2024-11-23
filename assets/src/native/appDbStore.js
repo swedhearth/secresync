@@ -1,4 +1,4 @@
-/* 'frequent_0.030_GitHub' */
+/* 'frequent_0.031_GitHub' */
 function AppDbStore(thisApp){
     "use strict";
     /* -------------------------------------------------------  Stores Extension ------------------------------------------------------------------ */
@@ -423,7 +423,7 @@ function AppDbStore(thisApp){
         const getAuthUrl = (state, codeChallenge) => `${authLeadUrl}/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=${graphUserScopes}&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
         const oneDriveFileUrl = `https://graph.microsoft.com/v1.0/me/drive/special/approot:${oneDriveFilePath}:/content`
 
-        const getRefreshTokenTime = _ => Date.now() + 1000 * 60 * 60 * 23; // Refresher lasts only 24 hours - refresh after more than 23 hours
+        const getRefreshTokenTime = refreshIn => Date.now() + refreshIn * 1000; //1000 * 60 * 60 * 23; // Refresher lasts only 24 hours - refresh after more than 23 hours
         const timeoutMsec = 5000;
 
         let oneDriveAccessToken = null; // holder of the tokenResponse.access_token - obtained throgh the getAccessToken, used in putOneDriveFile, getOneDriveFile and the switchConnection

@@ -1,7 +1,7 @@
-/* 'frequent_0.030_GitHub' */
+/* 'frequent_0.031_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.030_GitHub";
+    let tempVer = "frequent_0.031_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -659,8 +659,10 @@ passHint = credFormPassHint // only new
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
+               // console.log("vFormScrollTop", vFormScrollTop, "e.target.scrollTop", e.target.scrollTop);
                 vFormScrollTop = e.target.scrollTop;
-                document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
+                
+                if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
             });
             if(addHistory) addModalToHistory();
             
@@ -1122,6 +1124,7 @@ passHint = credFormPassHint // only new
             );
 
             vForm.attach(formHead).attach(recordModWrp).attach(revisionWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());
+            appSectionForm.isDisplay = displayMode;
             //boxNoteEl.value = vendObj.note || "";
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
             toggleScrollWrpOverflow(vForm);
@@ -1298,7 +1301,9 @@ passHint = credFormPassHint // only new
                     getSvgIcon("downDbIcon", "downDb", downloadCopyDB),
                     getSvgIcon("impDbIcon", "impDb", importDb),
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
-                    langModule(thisApp, repaintUI)
+                    
+                    //langModule(thisApp, repaintUI),
+                    getSvgIcon("settings", true, settings.open)
                 ]),
                 getSvgIcon("arrowUp", "hide", (e => e.target.forebear(1).toggleClass("appMoreTaskbarShow")))
             ]);
@@ -1649,7 +1654,7 @@ passHint = credFormPassHint // only new
                 this.messages.paintFullArchive();
             } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
                 isVerticalSwipe = true;
-            } else if (!appSectionForm.hasClass("elSlideOut")) {
+            } else if (!appSectionForm.hasClass("elSlideOut") && appSectionForm.isDisplay) {
                 isHorizontalSwipe = true;
             }
         };
@@ -1753,14 +1758,14 @@ passHint = credFormPassHint // only new
             }
             
             
-    const contextHandler = (_ => {
+    const settings = (_ => {
         let settingsSection = null;
 
         const openSetting = e =>{
             e.preventDefault();
             if(settingsSection) return;
             
-            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", "donate", getDonate), []];
+            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", "donate", getDonate), [], langModule(thisApp, this.init)];
             
             settingsSection = dom.addDiv("settingsSection").attach(
                 dom.addDiv("settingsWrp").attachAry(
@@ -1790,7 +1795,7 @@ passHint = credFormPassHint // only new
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-        if(contextHandler.hasClosed()) return;
+        if(settings.hasClosed()) return;
         if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
 
         mainGui.reset(); //resetUI - hide form, show list
@@ -1811,7 +1816,7 @@ passHint = credFormPassHint // only new
     .on("touchmove", touchHandler.swiping)
     .on("touchend", touchHandler.endSwipe)
     .on("touchcancel", touchHandler.endSwipe)
-    .on("contextmenu", contextHandler.open);
+    //.on("contextmenu", contextHandler.open);
     
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
