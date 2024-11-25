@@ -1,4 +1,4 @@
-/* 'frequent_0.30_GitHub' */
+/* 'frequent_0.34_GitHub' */
 "use strict";
 console.log("index core_0.030_GitHub");
 /* 
@@ -81,7 +81,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         setTimeout(_ =>{
             mobileDebug("!!! IN INDEX - !!! This has been caught when no urlSearchParams and 5 seconds ellapsed. WILL RELOAD. history.state", JSON.stringify(window.history.state));
             alert("urlSearchParams returned null and 5 seconds has passed. reload the app");
-            window.location.replace(window.location.origin + window.location.pathname);
+            if(confirm("NACISNIJ CANCEL to examin the error!!!!!!!")){
+                window.location.replace(window.location.origin + window.location.pathname);
+            }
+            
         }, 5000);
         return;
     }
@@ -100,7 +103,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
-        //window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
 
         let appInstalled = false;

@@ -1,4 +1,4 @@
-/* 'frequent_0.031_GitHub */
+/* 'frequent_0.034_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -250,8 +250,14 @@ const txtBankObj = {
       },
       "registerAuth": {
         "q": "Would you like to enable the Web Authentication (WebAuthn) API?<br>You can choose from various methods available on your device (fingerprint, voice, eye scan, PIN, etc.).",
-        "y": "Yes, I want to use the available device authentication.<br>This allows offline access.",
-        "n": "No, I do not want to use any biometric authentication.<br>Use the online authentication method instead.",
+        "y": "Yes, I want to use the available device authentication.",
+        "n": "No, I do not want to use any biometric authentication.<br>Use a different authentication method instead.",
+        "i": "secreSync"
+      },
+      "persistOnline": {
+        "q": "The online authentication method is currently unavailable.<br><br>Alternatively, you can save the encrypted password directly on the device.<br>The database password will be secured by a PIN, however, an insufficiently long PIN may allow a skilled hacker who gains access to this device to break it.",
+        "y": "",
+        "n": "Okay. Save the encrypted password directly on the device.<br><br>I understand that losing control of the device may result in access to my data.",
         "i": "secreSync"
       },
       "oneDriveRefreshAccess": {
@@ -294,8 +300,8 @@ const txtBankObj = {
       "pickFile": "Please select a Database File...",
       "offline": "No internet connection detected. Unable to sync with the cloud.",
       "online": "Internet connection restored. You are now online.",
-      "offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>",
-      "offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.",
+      //"offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>",
+      //"offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.",
       "credFormPinTooLong": "The entered PIN is too long.",
       "credFormPassTooLong": "The entered password is too long.",
       "persistedSucess": "The encrypted password has been saved on the device. You will log in with a PIN next time.",
@@ -399,6 +405,7 @@ const txtBankObj = {
         "localFile": "Device Database File", //Device Database File.
         "secreSync": "SecreSync",
         "share": "Share",
+        "settings": "Settings",
         "installApp": "Install SecreSync on this device",
         "updateApp": "A new version of SecreSync is available. Update the application"
       },
@@ -728,8 +735,14 @@ const txtBankObj = {
       },
       "registerAuth": {
         "q": "¿Te gustaría habilitar la API de Autenticación Web (WebAuthn)?<br>Puedes elegir entre varios métodos disponibles en tu dispositivo (huella digital, voz, escaneo ocular, PIN, etc.).",
-        "y": "Sí, quiero usar la autenticación del dispositivo disponible.<br>Esto permite el acceso sin conexión.",
-        "n": "No, no quiero usar ninguna autenticación biométrica.<br>Usa el método de autenticación en línea en su lugar.",
+        "y": "Sí, quiero usar la autenticación del dispositivo disponible.",
+        "n": "No, no quiero usar ninguna autenticación biométrica.<br>Utilice otro método de autenticación en su lugar.",
+        "i": "secreSync"
+      },
+      "persistOnline": {
+        "q": "El método de autenticación en línea no está disponible actualmente.<br><br>Alternativamente, puede guardar la contraseña cifrada directamente en el dispositivo.<br>La contraseña de la base de datos estará protegida por un PIN, sin embargo, un PIN insuficientemente largo puede permitir que un hacker experimentado que acceda a este dispositivo lo rompa.",
+        "y": "",
+        "n": "De acuerdo. Guarde la contraseña cifrada directamente en el dispositivo.<br><br>Entiendo que perder el control del dispositivo puede resultar en el acceso a mis datos.",
         "i": "secreSync"
       },
       "oneDriveRefreshAccess": {
@@ -773,8 +786,8 @@ const txtBankObj = {
       "pickFile": "Seleccione un archivo de base de datos...",
       "offline": "No hay conexión a Internet. No se puede sincronizar con la nube.",
       "online": "Ha vuelto a estar en línea.",
-       "offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>",
-      "offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.",
+      //"offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>",
+      //"offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.",
       "credFormPinTooLong": "El PIN ingresado es demasiado largo.",
       "credFormPassTooLong": "La contraseña ingresada es demasiado larga.",
       "persistedSucess": "La contraseña cifrada se ha guardado en el dispositivo. La próxima vez iniciará sesión con un PIN.",
@@ -878,6 +891,7 @@ const txtBankObj = {
         "localFile": "Archivo de Base de Datos del dispositivo",
         "secreSync": "SecreSync",
         "share": "Share",
+        "settings": "Configuración",
         "installApp": "Instala SecreSync en este dispositivo",
         "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación"
       },
@@ -1207,10 +1221,16 @@ const txtBankObj = {
       },
       "registerAuth": {
         "q": "Souhaitez-vous activer l'API d'authentification Web (WebAuthn)?<br>Vous pouvez choisir parmi les différentes méthodes disponibles sur votre appareil (empreinte digitale, voix, scan oculaire, code PIN, etc.).",
-        "y": "Oui, je veux utiliser l'authentification de l'appareil disponible.<br>Cela permet un accès hors ligne.",
-        "n": "Non, je ne veux pas utiliser d'authentification biométrique.<br>Utilisez plutôt la méthode d'authentification en ligne.",
+        "y": "Oui, je veux utiliser l'authentification de l'appareil disponible.",
+        "n": "Non, je ne veux pas utiliser d'authentification biométrique.<br>Utilisez une autre méthode d'authentification à la place.",
         "i": "secreSync"
       },
+      "persistOnline": {
+        "q": "La méthode d'authentification en ligne est actuellement indisponible.<br><br>Alternativement, vous pouvez enregistrer le mot de passe crypté directement sur l'appareil.<br>Le mot de passe de la base de données sera sécurisé par un code PIN, cependant, un PIN insuffisamment long peut permettre à un hacker expérimenté qui accède à cet appareil de le casser.",
+        "y": "",
+        "n": "D'accord. Enregistrez le mot de passe crypté directement sur l'appareil.<br><br>Je comprends que la perte du contrôle de l'appareil peut entraîner l'accès à mes données.",
+        "i": "secreSync" 
+     },
       "oneDriveRefreshAccess": {
         "q": "L'application a perdu l'accès à OneDrive.<br>L'accès doit être revalidé au moins une fois toutes les 24 heures.",
         "y": "D'accord, actualisez l'accès maintenant.",
@@ -1251,8 +1271,8 @@ const txtBankObj = {
       "pickFile": "Veuillez sélectionner un fichier de base de données...",
       "offline": "Aucune connexion Internet détectée. Impossible de synchroniser avec le cloud.",
       "online": "Connexion Internet rétablie. Vous êtes maintenant en ligne.",
-      "offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>",
-      "offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.",
+      //"offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>",
+      //"offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.",
       "credFormPinTooLong": "Le PIN saisi est trop long.",
       "credFormPassTooLong": "Le mot de passe saisi est trop long.",
       "persistedSucess": "Le mot de passe chiffré a été enregistré sur l'appareil. Vous vous connecterez avec un PIN la prochaine fois.",
@@ -1356,6 +1376,7 @@ const txtBankObj = {
         "localFile": "Fichier de base de données de l'appareil",
         "secreSync": "SecreSync",
         "share": "Share",
+        "settings": "Paramètres",
         "installApp": "Installez SecreSync sur cet appareil",
         "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application"
       },
@@ -1685,8 +1706,14 @@ const txtBankObj = {
       },
       "registerAuth": {
         "q": "Czy chcesz włączyć interfejs Web Authentication (WebAuthn) API?<br>Możesz wybrać jedną z dostępnych metod na swoim urządzeniu (odcisk palca, głos, skan oka, PIN itp.).",
-        "y": "Tak, chcę używać dostępnej autoryzacji urządzenia.<br>To umożliwia dostęp offline.",
-        "n": "Nie, nie chcę używać żadnej biometrycznej autoryzacji.<br>Użyj metody autoryzacji online.",
+        "y": "Tak, chcę używać dostępnej autoryzacji urządzenia.",
+        "n": "Nie, nie chcę używać żadnej biometrycznej autoryzacji.<br>Użyj innej metody uwierzytelniania.",
+        "i": "secreSync"
+      },
+      "persistOnline": {
+        "q": "Metoda uwierzytelniania online jest obecnie niedostępna.<br><br>Alternatywnie, można zapisać zaszyfrowane hasło bezpośrednio na urządzeniu.<br>Hasło do bazy danych będzie zabezpieczone PIN-em, jednak niewystarczająco długi PIN może umożliwić jego złamanie przez doświadczonego hakera, który zdobędzie dostęp do tego urządzenia.",
+        "y": "",
+        "n": "Dobrze. Zapisz zaszyfrowane hasło bezpośrednio na urządzeniu.<br><br>Rozumiem, że utrata kontroli nad urządzeniem może skutkować dostępem do moich danych.",
         "i": "secreSync"
       },
       "oneDriveRefreshAccess": {
@@ -1729,8 +1756,8 @@ const txtBankObj = {
       "pickFile": "Proszę wybrać plik bazy danych...",
       "offline": "Brak połączenia z Internetem. Nie można zsynchronizować z chmurą.",
       "online": "Połączenie z Internetem zostało przywrócone.",
-      "offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>",
-      "offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.",
+      //"offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>",
+      //"offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.",
       "credFormPinTooLong": "Wprowadzony PIN jest za długi.",
       "credFormPassTooLong": "Wprowadzone hasło jest za długie.",
       "persistedSucess": "Zaszyfrowane hasło zostało zapisane na urządzeniu. Następnym razem zalogujesz się za pomocą PIN-u.",
@@ -1834,6 +1861,7 @@ const txtBankObj = {
         "localFile": "Baza Danych Urządzenia", //bazy danych pliku urządzenia // "Zapasowa Kopia Bazy Danych"
         "secreSync": "SecreSync",
         "share": "Share",
+        "settings": "Ustawienia",
         "installApp": "Zainstaluj SecreSync na tym urządzeniu",
         "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },

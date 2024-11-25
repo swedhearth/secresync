@@ -1,7 +1,7 @@
-/* 'frequent_0.032_GitHub' */
+/* 'frequent_0.034_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.032_GitHub";
+    let tempVer = "frequent_0.034_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -279,7 +279,7 @@ function Interface(thisApp){
                 };
                 return dom.addDiv("credInpWrp pinWrp").attachAry(basePinInputElAry).on("paste", pastePin);
             };
-            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "X X X X X * * * * * * * * * * * * * * *"}})).on("paste", e => {
+            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "* * * * * * * * * * * * * * * * * * * *"}})).on("paste", e => {
                 if((e.clipboardData || window.clipboardData).getData("text").length > inputObject.maxLength) thisApp.message.credFormPassTooLong();
             });
             const inpWrp = inputObject._isPin ? pinWrp(inputObject) : passWrp(inputObject);
@@ -424,8 +424,8 @@ passHint = credFormPassHint // only new
         };
         
         this.offline = storeKey => appAlert("offline", {sKey: storeKey});
-        this.offlineCredNoVerify = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoVerify"), sKey: "secreSync"});
-        this.offlineCredNoSave = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoSave"), sKey: "secreSync"});
+        //this.offlineCredNoVerify = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoVerify"), sKey: "secreSync"});
+        //this.offlineCredNoSave = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoSave"), sKey: "secreSync"});
         this.IdxDbError = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("IdxDbError"), sKey: "secreSync"});
         this.appFailed = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("appFailed"), sKey: "secreSync"});
         
@@ -472,6 +472,7 @@ passHint = credFormPassHint // only new
         
         
         this.registerAuth = _ => appAlert("registerAuth");
+        this.persistOnline = _ => appAlert("persistOnline");
         this.oneDriveRefreshAccess = _ => appAlert("oneDriveRefreshAccess");
     }
  

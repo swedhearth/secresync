@@ -1,4 +1,4 @@
-/* 'frequent_0.030_GitHub */
+/* 'frequent_0.034_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -28,7 +28,30 @@ function App(urlSearchParams){
             dbCipher = null;
             thisApp.dbObj = new thisApp.crypto.DatabaseObject(dbObj, doUpdateMod); 
         };
-
+        
+        this.saveOpfsFile = async(opfsFileName, fileContent) => {
+            const opfsFileBlob = getFileBlob(fileContent);
+            const opfsRoot = await navigator.storage.getDirectory();
+            const opfsFileHandle = await opfsRoot.getFileHandle(opfsFileName, { create: true });
+            const writable = await opfsFileHandle.createWritable();
+            await writable.write(opfsFileBlob);
+            await writable.close();
+        };
+        
+        this.getOpfsFileContent = async(opfsFileName, removeFile) => { // returns Array Buffer
+            const opfsRoot = await navigator.storage.getDirectory();
+            const opfsFileHandle = await opfsRoot.getFileHandle(opfsFileName);
+            const opfsFileFileBlob = await opfsFileHandle.getFile();
+            const opfsFileContent = await opfsFileFileBlob.arrayBuffer();
+            if(removeFile) await opfsFileHandle.remove();
+            return opfsFileContent;
+        };
+        
+        this.clearOpfs = async _ => {
+            const opfsRoot = await navigator.storage.getDirectory();
+            opfsRoot.remove({ recursive: true }); // clear entire opfs
+        };
+        
         this.setRedirectCredentials = async (codeVerifier, redirectState) => { //await thisApp.cryptoHandle.setRedirectCredentials(codeVerifier, state);
             // consent is present or use of session storage was approved by the user in redirectToOAuth
             // redirectState and a random 128 bit sessionStoragePin string become a temporary password to encrypt the appState
@@ -45,22 +68,16 @@ function App(urlSearchParams){
                 dbSalt: salt ? await thisApp.crypto.safeB64From(salt) : null,
                 appDbObj: thisApp.dbObj ? await thisApp.crypto.safeB64From(await this.getDbCipher()) : null,
             };
-
-            const appStateString = JSON.stringify(appStateObject);
-            const appStateCipher = await thisApp.crypto.getCipherFromString(appStateString, appStateCryptoKey, appStateSalt);
-            const appStateFileBlob = getFileBlob(appStateCipher);// new Blob([appStateCipher], {type:"application/octet-stream"});
             
+            const appStateString = JSON.stringify(appStateObject);
+
             window.sessionStorage.setItem("historyLength", history.length);
             window.sessionStorage.setItem("lang", thisApp.lang); // save language for the Private Mode redirect
             window.sessionStorage.setItem("sessionStoragePin", sessionStoragePin);
 
-            const opfsRoot = await navigator.storage.getDirectory();
             const opfsFileName = (await thisApp.crypto.safeB64From(redirectState, sessionStoragePin)).slice(-16);
-            const opfsFileHandle = await opfsRoot.getFileHandle(opfsFileName, { create: true });
-
-            const writable = await opfsFileHandle.createWritable();
-            await writable.write(appStateFileBlob);
-            await writable.close();
+            const appStateCipher = await thisApp.crypto.getCipherFromString(appStateString, appStateCryptoKey, appStateSalt);
+            await this.saveOpfsFile(opfsFileName, appStateCipher);
         };
         
         this.getRedirectCredentials = async redirectState => {
@@ -68,21 +85,18 @@ function App(urlSearchParams){
             const sessionStoragePin = window.sessionStorage.getItem('sessionStoragePin');
             window.sessionStorage.clear();
             
-            const opfsRoot = await navigator.storage.getDirectory();
             const opfsFileName = (await thisApp.crypto.safeB64From(redirectState, sessionStoragePin)).slice(-16);
-            const opfsFileHandle = await opfsRoot.getFileHandle(opfsFileName);
-            const appStateFileBlob = await opfsFileHandle.getFile();
-            const appStateCipher = await appStateFileBlob.arrayBuffer();
-            await opfsRoot.remove({ recursive: true }); // clear entire opfs
+            const appStateCipher = await this.getOpfsFileContent(opfsFileName, true);
             
             const appStateCryptoKey = await thisApp.crypto.getCryptoKeyFromPlains(appStateCipher, redirectState, sessionStoragePin);
             const [appStateString] = await thisApp.crypto.getStringFromCipher(appStateCipher, appStateCryptoKey);
             const appStateObject = JSON.parse(appStateString);
-
-            
             const codeVerifier = appStateObject.codeVerifier;
             const dbExpCryptoKey = appStateObject.dbExpCryptoKey ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.dbExpCryptoKey) : null;
-            const dbCryptoKey = dbExpCryptoKey 
+            
+            const dbCryptoKey = dbExpCryptoKey ? await thisApp.crypto.importKey(dbExpCryptoKey) : null;
+            
+/*             const dbCryptoKey = dbExpCryptoKey 
                 ? await window.crypto.subtle.importKey(  /// make a part of thisApp.crypto object
                     "raw",
                     dbExpCryptoKey,
@@ -90,10 +104,9 @@ function App(urlSearchParams){
                     true,
                     [ "encrypt", "decrypt" ]
                 ) 
-                : null;
+                : null; */
             const dbSalt = appStateObject.dbSalt ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.dbSalt) : null;
             const appDbObj = appStateObject.appDbObj ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.appDbObj) : null;
-
             this.updateCryptoCredentials(dbCryptoKey, dbSalt);
             return [codeVerifier, appDbObj];
         };
@@ -109,7 +122,7 @@ function App(urlSearchParams){
                         return res(decryptedString);
                     }
 
-                    dbCredentials = dbCredentials || await thisApp.credentials.get(newCredentials,); //dbCredentials only when using Local File
+                    dbCredentials = dbCredentials || await thisApp.credentials.get(newCredentials,); //dbCredentials only when using Local File 
                     if(newCredentials){ // means that wasPersisted === false
                         [cryptoKey, salt] = await thisApp.crypto.getNewCryptoKeyAndSalt(dbCredentials);
                         decryptedString = "{}";
@@ -123,7 +136,8 @@ function App(urlSearchParams){
                                 if(dbCredentials.plainPinString === true || !dbCredentials.persistType) throw "deletePersistedCredentials"; // clicked Log with Pass and Pin
                                 const getDecryptedCryptoKey = {
                                     online: thisApp.crypto.getDecryptedCryptoKeyUseOnline,
-                                    auth: thisApp.crypto.getDecryptedCryptoKeyUseAuth
+                                    auth: thisApp.crypto.getDecryptedCryptoKeyUseAuth,
+                                    device: thisApp.crypto.getDecryptedCryptoKeyUseDevice
                                 }[dbCredentials.persistType];
                                 if(!getDecryptedCryptoKey) throw "deletePersistedCredentials";
                                 cryptoKey = await getDecryptedCryptoKey(dbCredentials);
@@ -182,7 +196,10 @@ function App(urlSearchParams){
         Persisted.prototype.exist = function(){
             return this.get().then(persistedCredentials => persistedCredentials.filter(Boolean).length);
         };
-        Persisted.prototype.delete = function() {
+        Persisted.prototype.delete = async function() {
+            await thisApp.cryptoHandle.clearOpfs();
+            thisApp.localStorage.delete("persistPepper");
+            
             return this.exist().then(len => len && Promise.all(Object.values(this).map(methods => methods.delete())).then(thisApp.message.persistedDeleted))
         };
         
@@ -206,6 +223,17 @@ function App(urlSearchParams){
                     await this.persisted.id.set(persistId);
                     await this.persisted.cryptoKey.set(cryptoKeyCipher);
                 }
+
+                if(dbCredentials.persistType === "device" && !dbCredentials.wasPersisted){
+                    const [persistId, cryptoKeyCipher, pinSaltCipher, persistPepper] = await thisApp.crypto.getEncryptedCryptoKeyUseDevice(cryptoKey, dbCredentials.plainPinString); //[ArrayBuffer, ArrayBuffer]
+                    await this.persisted.id.set(persistId);
+                    await this.persisted.cryptoKey.set(cryptoKeyCipher);
+                    
+                    thisApp.localStorage.set("persistPepper", persistPepper);
+
+                    await thisApp.cryptoHandle.clearOpfs();
+                    await thisApp.cryptoHandle.saveOpfsFile(persistPepper.slice(-16), pinSaltCipher);
+                }
                 
                 if(!dbCredentials.wasPersisted){
                     await this.persisted.type.set(dbCredentials.persistType);
@@ -221,10 +249,16 @@ function App(urlSearchParams){
         
         //credentials getter
         this.get = async isNewCredentials => {
-            //const userVerificationAvailable = window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); // temp until online available
-            const canPersist = !!thisApp.consent;// && userVerificationAvailable; // remove '&& userVerificationAvailable' when online available
+            const canPersist = !!thisApp.consent;
             const [persistedType, cryptoKeyCipher, persistId] = await this.persisted.get();
             const isPersisted = !!(canPersist && persistedType && cryptoKeyCipher && persistId && !isNewCredentials);
+
+            let persistPepper, pinSaltCipher;
+            if(isPersisted && persistedType === "device"){
+                persistPepper = thisApp.localStorage.get("persistPepper");
+                pinSaltCipher = await thisApp.cryptoHandle.getOpfsFileContent(persistPepper.slice(-16), false);
+            }
+            
             //Arguments - this.ui.credentials: (canDelete <can delete an existing database - clear all storages>, canPersist <can persist the cryptoKey>, isPersisted <is it already persisted = isPersisted const>)
             const dbRawCredentials = isNewCredentials
                 ? await thisApp.ui.credentials.pinPassNewChange(false, canPersist)
@@ -238,17 +272,22 @@ function App(urlSearchParams){
             if(!dbRawCredentials.length) throw "DeleteDatabase";
             
             const [plainPassString, plainPinString, doPersist] = dbRawCredentials;
+
             const getPersistType = async _ => {
+                let persistType = null;
                 const userVerificationAvailable = window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); // uncomment when online available
-                const registerAuth = userVerificationAvailable && await thisApp.alert.registerAuth();//true; // - Temp!!! When online available replace with: userVerificationAvailable && await this.alert.registerAuth();//"Would you like to Enable Web Authentication / Pin / Biometric? Or Online?";
-                return registerAuth // true, false, null
-                    ? "auth"
-                    : registerAuth === false
-                        ? thisApp.online 
-                            ? "online"
-                            : (await thisApp.alert.offlineCredNoSave(), null)
-                        : null; //if registerAuth === null (user cancelled) then persistType = null - will mean not persists at all
+                const registerAuth = userVerificationAvailable && await thisApp.alert.registerAuth();//"Would you like to Enable Web Authentication / Pin / Biometric? Or Device?";
+                if(registerAuth) persistType = "auth";
+                if(registerAuth === false){
+                    const persistOnline = await thisApp.alert.persistOnline();
+                    console.log(persistOnline);
+                    if(persistOnline) persistType = "online";
+                    if(persistOnline === false) persistType = "device";
+                }
+                return persistType;//if registerAuth === null (user cancelled) then persistType = null - will mean not persists at all
+
             };
+            
             
             const persistType = isPersisted 
                 ? persistedType
@@ -268,7 +307,9 @@ function App(urlSearchParams){
                 persistId: persistId,
                 cryptoKeyCipher: cryptoKeyCipher,
                 plainPassString: plainPassString,
-                plainPinString: plainPinString
+                plainPinString: plainPinString,
+                persistPepper: persistPepper,
+                pinSaltCipher: pinSaltCipher
             };
             return dbCredentials;
         };
@@ -367,8 +408,10 @@ function App(urlSearchParams){
     this.reload = _ => this.urlReplace(this.URL);
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
 
+    let lastActiveTime = 0;
+    
     const logOffApp = async type => {
-        console.log("logOffApp", type);
+
         mobileDebug("logOffApp Start. type = ", type);
         if(!this.dbObj){ // logOffApp has already been triggered
             mobileDebug("logOffApp Start. NO this.dbObj!!!!!! Will return. type = ", type);
@@ -376,55 +419,45 @@ function App(urlSearchParams){
         }
         this.ui.clear();
         this.dbObj = null;
-        mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
-        if(this.hidden){
-            mobileDebug("logOffApp Start = App is Hidden and the timeOut fired. Will NOT return. type = ", type);
+        
+        if(Date.now() - lastActiveTime > 600000){ // 600000 = 100 minutes
+            alert("in logOffApp - Date.now() - lastActiveTime > 6000000. Will reload" + (Date.now() - lastActiveTime));
+            return this.reload();
         }
-        let loop = 0;
+
+        mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
+
 
         while (!window.history.state.lastBackExists) {
-            mobileDebug("In logOffApp. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
             await new Promise(res => {
                 window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
                 window.history.back();
             });
         }
-        mobileDebug("In logOffApp. after while loop - the final current history.state", JSON.stringify(window.history.state));
+
 
         this.start(this.message.loggedOff(), false);
-        mobileDebug("logOffApp End = The appDbObj should be null and is:= ", JSON.stringify(this.dbObj));
+
     };
 
     this.online = navigator.onLine;
+    
 
     this.connectivitychange = e => {
-/*         if(this.hidden) {
-            mobileDebug("connectivitychange Was about to be triggered while the app is hidden. Will return.");
-            return;
-        }
 
-        if(!this.dbObj){
-            mobileDebug("connectivitychange Was about to be triggered while no dbObj.");
-        } */
-        
-/*         if((e.type !== "offline") === this.online){ // was online (this.online = true). e.type is "online", "online" !== "offline" (true)
-            mobileDebug("connectivitychange. App was online and now is online too. No need to update anything. Will return.");
-            return;
-        }// else - change connectivity */
         const wasOnline = this.online;
         
         this.online = e.type !== "offline";
         
-        mobileDebug("connectivitychange. e.type = ", e.type);
-        mobileDebug("connectivitychange. Is this.dbObj? = ", !!this.dbObj);
-        mobileDebug("connectivitychange. document.visibilityState = ", document.visibilityState);
+         mobileDebug("connectivitychange. e.type = ", e.type);
+/*        mobileDebug("connectivitychange. Is this.dbObj? = ", !!this.dbObj);
+        mobileDebug("connectivitychange. document.visibilityState = ", document.visibilityState); */
 
         this.dbStore.getRemoteObjects().forEach(storeObj => storeObj.switchConnection()); 
         if(wasOnline !== this.online && !this.hidden && this.dbObj) this.message[e.type](); // message.online : message.offline
     };
 
     this.visibilityChange = e => {
-        console.log("visibilityChange");
         if(!this.dbObj) return;
         mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
@@ -446,11 +479,12 @@ function App(urlSearchParams){
     };
 
     this.resetLogOutTimer = (_ => { // self invoking
-        let inactivityTimer;
+        let inactivityTimer = 0
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(_ => logOffApp("setTimeout"), 600000);//600000 ms = 10 minutes 
+            lastActiveTime = Date.now();
+            inactivityTimer = setTimeout(_ => logOffApp("setTimeout"), 600000);//600000 ms = 10 minutes
         }
     })();
 

@@ -1,4 +1,4 @@
-/* 'frequent_0.027_GitHub' */
+/* 'frequent_0.034_GitHub' */
 function Crypto(){
     "use strict";
 
@@ -65,10 +65,10 @@ function Crypto(){
             iv: iv
         })
     };
-    const importKey = (cryptoKey, aesObj) => window.crypto.subtle.importKey(
+    const importKey = cryptoKey => window.crypto.subtle.importKey(
         "raw",
         cryptoKey,
-        { "name": aesObj.name, "length": 256},
+        { "name": "AES-GCM", "length": 256},
         true,
         [ "encrypt", "decrypt" ]
     );
@@ -138,7 +138,7 @@ function Crypto(){
     
     async function getDecryptedCryptoKey(cryptoKeyCipher, cryptoKeyCipherPass){ // returns decrypted cryptoKey using cryptoKeyCipherPass
         const [decryptedCryptoKey] = await decryptUsePass(cryptoKeyCipher, cryptoKeyCipherPass, minPbkdf2Loops, aesCtrObj); // whitout salt
-        return importKey(decryptedCryptoKey, aesGcmObj); //Returns Crypto Key Object
+        return importKey(decryptedCryptoKey); //Returns Crypto Key Object - uses "AES-GCM"
     }
     
     
@@ -204,7 +204,34 @@ function Crypto(){
         const cryptoKeyCipherPass = await getCryptoKeyCipherPass(plainPinString, persistId, false); // persistId (ArrayBuffer) - returns arryBuffer
         return getDecryptedCryptoKey(cryptoKeyCipher, cryptoKeyCipherPass); //Returns Crypto Key Object
     }
+    
+    
+    
+    /** ---------------------------**/
+    async function getEncryptedCryptoKeyUseDevice(cryptoKey, plainPinString){
+        const persistPepper =  randomHex(32); //string save in localStorage
+        const persistId = await randomU8Ary(32).buffer; //ArrayBuffer - save in idbx
+        const pinSalt =  await randomU8Ary(32).buffer; //ArrayBuffer - do not save
+        const cryptoKeyCipherPass = await digestFromIterable(pinSalt, persistId, plainPinString, persistPepper);
+        const pinSaltCipherPass = await digestFromIterable(persistId, plainPinString, persistPepper);
+         
+        const cryptoKeyCipher =  await encryptUsePass(await exportKey(cryptoKey), cryptoKeyCipherPass, totalPbkdf2Loops, aesCtrObj); //returns cipher: concated ArrayBuffer of salt, iv and ciphertext buffers - save in idbx
+        const pinSaltCipher = await encryptUsePass(pinSalt, pinSaltCipherPass, totalPbkdf2Loops, aesCtrObj); //returns cipher: concated ArrayBuffer of salt, iv and ciphertext buffers - save in opfs
+        
+        return [persistId, cryptoKeyCipher, pinSaltCipher, persistPepper];
+    }
+    
+    async function getDecryptedCryptoKeyUseDevice({plainPinString, cryptoKeyCipher, persistId, pinSaltCipher, persistPepper}){
 
+        const pinSaltCipherPass = await digestFromIterable(persistId, plainPinString, persistPepper);
+        const [pinSalt] = await decryptUsePass(pinSaltCipher, pinSaltCipherPass, totalPbkdf2Loops, aesCtrObj); // whitout salt
+        
+        const cryptoKeyCipherPass = await digestFromIterable(pinSalt, persistId, plainPinString, persistPepper);
+        
+        const [decryptedCryptoKey] = await decryptUsePass(cryptoKeyCipher, cryptoKeyCipherPass, totalPbkdf2Loops, aesCtrObj); // whitout salt
+        return importKey(decryptedCryptoKey); //Returns Crypto Key Object - uses "AES-GCM"
+
+    }
     /* --------------------------------------------------- Persisted Key Use AUTH ---------------------------------------------------------------*/
     async function verifyAuth(clientDataChallenge, randomChallenge, flagsByte){
         if(clientDataChallenge !== await safeB64From(randomChallenge)){
@@ -436,6 +463,11 @@ function Crypto(){
     this.getDecryptedCryptoKeyUseOnline = getDecryptedCryptoKeyUseOnline; //ASYNC requires plainPinString, cryptoKeyCipher (ArrayBuffer), persistId (ArrayBuffer) //Returns Crypto Key Object
     this.getEncryptedCryptoKeyUseAuth = getEncryptedCryptoKeyUseAuth; //ASYNC requires cryptoKey, plainPinString //Returns [persistId, cryptoKeyCipher]=([ArrayBuffer, Uint8Array])
     this.getDecryptedCryptoKeyUseAuth = getDecryptedCryptoKeyUseAuth; //ASYNC requires plainPinString, cryptoKeyCipher (ArrayBuffer), persistId (ArrayBuffer)// Returns Crypto Key Object
+    
+    this.importKey = importKey;
+    
+    this.getEncryptedCryptoKeyUseDevice = getEncryptedCryptoKeyUseDevice;
+    this.getDecryptedCryptoKeyUseDevice = getDecryptedCryptoKeyUseDevice;
 
     this.getCipherFromString = getCipherFromString; //ASYNC requires plainString, cryptoKey, salt //Returns cipher
     this.getStringFromCipher = getStringFromCipher; //ASYNC requires cipherData, cryptoKey //Returns [decryptedString, salt];
