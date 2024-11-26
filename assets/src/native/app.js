@@ -1,4 +1,4 @@
-/* 'frequent_0.034_GitHub */
+/* 'frequent_0.035_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -95,16 +95,7 @@ function App(urlSearchParams){
             const dbExpCryptoKey = appStateObject.dbExpCryptoKey ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.dbExpCryptoKey) : null;
             
             const dbCryptoKey = dbExpCryptoKey ? await thisApp.crypto.importKey(dbExpCryptoKey) : null;
-            
-/*             const dbCryptoKey = dbExpCryptoKey 
-                ? await window.crypto.subtle.importKey(  /// make a part of thisApp.crypto object
-                    "raw",
-                    dbExpCryptoKey,
-                    { "name": "AES-GCM", "length": 256},
-                    true,
-                    [ "encrypt", "decrypt" ]
-                ) 
-                : null; */
+
             const dbSalt = appStateObject.dbSalt ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.dbSalt) : null;
             const appDbObj = appStateObject.appDbObj ?  await thisApp.crypto.bufferFromSafeB64(appStateObject.appDbObj) : null;
             this.updateCryptoCredentials(dbCryptoKey, dbSalt);
@@ -287,8 +278,7 @@ function App(urlSearchParams){
                 return persistType;//if registerAuth === null (user cancelled) then persistType = null - will mean not persists at all
 
             };
-            
-            
+
             const persistType = isPersisted 
                 ? persistedType
                 : doPersist
@@ -408,11 +398,12 @@ function App(urlSearchParams){
     this.reload = _ => this.urlReplace(this.URL);
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
 
-    let lastActiveTime = 0;
+    //let lastActiveTime = 0;
     
     const logOffApp = async type => {
+        this.reload();
 
-        mobileDebug("logOffApp Start. type = ", type);
+/*         mobileDebug("logOffApp Start. type = ", type);
         if(!this.dbObj){ // logOffApp has already been triggered
             mobileDebug("logOffApp Start. NO this.dbObj!!!!!! Will return. type = ", type);
             return;
@@ -421,12 +412,12 @@ function App(urlSearchParams){
         this.dbObj = null;
         
         if(Date.now() - lastActiveTime > 600000){ // 600000 = 100 minutes
-            alert("in logOffApp - Date.now() - lastActiveTime > 6000000. Will reload" + (Date.now() - lastActiveTime));
-            return this.reload();
+            //alert("in logOffApp - Date.now() - lastActiveTime > 6000000. Will reload" + (Date.now() - lastActiveTime));
+            this.reload();
+            return;
         }
 
         mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
-
 
         while (!window.history.state.lastBackExists) {
             await new Promise(res => {
@@ -435,8 +426,11 @@ function App(urlSearchParams){
             });
         }
 
+        if(this.hidden){
+            alert("This should not happen. The app is hidded. Will re
+        }
 
-        this.start(this.message.loggedOff(), false);
+        this.start(this.message.loggedOff(), false); */
 
     };
 
@@ -483,7 +477,7 @@ function App(urlSearchParams){
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            lastActiveTime = Date.now();
+            //lastActiveTime = Date.now();
             inactivityTimer = setTimeout(_ => logOffApp("setTimeout"), 600000);//600000 ms = 10 minutes
         }
     })();

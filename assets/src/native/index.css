@@ -1,4 +1,4 @@
-/* 'frequent_0.034_GitHub' */
+/* 'frequent_0.035_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -445,8 +445,8 @@ legend.url:before{
     cursor: help;
     
     
-    top: calc(-2vh - 0.1875rem);
-
+    /* top: calc(-2vh - 0.1875rem); */
+    top: -2vh;
 }
 
 .credHintWrp{
@@ -1131,6 +1131,10 @@ body.invert .scrollWrpPrivate:before, body.invert .scrollWrpPastRevision:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
 }
 
+.swapTheme{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#cog);
+}
+
 .downDbIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#downDb);
 }
@@ -1429,6 +1433,15 @@ body.invert .langWrp{
         backdrop-filter: blur(5px);
         background: rgb(255 255 255 / 75%);
         background: rgb(250 250 250 / 75%);
+        
+        
+    width: 100%;
+    max-width: var(--max-app-width);
+    box-sizing: border-box;
+}
+
+.formHead.fix{
+    position: fixed;
 }
 
 .formTitle{

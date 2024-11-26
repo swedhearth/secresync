@@ -1,6 +1,6 @@
-/* 'frequent_0.34_GitHub' */
+/* 'frequent_0.35_GitHub' */
 "use strict";
-console.log("index core_0.030_GitHub");
+console.log("index core_0.035_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -33,6 +33,13 @@ DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:
 DONE!!! Change the remember password hint and the checkbox text to: remember password. Password is remembered. / Remove the remembered password.... maybe make it in the unrolled hint
 
 DONE!!! Make hint for new Password 
+
+Settings: 
+ - history versions
+ - app max width (if not mobile)
+ - AppLogOff seconds
+ - app colour mode
+ 
 
 */
 
@@ -79,13 +86,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     console.log("urlSearchParams", urlSearchParams);
     if(!urlSearchParams){
         setTimeout(_ =>{
-            mobileDebug("!!! IN INDEX - !!! This has been caught when no urlSearchParams and 5 seconds ellapsed. WILL RELOAD. history.state", JSON.stringify(window.history.state));
-            alert("urlSearchParams returned null and 5 seconds has passed. reload the app");
-            if(confirm("NACISNIJ CANCEL to examin the error!!!!!!!")){
+            if(confirm("IN INDEX - !!! This has been caught when no urlSearchParams and 5 seconds ellapsed. WILL RELOAD. history.state: " + JSON.stringify(window.history.state))){
                 window.location.replace(window.location.origin + window.location.pathname);
             }
-            
-        }, 5000);
+        }, 2000);
         return;
     }
 

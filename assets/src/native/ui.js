@@ -1,7 +1,7 @@
-/* 'frequent_0.034_GitHub' */
+/* 'frequent_0.035_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.034_GitHub";
+    let tempVer = "frequent_0.035_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -51,11 +51,17 @@ function Interface(thisApp){
 
             if(isPinFieldset) this.addClass("pinFieldset");
         }, {capture: true});
+
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
         inpObj._onInput && inpEl.on("input", inpObj._onInput);
         inpObj._onKeydown && inpEl.on("keydown", inpObj._onKeydown);
+        !inpObj._noBlur && inpEl.observedBy(new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if(!entry.isIntersecting) entry.target.blur();
+            });
+        }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         return inpEl;
     };
@@ -270,7 +276,15 @@ function Interface(thisApp){
                     }
                 };
                 
-                const getPinInputEl = (required, idx) => getInpEl({...inputObject, ...{required: required, _onInput: inputPin, _onKeydown: inputPin, id: "pinChar_" + idx, placeholder: "X"}}); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                const getPinInputEl = (required, idx) => getInpEl({
+                    ...inputObject,
+                    id: "pinChar_" + idx,
+                    required: required,
+                    placeholder: "X",
+                    _onInput: inputPin,
+                    _onKeydown: inputPin,
+                    _noBlur: true
+                }); // !!!!!!!!!!!!!!!!!!!!!!!!!!!! add Label maybe? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 const basePinInputElAry = new Array(inputObject._inputsCount).fill(0).map((el, idx) => getPinInputEl(true, idx));
                 const pastePin = (e) => {
                     e.preventDefault(); // Prevent input triggered on the last element
@@ -279,9 +293,17 @@ function Interface(thisApp){
                 };
                 return dom.addDiv("credInpWrp pinWrp").attachAry(basePinInputElAry).on("paste", pastePin);
             };
-            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").attach(getInpEl({...inputObject, ...{required: true, _onInput: e => inputObject._value = e.target.value, placeholder: "* * * * * * * * * * * * * * * * * * * *"}})).on("paste", e => {
-                if((e.clipboardData || window.clipboardData).getData("text").length > inputObject.maxLength) thisApp.message.credFormPassTooLong();
-            });
+            const passWrp = inputObject => dom.addDiv("credInpWrp passWrp").on("paste", e => {
+                    if((e.clipboardData || window.clipboardData).getData("text").length > inputObject.maxLength) thisApp.message.credFormPassTooLong();
+                }).attach(
+                    getInpEl({
+                        ...inputObject,
+                        required: true,
+                        placeholder: "* * * * * * * * * * * * * * * * * * * *",
+                        _onInput: e => inputObject._value = e.target.value,
+                        _noBlur: true
+                    })
+                );
             const inpWrp = inputObject._isPin ? pinWrp(inputObject) : passWrp(inputObject);
             const clearInput = e => {
                 inputObject._value = "";
@@ -329,7 +351,8 @@ function Interface(thisApp){
                 type: "checkbox",
                 id: "persistCheckbox",
                 checked: isPersisted, // if not passInputLabel it means that it's only pin - so the key was persisted already, therefore select as default
-                _onInput: repaintPersistLabel 
+                _onInput: repaintPersistLabel,
+                _noBlur: true
             }).hide();
             const presistFieldset = canPersist ? getFieldsetEl("padded", msgObj.persistLabel).attachAry([
                 ...getHintAry(getTxtBankHtmlTxt(isPersisted ? "credFormPersistRemoveHint" : "credFormPersistHint")),
@@ -339,7 +362,8 @@ function Interface(thisApp){
             ]) : "";
             const sumbitInpEl = getInpEl({
                 id: "submitCredentials",
-                type: "submit"
+                type: "submit",
+                _noBlur: true
             }).hide();
             const inputAry = isPinOnly ? [getInputFieldset(pinInputObj)] : [getInputFieldset(passInputObj), getInputFieldset(pinInputObj)];
             const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnCloseForm", _ => modalSectionPromise.fulfill([]));
@@ -650,6 +674,22 @@ passHint = credFormPassHint // only new
 
         let listScrollWrpPrevTopPosition = 0;
         
+        let visualViewportHeight = visualViewport.height;
+        let formHeadEdit = null;
+        const viewportHandler = e => {
+            if(e.target.height + 50 < visualViewportHeight){
+                console.log("FIX")
+                formHeadEdit && formHeadEdit.addClass("fix");
+            }else{
+                console.log("sticky")
+                formHeadEdit && formHeadEdit.killClass("fix");
+            }
+/*             console.log("visualViewportHeight", visualViewportHeight);
+            console.log("e", e.target.height); */
+        };
+        
+        window.visualViewport.addEventListener('scroll', viewportHandler);
+        window.visualViewport.addEventListener('resize', viewportHandler);
 
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -659,8 +699,9 @@ passHint = credFormPassHint // only new
             const boxNoteElMaxLen = 10000;
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
+            visualViewportHeight = visualViewport.height;
+
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
-               // console.log("vFormScrollTop", vFormScrollTop, "e.target.scrollTop", e.target.scrollTop);
                 vFormScrollTop = e.target.scrollTop;
                 
                 if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
@@ -887,7 +928,8 @@ passHint = credFormPassHint // only new
                         min: min,
                         max: max,
                         value: value,
-                        _onInput: changeRangeInput
+                        _onInput: changeRangeInput,
+                        _noBlur: true
                     });
                     const changeRangeInputValue = val => {
                         rangeInputEl.value = parseInt(rangeInputEl.value) + val;
@@ -1045,7 +1087,7 @@ passHint = credFormPassHint // only new
                     placeholder: labelHtml,
                     value: vendObj[prop],
                     disabled: displayMode,
-                    _onInput: changeVprop
+                    _onInput: changeVprop,
                 });
 
                 return displayMode && !vendObj[prop] ? [] :  getFieldsetEl("padded", labelHtml, prop).attachAry([
@@ -1064,6 +1106,8 @@ passHint = credFormPassHint // only new
                     : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true),
                 getSvgIcon("btnCloseForm", true, closeForm)
             ]);
+            
+            formHeadEdit = displayMode ? formHead : null;
 
             const recordModWrp = !displayMode // Show only if Display
                 ? null
@@ -1758,6 +1802,9 @@ passHint = credFormPassHint // only new
                  console.log("TO DO getDonate");
             }
             
+            const swapTheme = _ => {
+                document.body.toggleClass("invert");
+            }
             
     const settings = (_ => {
         let settingsSection = null;
@@ -1766,7 +1813,7 @@ passHint = credFormPassHint // only new
             e.preventDefault();
             if(settingsSection) return;
             
-            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", "donate", getDonate), [], langModule(thisApp, this.init)];
+            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", true, getDonate), [], langModule(thisApp, this.init), getSvgIcon("swapTheme", true, swapTheme)];
             
             settingsSection = dom.addDiv("settingsSection").attach(
                 dom.addDiv("settingsWrp").attachAry(

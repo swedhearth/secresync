@@ -1,4 +1,4 @@
-/* 'frequent_0.034_GitHub */
+/* 'frequent_0.035_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -284,7 +284,7 @@ const txtBankObj = {
       "deleteVendorReject": "The '${ vName }' Account has not been deleted.",
       "deleteVendorFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been removed, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
       "submitFormFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been updated, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
-      "submitFormSucess": "The '${ vName }' Account has been updated successfully.",
+      "submitFormSucess": "The '${ vName }' Account has been updated.",
       "submitFormSucessModerateFail": "The '${ vName }' Account updates are not reflected in the disconnected databases. Updates will be applied once the connection is restored.",
       "submitPassFailed": "Oops! There's an issue... The new password for the '${ vName }' Account cannot be saved. The password remains unchanged.",
       "vendorExists": "The account name '${ vName }' is already in use. Please choose a different name.",
@@ -292,7 +292,7 @@ const txtBankObj = {
       "passCopied": "Password has been copied to the clipboard.",
       "logCopied": "Login has been copied to the clipboard.",
       "newPassGenerated": "A new password for the account '${vName}' has been generated.",
-      "vendorDeleted": "The '${ vName }' Account has been deleted successfully.",
+      "vendorDeleted": "The '${ vName }' Account has been deleted.",
       "exitAppConfirm": "Press the Back Button again to exit the application.",
       "noFilePickedErr": "No Database File has been selected, or the file is corrupted. Unable to load the Database...",
       "pickFileFR": "Select the database file. Data on this file will not be modifiable...", //Device Database File
@@ -308,7 +308,7 @@ const txtBankObj = {
       "persistedFail": "Oops! There's an issue... The password cannot be saved on the device.",
       "persistedDeleted": "The password has been removed from the device.",
       "persistedBadPin": "The entered PIN is incorrect. The Database cannot be unlocked. You have ${ count } more attempts to unlock it with the PIN.",
-      "dbCredentialsChangeSucess": "The login credentials have been updated successfully.",
+      "dbCredentialsChangeSucess": "The login credentials have been updated.",
       "dbCredentialsChangeFail": "The login credentials have not been updated.",
       "dbCredentialsChangeModerateFail": "The login credentials have not been updated in the databases with removed connections. It will not be possible to synchronise the Database with these copies.",
       "dbCredentialsChangeCriticalFail": "Connection with the database has been lost. Login credentials remain unchanged.",
@@ -389,6 +389,7 @@ const txtBankObj = {
         "toggleToNote": "Convert Login Credentials to a Note",
         "changeLang": "Change Language",
         "donate": "Support Our Work!",
+        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -770,7 +771,7 @@ const txtBankObj = {
       "deleteVendorReject": "La cuenta '${ vName }' no ha sido eliminada.",
       "deleteVendorFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha eliminado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
       "submitFormFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha actualizado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
-      "submitFormSucess": "La cuenta '${ vName }' se ha actualizado correctamente.",
+      "submitFormSucess": "La cuenta '${ vName }' se ha actualizado.",
       "submitFormSucessModerateFail": "Las actualizaciones de la cuenta '${ vName }' no se reflejan en las bases de datos desconectadas. Las actualizaciones se aplicarán una vez que se restablezca la conexión.",
       "submitPassFailed": "¡Vaya! Hay un problema... La nueva contraseña para la cuenta '${ vName }' no se puede guardar. La contraseña permanece sin cambios.",
       "vendorExists": "El nombre de la cuenta '${ vName }' ya está en uso. Elija otro nombre.",
@@ -778,7 +779,7 @@ const txtBankObj = {
       "passCopied": "La contraseña se ha copiado al portapapeles.",
       "logCopied": "Los detalles de inicio de sesión se han copiado al portapapeles.",
       "newPassGenerated": "Se ha generado una nueva contraseña para la cuenta '${vName}'.",
-      "vendorDeleted": "La cuenta '${ vName }' se ha eliminado correctamente.",
+      "vendorDeleted": "La cuenta '${ vName }' se ha eliminado.",
       "exitAppConfirm": "Presione nuevamente el botón Atrás para salir de la aplicación.",
       "noFilePickedErr": "No se ha seleccionado ningún archivo de base de datos o el archivo está dañado. No se puede cargar la base de datos...",
       "pickFileFR": "Seleccione el archivo de base de datos. Los datos en este archivo no podrán ser modificados...",
@@ -794,7 +795,7 @@ const txtBankObj = {
       "persistedFail": "¡Vaya! Hay un problema... La contraseña no se puede guardar en el dispositivo.",
       "persistedDeleted": "La contraseña se ha eliminado del dispositivo.",
       "persistedBadPin": "El PIN ingresado es incorrecto. No se puede desbloquear la base de datos. Le quedan ${ count } intentos para desbloquearla con el PIN.",
-      "dbCredentialsChangeSucess": "Las credenciales de inicio de sesión se han actualizado correctamente.",
+      "dbCredentialsChangeSucess": "Las credenciales de inicio de sesión se han actualizado.",
       "dbCredentialsChangeFail": "Las credenciales de inicio de sesión no se han actualizado.",
       "dbCredentialsChangeModerateFail": "Las credenciales de inicio de sesión no se han actualizado en las bases de datos con conexiones eliminadas. No será posible sincronizar la base de datos con estas copias.",
       "dbCredentialsChangeCriticalFail": "Se ha perdido la conexión con la base de datos. Las credenciales de inicio de sesión no han sido cambiadas.",
@@ -875,6 +876,7 @@ const txtBankObj = {
         "toggleToNote": "Convertir Credenciales de Inicio de Sesión en Nota",
         "changeLang": "Cambiar Idioma",
         "donate": "¡Apoya nuestro trabajo!",
+        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -1360,6 +1362,7 @@ const txtBankObj = {
         "toggleToNote": "Convertir des Identifiants de Connexion en Note",
         "changeLang": "Changer de Langue",
         "donate": "Soutenez Notre Travail !",
+        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1740,7 +1743,7 @@ const txtBankObj = {
       "deleteVendorReject": "Konto '${ vName }' nie zostało usunięte.",
       "deleteVendorFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało usunięte, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
       "submitFormFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało zaktualizowane, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
-      "submitFormSucess": "Konto '${ vName }' zostało pomyślnie zaktualizowane.",
+      "submitFormSucess": "Konto '${ vName }' zostało zaktualizowane.",
       "submitFormSucessModerateFail": "Aktualizacje konta '${ vName }' nie są odzwierciedlone w bazach danych, z którymi rozłączono połączenie. Aktualizacje zostaną zastosowane po przywróceniu połączenia.",
       "submitPassFailed": "Ups! Wystąpił problem... Nie można zapisać nowego hasła dla konta '${ vName }'. Hasło nie zostało zmienione.",
       "vendorExists": "Nazwa konta '${ vName }' jest już używana. Proszę wybrać inną nazwę.",
@@ -1748,7 +1751,7 @@ const txtBankObj = {
       "passCopied": "Hasło zostało skopiowane do schowka.",
       "logCopied": "Login został skopiowany do schowka.",
       "newPassGenerated": "Nowe hasło dla konta '${ vName }' zostało wygenerowane.",
-      "vendorDeleted": "Konto '${ vName }' zostało pomyślnie usunięte.",
+      "vendorDeleted": "Konto '${ vName }' zostało usunięte.",
       "exitAppConfirm": "Naciśnij ponownie przycisk Wstecz, aby wyjść z aplikacji.",
       "noFilePickedErr": "Nie wybrano pliku bazy danych lub plik jest uszkodzony. Nie można załadować bazy danych...",
       "pickFileFR": "Wybierz plik bazy danych. Dane w tym pliku nie będą mogły być modyfikowane...",
@@ -1764,7 +1767,7 @@ const txtBankObj = {
       "persistedFail": "Ups! Wystąpił problem... Nie można zapisać hasła na urządzeniu.",
       "persistedDeleted": "Hasło zostało usunięte z urządzenia.",
       "persistedBadPin": "Wprowadzony PIN jest nieprawidłowy. Baza danych nie może być odblokowana. Aby odblokować ją za pomocą PIN-u pozostało Ci prób: ${ count }.",
-      "dbCredentialsChangeSucess": "Dane logowania zostały pomyślnie zmienione.",
+      "dbCredentialsChangeSucess": "Dane logowania zostały zmienione.",
       "dbCredentialsChangeFail": "Dane logowania nie zostały zmienione.",
       "dbCredentialsChangeModerateFail": "Dane logowania nie zostały zmienione w bazach danych, z którymi rozłączono połączenie. Nie będzie możliwe zsynchronizowanie bazy danych z tymi kopiami.",
       "dbCredentialsChangeCriticalFail": "Utracono połączenie z bazą danych. Dane logowania nie zostały zmienione.",
@@ -1845,6 +1848,7 @@ const txtBankObj = {
         "toggleToNote": "Konwertuj Dane Logowania na Notatkę",
         "changeLang": "Zmień Język",
         "donate": "Wesprzyj Naszą Pracę!",
+        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",
