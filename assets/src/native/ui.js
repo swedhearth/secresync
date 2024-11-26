@@ -1,7 +1,7 @@
-/* 'frequent_0.035_GitHub' */
+/* 'frequent_0.036_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.035_GitHub";
+    let tempVer = "frequent_0.036_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -678,10 +678,10 @@ passHint = credFormPassHint // only new
         let formHeadEdit = null;
         const viewportHandler = e => {
             if(e.target.height + 50 < visualViewportHeight){
-                console.log("FIX")
+                console.log("FIX", formHeadEdit)
                 formHeadEdit && formHeadEdit.addClass("fix");
             }else{
-                console.log("sticky")
+                console.log("sticky", formHeadEdit)
                 formHeadEdit && formHeadEdit.killClass("fix");
             }
 /*             console.log("visualViewportHeight", visualViewportHeight);
@@ -1107,7 +1107,7 @@ passHint = credFormPassHint // only new
                 getSvgIcon("btnCloseForm", true, closeForm)
             ]);
             
-            formHeadEdit = displayMode ? formHead : null;
+            formHeadEdit = displayMode ? null: formHead ;
 
             const recordModWrp = !displayMode // Show only if Display
                 ? null

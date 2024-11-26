@@ -107,7 +107,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
-        window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        if( thisApp.URL !== "http://localhost:8080/" )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
 
         let appInstalled = false;
