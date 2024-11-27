@@ -1,4 +1,4 @@
-/* 'frequent_0.040_GitHub' */
+/* 'frequent_0.041_GitHub' */
 
 function Interface(thisApp){
     let tempVer = "frequent_0.040_GitHub";
@@ -698,7 +698,7 @@ passHint = credFormPassHint // only new
 
                 if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
 //.scrollTo(0, formHeadEdit.parentElement.parentElement.scrollHeight);
-formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight);
+/* formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight); */
             }else{
                 //console.log("sticky", formHeadEdit)
                 //formHeadEdit && formHeadEdit.killClass("fix");
