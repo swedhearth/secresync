@@ -1420,7 +1420,7 @@ body.invert .langWrp{
 
 /* __ Application Form Head __ */
 .formHead{
-    position: fixed;
+    position: sticky;
     top: 0px;
     display: flex;
     align-items: center;
@@ -1438,6 +1438,10 @@ body.invert .langWrp{
     width: 100%;
     max-width: var(--max-app-width);
     box-sizing: border-box;
+}
+
+.formHead.fix{
+    position: fixed;
 }
 
 .formTitle{

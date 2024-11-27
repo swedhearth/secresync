@@ -1,7 +1,7 @@
-/* 'frequent_0.043_GitHub' */
+/* 'frequent_0.044_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.043_GitHub";
+    let tempVer = "frequent_0.044_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -690,7 +690,7 @@ passHint = credFormPassHint // only new
            // mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
             
             if(e.target.height < visualViewportHeight){
-                console.log("FIX", formHeadEdit, `${e.target.offsetTop}px`)
+                //console.log("FIX", formHeadEdit, `${e.target.offsetTop}px`)
                 
 
                  
@@ -699,6 +699,7 @@ passHint = credFormPassHint // only new
                 //if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
                     
                 if(formHeadEdit){
+                    formHeadEdit.addClass("fix");
                     mobileDebug("e.target.height < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`, "e.offsetTop =", e.target.offsetTop);
                     formHeadEdit.style.top = `${e.target.offsetTop}px`; //scale(${1 / viewport.scale  })
                 }
@@ -709,10 +710,13 @@ passHint = credFormPassHint // only new
 /* formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight); */
             }else{
                 //console.log("sticky", formHeadEdit)
-                //formHeadEdit && formHeadEdit.killClass("fix");
-                if(formHeadEdit)formHeadEdit.style.transform = "unset";
+                //formHeadEdit && 
+                if(formHeadEdit){
+                    formHeadEdit.killClass("fix");
+                    formHeadEdit.style.top = "0px";
+                }
                 
-                if(formHeadEdit)formHeadEdit.style.top = "0px";
+                //if(formHeadEdit)formHeadEdit.style.top = "0px";
             }
 /*             console.log("visualViewportHeight", visualViewportHeight);
             console.log("e", e.target.height); */
