@@ -1,7 +1,7 @@
-/* 'frequent_0.038_GitHub' */
+/* 'frequent_0.039_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.038_GitHub";
+    let tempVer = "frequent_0.039_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -678,18 +678,28 @@ passHint = credFormPassHint // only new
         let visualViewportHeight = window.visualViewport.height;
         let formHeadEdit = null;
         const viewportHandler = e => {
+            mobileDebug("viewportHandler Triggered");
 
             
             const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
-            console.log(offsetTop);
+            //console.log(offsetTop);
+            
+            mobileDebug("viewportHandler was height in pixels = ", visualViewportHeight);
+            mobileDebug("viewportHandler is height in pixels = ", e.target.height);
+            
+            mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
             
             if(e.target.height + 50 < visualViewportHeight){
-                console.log("FIX", formHeadEdit, `translateY(${offsetTop}px);`)
+                //console.log("FIX", formHeadEdit, `translateY(${offsetTop}px);`)
+                
+
+                 
+                 mobileDebug("e.target.height + 50 < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`);
 
                 if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
 
             }else{
-                console.log("sticky", formHeadEdit)
+                //console.log("sticky", formHeadEdit)
                 //formHeadEdit && formHeadEdit.killClass("fix");
                 if(formHeadEdit)formHeadEdit.style.transform = "unset";
             }
