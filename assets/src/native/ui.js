@@ -1,7 +1,7 @@
-/* 'frequent_0.039_GitHub' */
+/* 'frequent_0.040_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.039_GitHub";
+    let tempVer = "frequent_0.040_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -678,18 +678,18 @@ passHint = credFormPassHint // only new
         let visualViewportHeight = window.visualViewport.height;
         let formHeadEdit = null;
         const viewportHandler = e => {
-            mobileDebug("viewportHandler Triggered");
+            //mobileDebug("viewportHandler Triggered");
 
             
             const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
             //console.log(offsetTop);
             
-            mobileDebug("viewportHandler was height in pixels = ", visualViewportHeight);
-            mobileDebug("viewportHandler is height in pixels = ", e.target.height);
+           // mobileDebug("viewportHandler was height in pixels = ", visualViewportHeight);
+          //  mobileDebug("viewportHandler is height in pixels = ", e.target.height);
             
-            mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
+           // mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
             
-            if(e.target.height + 50 < visualViewportHeight){
+            if(e.target.height < visualViewportHeight){
                 //console.log("FIX", formHeadEdit, `translateY(${offsetTop}px);`)
                 
 
@@ -697,7 +697,8 @@ passHint = credFormPassHint // only new
                  mobileDebug("e.target.height + 50 < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`);
 
                 if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
-
+//.scrollTo(0, formHeadEdit.parentElement.parentElement.scrollHeight);
+formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight);
             }else{
                 //console.log("sticky", formHeadEdit)
                 //formHeadEdit && formHeadEdit.killClass("fix");
@@ -709,7 +710,7 @@ passHint = credFormPassHint // only new
         
         //if(window.TOUCH_DEVICE){
             window.visualViewport.addEventListener('scroll', viewportHandler);
-            window.visualViewport.addEventListener('resize', viewportHandler);
+            //window.visualViewport.addEventListener('resize', viewportHandler);
        // }
 
 
