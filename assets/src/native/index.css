@@ -1,4 +1,4 @@
-/* 'frequent_0.037_GitHub' */
+/* 'frequent_0.045_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -61,7 +61,8 @@
 }
 
 html {
-    height: 100%;
+    /* height: 100%; */
+    height: 100vh;
 }
 
 html *{
@@ -71,8 +72,11 @@ html *{
 
 body{
     position: fixed;
-    width: 100%;
-    height: 100%;
+/*     width: 100%;
+    height: 100%; */
+    
+    width: 100vw;
+    height: 100vh;
     margin: 0;
     padding: 0;
     font-family: "Century Gothic", century-gothic, CenturyGothic, AppleGothic, sans-serif;
@@ -953,8 +957,12 @@ body.invert .scrollWrpPrivate:before, body.invert .scrollWrpPastRevision:before{
     position: fixed;
     top:0;
     left:0;
-    width: 100%;
-    height: 100%;
+/*     width: 100%;
+    height: 100%; */
+    
+    width: 100vw;
+    height: 100vh;
+    
     overflow: hidden;
     background: var(--app-bckg);
     z-index: 1;
