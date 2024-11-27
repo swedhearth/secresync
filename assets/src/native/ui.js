@@ -1,7 +1,7 @@
-/* 'frequent_0.036_GitHub' */
+/* 'frequent_0.037_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.036_GitHub";
+    let tempVer = "frequent_0.037_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -674,22 +674,33 @@ passHint = credFormPassHint // only new
 
         let listScrollWrpPrevTopPosition = 0;
         
-        let visualViewportHeight = visualViewport.height;
+
+        let visualViewportHeight = window.visualViewport.height;
         let formHeadEdit = null;
         const viewportHandler = e => {
+            mobile
+            
+            const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
+            console.log(offsetTop);
+            
             if(e.target.height + 50 < visualViewportHeight){
-                console.log("FIX", formHeadEdit)
-                formHeadEdit && formHeadEdit.addClass("fix");
+                console.log("FIX", formHeadEdit, `translateY(${offsetTop}px);`)
+
+                if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
+
             }else{
                 console.log("sticky", formHeadEdit)
-                formHeadEdit && formHeadEdit.killClass("fix");
+                //formHeadEdit && formHeadEdit.killClass("fix");
+                if(formHeadEdit)formHeadEdit.style.transform = "unset";
             }
 /*             console.log("visualViewportHeight", visualViewportHeight);
             console.log("e", e.target.height); */
         };
         
-        window.visualViewport.addEventListener('scroll', viewportHandler);
-        window.visualViewport.addEventListener('resize', viewportHandler);
+        if(window.TOUCH_DEVICE){
+            window.visualViewport.addEventListener('scroll', viewportHandler);
+            window.visualViewport.addEventListener('resize', viewportHandler);
+        }
 
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -699,7 +710,7 @@ passHint = credFormPassHint // only new
             const boxNoteElMaxLen = 10000;
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
-            visualViewportHeight = visualViewport.height;
+            visualViewportHeight = window.visualViewport.height;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
                 vFormScrollTop = e.target.scrollTop;

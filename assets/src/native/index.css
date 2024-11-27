@@ -1,4 +1,4 @@
-/* 'frequent_0.035_GitHub' */
+/* 'frequent_0.037_GitHub' */
 
 :root {
     --max-app-width: 900px;
@@ -1438,10 +1438,6 @@ body.invert .langWrp{
     width: 100%;
     max-width: var(--max-app-width);
     box-sizing: border-box;
-}
-
-.formHead.fix{
-    position: fixed;
 }
 
 .formTitle{
