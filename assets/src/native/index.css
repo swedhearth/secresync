@@ -1420,8 +1420,8 @@ body.invert .langWrp{
 
 /* __ Application Form Head __ */
 .formHead{
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;

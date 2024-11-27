@@ -1,7 +1,7 @@
-/* 'frequent_0.042_GitHub' */
+/* 'frequent_0.043_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.042_GitHub";
+    let tempVer = "frequent_0.043_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -680,7 +680,7 @@ passHint = credFormPassHint // only new
         const viewportHandler = e => {
             //mobileDebug("viewportHandler Triggered");
 
-            
+            console.log(e)
             const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
             //console.log(offsetTop);
             
@@ -690,19 +690,29 @@ passHint = credFormPassHint // only new
            // mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
             
             if(e.target.height < visualViewportHeight){
-                //console.log("FIX", formHeadEdit, `translateY(${offsetTop}px);`)
+                console.log("FIX", formHeadEdit, `${e.target.offsetTop}px`)
                 
 
                  
-                 mobileDebug("e.target.height + 50 < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`);
+                 
 
-                if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
+                //if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
+                    
+                if(formHeadEdit){
+                    mobileDebug("e.target.height < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`, "e.offsetTop =", e.target.offsetTop);
+                    formHeadEdit.style.top = `${e.target.offsetTop}px`; //scale(${1 / viewport.scale  })
+                }
+                    
+                
+                
 //.scrollTo(0, formHeadEdit.parentElement.parentElement.scrollHeight);
 /* formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight); */
             }else{
                 //console.log("sticky", formHeadEdit)
                 //formHeadEdit && formHeadEdit.killClass("fix");
                 if(formHeadEdit)formHeadEdit.style.transform = "unset";
+                
+                if(formHeadEdit)formHeadEdit.style.top = "0px";
             }
 /*             console.log("visualViewportHeight", visualViewportHeight);
             console.log("e", e.target.height); */
