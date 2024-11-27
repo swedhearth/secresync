@@ -1,7 +1,7 @@
-/* 'frequent_0.037_GitHub' */
+/* 'frequent_0.038_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.037_GitHub";
+    let tempVer = "frequent_0.038_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -678,7 +678,7 @@ passHint = credFormPassHint // only new
         let visualViewportHeight = window.visualViewport.height;
         let formHeadEdit = null;
         const viewportHandler = e => {
-            mobile
+
             
             const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
             console.log(offsetTop);
@@ -697,10 +697,10 @@ passHint = credFormPassHint // only new
             console.log("e", e.target.height); */
         };
         
-        if(window.TOUCH_DEVICE){
+        //if(window.TOUCH_DEVICE){
             window.visualViewport.addEventListener('scroll', viewportHandler);
             window.visualViewport.addEventListener('resize', viewportHandler);
-        }
+       // }
 
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
