@@ -1,7 +1,7 @@
-/* 'frequent_0.049_GitHub' */
+/* 'frequent_0.050_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.049_GitHub - MobileOptimisation_21";
+    let tempVer = "frequent_0.050_GitHub - MobileOptimisation_22";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -57,11 +57,15 @@ function Interface(thisApp){
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
         inpObj._onInput && inpEl.on("input", inpObj._onInput);
         inpObj._onKeydown && inpEl.on("keydown", inpObj._onKeydown);
-/*         !inpObj._noBlur && inpEl.observedBy(new IntersectionObserver(entries => {
+        !inpObj._noBlur && inpEl.observedBy(new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if(!entry.isIntersecting) entry.target.blur();
+                if(!entry.isIntersecting) {
+                    setTimeout(_ => {
+                        if(!entry.isIntersecting) entry.target.blur();
+                    },500);
+                }
             });
-        }, {})); */
+        }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         return inpEl;
     };
