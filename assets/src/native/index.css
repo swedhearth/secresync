@@ -1,6 +1,8 @@
-/* 'frequent_0.045_GitHub' */
+/* 'frequent_0.046_GitHub' */
 
 :root {
+    --body-height: 100vh;
+    
     --max-app-width: 900px;
     --min-app-width: 300px;
     
@@ -60,10 +62,9 @@
     font-stretch:normal;
 }
 
-html {
-    /* height: 100%; */
+/* html {
     height: 100vh;
-}
+} */
 
 html *{
     scrollbar-width: none;
@@ -72,11 +73,8 @@ html *{
 
 body{
     position: fixed;
-/*     width: 100%;
-    height: 100%; */
-    
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: var(--body-height);
     margin: 0;
     padding: 0;
     font-family: "Century Gothic", century-gothic, CenturyGothic, AppleGothic, sans-serif;
@@ -84,6 +82,8 @@ body{
     background: var(--app-bckg-opaque-80);
     overflow-x: hidden;
     overscroll-behavior: contain;
+    
+    transition: height 0.3s ease-out;
     
 display: flex;
     justify-content: center;
@@ -731,7 +731,8 @@ legend.url:before{
 
 /* ------------------------------------------------------ Message Module ----------------------------------------------------------*/
 .msgModule{
-    position: fixed;
+    /* position: fixed; */
+    position: absolute;
     bottom: 0;
     /* left: 0; */
     width: 100%;
@@ -791,6 +792,7 @@ legend.url:before{
 .msgHistoryContentWrp{
     overflow:auto;
         height: calc(100% - 3em);
+        min-width: calc(var(--min-app-width)* 1.5);
 }
 
 .msgModule.slideDown{
@@ -850,6 +852,7 @@ legend.url:before{
     top:0;
     padding: 0;
     justify-content: space-between;
+   min-width: calc(var(--min-app-width)* 1.5);
 }
 
 .closeFullArchive{
@@ -863,7 +866,8 @@ legend.url:before{
 }
 /* ------------------------------------------------------ Database Modification Date Bar ----------------------------------------------------------*/
 .dbModifiedBar{
-    position: fixed;
+    /* position: fixed; */
+    position: absolute;
     bottom: 0;
     height: var(--db-mod-bar-height); /* 5mm; */
     font-size: xx-small;
@@ -954,15 +958,12 @@ body.invert .scrollWrpPrivate:before, body.invert .scrollWrpPastRevision:before{
 
 /* ------------------------------------------------------ App Section  ----------------------------------------------------------*/
 .appSection{
-    position: fixed;
+    /* position: fixed; */
+    position:absolute;
     top:0;
     left:0;
-/*     width: 100%;
-    height: 100%; */
-    
-    width: 100vw;
-    height: 100vh;
-    
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     background: var(--app-bckg);
     z-index: 1;
@@ -1443,14 +1444,14 @@ body.invert .langWrp{
         background: rgb(250 250 250 / 75%);
         
         
-    width: 100%;
+/*     width: 100%;
     max-width: var(--max-app-width);
-    box-sizing: border-box;
+    box-sizing: border-box; */
 }
 
-.formHead.fix{
+/* .formHead.fix{
     position: fixed;
-}
+} */
 
 .formTitle{
     display: flex;
@@ -1654,11 +1655,17 @@ line-height: 1.5rem;
 } */
 
 .formFoot{
-    position: fixed;
+    /* position: fixed; */
+    position: sticky;
+    bottom:0;
+    /* top: min(100%, calc(100vh - 11mm - 2vmin - 1.5rem)); */
+    
+    top: min(100%, calc(var(--body-height) - (var(--svgIcon-padding-small) * 2) - 2vmin - var(--db-mod-bar-height) - 1px));
+    
     display: flex;
     justify-content: space-between;
     width: min(100%, var(--max-app-width));
-    bottom: var(--db-mod-bar-height);
+    /* bottom: var(--db-mod-bar-height); */
     border-top: var(--trace-gray-240);
     /* background: var(--app-bckg-opaque-80); */
     

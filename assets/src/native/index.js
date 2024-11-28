@@ -1,6 +1,6 @@
-/* 'frequent_0.35_GitHub' */
+/* 'frequent_0.46_GitHub' */
 "use strict";
-console.log("index core_0.035_GitHub");
+console.log("index core_0.046_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -48,13 +48,16 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 (async _ =>{
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
     if(locationSearch){
-        mobileDebug("In Index. locationSearch is present. window.location.search = ", locationSearch);
+        //mobileDebug("In Index. locationSearch is present. window.location.search = ", locationSearch);
         const wasHistoryLength = window.sessionStorage?.getItem("historyLength");
-        mobileDebug("In Index. wasHistoryLength = ", wasHistoryLength);
-        mobileDebug("In Index. window.history.length = ", window.history.length);
+        //mobileDebug("In Index. wasHistoryLength = ", wasHistoryLength);
+        //mobileDebug("In Index. window.history.length = ", window.history.length);
         
-        if(wasHistoryLength){
-            mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
+        if(wasHistoryLength){ // Maybe if no history - then don;t do it?
+        
+            alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (wasHistoryLength - window.history.length -2));
+            
+            //mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
             window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
@@ -86,7 +89,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     console.log("urlSearchParams", urlSearchParams);
     if(!urlSearchParams){
         setTimeout(_ =>{
-            if(confirm("IN INDEX - !!! This has been caught when no urlSearchParams and 5 seconds ellapsed. WILL RELOAD. history.state: " + JSON.stringify(window.history.state))){
+            if(confirm("IN INDEX - !!! This has been caught when no urlSearchParams and 2 seconds ellapsed. WILL RELOAD. history.state: " + JSON.stringify(window.history.state) + " - window.history.length = " + window.history.length)){
                 window.location.replace(window.location.origin + window.location.pathname);
             }
         }, 2000);
@@ -107,7 +110,15 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
-        if( thisApp.URL !== "http://localhost:8080/" )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        
+
+        const viewportHandler = e => {
+            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+        };
+        
+        //window.visualViewport.addEventListener('scroll', viewportHandler);
+        window.visualViewport.addEventListener('resize', viewportHandler);
 
 
         let appInstalled = false;

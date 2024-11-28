@@ -1,7 +1,7 @@
-/* 'frequent_0.045_GitHub' */
+/* 'frequent_0.046_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.045_GitHub";
+    let tempVer = "frequent_0.046_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -675,13 +675,13 @@ passHint = credFormPassHint // only new
         let listScrollWrpPrevTopPosition = 0;
         
 
-        let visualViewportHeight = window.visualViewport.height;
-        let formHeadEdit = null;
-        const viewportHandler = e => {
+/*         let visualViewportHeight = window.visualViewport.height;
+        let formHeadEdit = null; */
+       // const viewportHandler = e => {
             //mobileDebug("viewportHandler Triggered");
 
-            console.log(e)
-            const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
+          //  console.log(e)
+         //   const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
             //console.log(offsetTop);
             
            // mobileDebug("viewportHandler was height in pixels = ", visualViewportHeight);
@@ -689,7 +689,7 @@ passHint = credFormPassHint // only new
             
            // mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
             
-            if(e.target.height < visualViewportHeight){
+        //    if(e.target.height < visualViewportHeight){
                 //console.log("FIX", formHeadEdit, `${e.target.offsetTop}px`)
                 
 
@@ -698,33 +698,33 @@ passHint = credFormPassHint // only new
 
                 //if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
                     
-                if(formHeadEdit){
-                    formHeadEdit.addClass("fix");
-                    mobileDebug("e.target.height < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`, "e.offsetTop =", e.target.offsetTop);
-                    formHeadEdit.style.top = `${e.target.offsetTop}px`; //scale(${1 / viewport.scale  })
-                }
+        //        if(formHeadEdit){
+        //            formHeadEdit.addClass("fix");
+        //            mobileDebug("e.target.height < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`, "e.offsetTop =", e.target.offsetTop);
+         //           formHeadEdit.style.top = `${e.target.offsetTop}px`; //scale(${1 / viewport.scale  })
+         //       }
                     
                 
                 
 //.scrollTo(0, formHeadEdit.parentElement.parentElement.scrollHeight);
 /* formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight); */
-            }else{
+        //    }else{
                 //console.log("sticky", formHeadEdit)
                 //formHeadEdit && 
-                if(formHeadEdit){
-                    formHeadEdit.killClass("fix");
-                    formHeadEdit.style.top = "0px";
-                }
+        //        if(formHeadEdit){
+        //            formHeadEdit.killClass("fix");
+        ///            formHeadEdit.style.top = "0px";
+        //        }
                 
                 //if(formHeadEdit)formHeadEdit.style.top = "0px";
-            }
+        //    }
 /*             console.log("visualViewportHeight", visualViewportHeight);
             console.log("e", e.target.height); */
-        };
+       // };
         
         //if(window.TOUCH_DEVICE){
-            window.visualViewport.addEventListener('scroll', viewportHandler);
-            //window.visualViewport.addEventListener('resize', viewportHandler);
+/*             window.visualViewport.addEventListener('scroll', viewportHandler);
+            window.visualViewport.addEventListener('resize', viewportHandler); */
        // }
 
 
@@ -735,7 +735,7 @@ passHint = credFormPassHint // only new
             const boxNoteElMaxLen = 10000;
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
-            visualViewportHeight = window.visualViewport.height;
+            //visualViewportHeight = window.visualViewport.height;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
                 vFormScrollTop = e.target.scrollTop;
@@ -882,6 +882,38 @@ passHint = credFormPassHint // only new
 
             const shareVendor = async _ => { //shareCredentials
                 console.log("----------------SHARE MODULE-------------------TO DO-----------------------------SHARE MODULE-------------------TO DO-----------------------------");
+                
+                
+                
+                
+                const device = await navigator.bluetooth.requestDevice({
+                    //acceptAllDevices: true,
+                    filters: [ { name: "Hubert's A52s" }],
+                    //optionalServices: ["battery_service"],
+                }).catch(err => console.error(err));
+                if(!device) return;
+                //await connectDevice(device)
+                
+                device.addEventListener("gattserverdisconnected", e => console.log("Bluetooth Disconnected", e));
+                const bluetooth = await device.gatt.connect(); // bluetooth === server
+                console.log("Getting UART service. bluetooth = ", bluetooth);
+                const service = await bluetooth.getPrimaryService("battery_service");
+                const characteristic_tx = service.getCharacteristic('new_alert');
+                characteristic_tx.writeValue(new TextEncoder().encode("Hello from JS"));
+                await characteristic_tx.startNotifications();
+                characteristic_tx.addEventListener("characteristicvaluechanged", e => {
+                    console.log("characteristicvaluechanged", e);
+                    const val = e.target.value;
+                    console.log(val);
+                });
+                
+                
+                
+                
+                
+                
+                
+                
                 return alert("TO DO!");
 
                 const plainPinString = prompt("PIN");
@@ -1143,7 +1175,7 @@ passHint = credFormPassHint // only new
                 getSvgIcon("btnCloseForm", true, closeForm)
             ]);
             
-            formHeadEdit = displayMode ? null: formHead ;
+            //formHeadEdit = displayMode ? null: formHead ;
 
             const recordModWrp = !displayMode // Show only if Display
                 ? null
