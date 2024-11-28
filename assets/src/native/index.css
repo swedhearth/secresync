@@ -1,4 +1,4 @@
-/* 'frequent_0.046_GitHub' */
+/* 'frequent_0.047_GitHub' */
 
 :root {
     --body-height: 100vh;
@@ -83,7 +83,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: height 0.3s ease-out;
+    /* transition: height 0.3s ease-out; */
     
 display: flex;
     justify-content: center;
