@@ -1,7 +1,7 @@
-/* 'frequent_0.050_GitHub' */
+/* 'frequent_0.051_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.050_GitHub - MobileOptimisation_22";
+    let tempVer = "frequent_0.051_GitHub - MobileOptimisation_23";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -59,9 +59,15 @@ function Interface(thisApp){
         inpObj._onKeydown && inpEl.on("keydown", inpObj._onKeydown);
         !inpObj._noBlur && inpEl.observedBy(new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if(!entry.isIntersecting) {
+                const inpEl = entry.target;
+                if(entry.isIntersecting) {
+                    if(inpEl.isBlured){
+                        inpEl.isBlured = false;
+                    }
+                }else{
+                    inpEl.isBlured = true;
                     setTimeout(_ => {
-                        if(!entry.isIntersecting) entry.target.blur();
+                        if(inpEl.isBlured) entry.target.blur();
                     },500);
                 }
             });
