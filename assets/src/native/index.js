@@ -126,17 +126,17 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         const origHeight = window.visualViewport.height;
         let virtualKeyboardIsDisplayed = false;
         
-let viewPortDelay;
+//let viewPortDelay;
 //let viewPortDelayb;
         const viewportHandler = e => {
             //if(origHeight === e.target.height){ //will make full screen
 
             
-            if(origHeight === e.target.height){
+/*             if(origHeight === e.target.height){
                 virtualKeyboardIsDisplayed = true;
-            }
+            } */
             
-            if(virtualKeyboardIsDisplayed){
+/*             if(virtualKeyboardIsDisplayed){
                 clearTimeout(viewPortDelay)
                 viewPortDelay = setTimeout(_ => {
                     virtualKeyboardIsDisplayed = false;
@@ -147,10 +147,11 @@ let viewPortDelay;
                 },1000);
                 
                 
-            }else{
-                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+            }else{ */
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
-            }
+                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                
+            //}
         };
         const viewportHandlerb = e => {
            // clearTimeout(viewPortDelayb);
