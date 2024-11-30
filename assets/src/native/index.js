@@ -144,7 +144,9 @@ let viewPortDelay;
                     document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                     document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
                     
-                },100);
+                },1000);
+                
+                
             }else{
                 document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
