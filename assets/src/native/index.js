@@ -129,7 +129,7 @@ let viewPortDelay;
            clearTimeout(viewPortDelay);
            viewPortDelay = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-            }, 300);
+            }, 100);
             /* document.documentElement.style.setProperty("--body-top-translateY", "0px"); //translateY(0px) */
         };
         const viewportHandlerb = e => {

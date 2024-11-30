@@ -76,7 +76,7 @@ html *{
 }
 
 body{
-    position: relative;
+    position: absolute;
     width: 100%;
     height: var(--body-height);
     margin: 0;
