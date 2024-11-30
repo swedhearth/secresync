@@ -737,8 +737,9 @@ legend.url:before{
 
 /* ------------------------------------------------------ Message Module ----------------------------------------------------------*/
 .msgModule{
-    /* position: fixed; */
-    position: absolute;
+    display:none;
+    position: fixed;
+    /* position: absolute; */
     bottom: 0;
     /* left: 0; */
     width: 100%;
