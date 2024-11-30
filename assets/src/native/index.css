@@ -92,7 +92,7 @@ body{
 display: flex;
     justify-content: center;
     
-    /* transform: translateY(var(--body-top-translateY)); */
+    transform: translateY(var(--body-top-translateY));
 }
 
 body *{
