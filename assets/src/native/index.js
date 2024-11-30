@@ -123,25 +123,25 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-let viewPortDelay;
-let viewPortDelayb;
+//let viewPortDelay;
+//let viewPortDelayb;
         const viewportHandler = e => {
             
-           clearTimeout(viewPortDelay);
-           viewPortDelay = setTimeout(_ => {
+           //clearTimeout(viewPortDelay);
+           //viewPortDelay = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-            document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); //translateY(0px)                
-            }, 500);
+                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); //translateY(0px)                
+            //}, 500);
 
         };
         const viewportHandlerb = e => {
-            clearTimeout(viewPortDelayb);
+           // clearTimeout(viewPortDelayb);
             
-           viewPortDelayb = setTimeout(_ => {
+           //viewPortDelayb = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-            }, 1000);
+           // }, 1000);
         };
-        window.visualViewport.addEventListener('scroll', viewportHandlerb);
+        window.visualViewport.addEventListener('scroll', viewportHandler);
         window.visualViewport.addEventListener('resize', viewportHandler);
         
 /* window.addEventListener('touchmove', (e) => {
