@@ -1,6 +1,6 @@
-/* 'frequent_0.56_GitHub' */
+/* 'frequent_0.59_GitHub' */
 "use strict";
-console.log("index core_0.056_GitHub");
+console.log("index core_0.059_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -130,7 +130,7 @@ let viewPortDelayb;
            clearTimeout(viewPortDelay);
            viewPortDelay = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-            document.documentElement.style.setProperty("--body-top-translateY", "0px"); //translateY(0px)                
+            document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); //translateY(0px)                
             }, 500);
 
         };
