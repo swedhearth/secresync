@@ -129,7 +129,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 let viewPortDelay;
 //let viewPortDelayb;
         const viewportHandler = e => {
-            if(origHeight === e.target.height){ //will make full screen
+            //if(origHeight === e.target.height){ //will make full screen
 
             
             if(origHeight !== e.target.height){
