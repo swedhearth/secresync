@@ -1,4 +1,4 @@
-/* 'frequent_0.055_GitHub' */
+/* 'frequent_0.056_GitHub' */
 
 :root {
     --body-height: 100vh;
@@ -64,8 +64,10 @@
 }
 
 html {
-    height: var(--body-height);
+    /* height: var(--body-height); */
 background: blue;
+scrollbar-width: none;
+height:100%;
 }
 
 html *{
@@ -74,7 +76,7 @@ html *{
 }
 
 body{
-    position: fixed;
+    position: relative;
     width: 100%;
     height: var(--body-height);
     margin: 0;
@@ -90,7 +92,7 @@ body{
 display: flex;
     justify-content: center;
     
-    transform: translateY(var(--body-top-translateY));
+    /* transform: translateY(var(--body-top-translateY)); */
 }
 
 body *{
@@ -742,7 +744,7 @@ legend.url:before{
     width: 100%;
     background: var(--app-shade-grey-255);
     text-indent: 1em;
-    border-top: var(--trace-gray-240);
+    /* border-top: var(--trace-gray-240); */
     z-index: 2;
     transform:translateY(100%);
     transition: all 0.5s ease-out;

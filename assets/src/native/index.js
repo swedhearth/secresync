@@ -1,6 +1,6 @@
-/* 'frequent_0.55_GitHub' */
+/* 'frequent_0.56_GitHub' */
 "use strict";
-console.log("index core_0.055_GitHub");
+console.log("index core_0.056_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -123,9 +123,13 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-
+let viewPortDelay;
         const viewportHandler = e => {
-            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+            
+           clearTimeout(viewPortDelay);
+           viewPortDelay = setTimeout(_ => {
+                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+            }, 300);
             /* document.documentElement.style.setProperty("--body-top-translateY", "0px"); //translateY(0px) */
         };
         const viewportHandlerb = e => {
@@ -136,7 +140,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.visualViewport.addEventListener('scroll', viewportHandlerb);
         window.visualViewport.addEventListener('resize', viewportHandler);
         
-window.addEventListener('touchmove', (e) => {
+/* window.addEventListener('touchmove', (e) => {
     if (document.body.scrollTop > 0) {
         document.body.scrollTop = 0;
     }
@@ -146,7 +150,7 @@ document.body.addEventListener('scroll', () => {
     if (document.body.scrollTop > 0) {
         document.body.scrollTop = 0;
     }
-}, { passive: false });
+}, { passive: false }); */
 
 
         let appInstalled = false;
