@@ -1,4 +1,4 @@
-/* 'frequent_0.035_GitHub' */
+/* 'frequent_0.052_GitHub' */
 function Crypto(){
     "use strict";
 
@@ -409,11 +409,11 @@ function Crypto(){
         vO.b = trimmedB64FromU8Ary(this.base);
         vO.c = b64FromTimeInt(this.cr8);
         vO.m = b64FromTimeInt(this.mod);
-        const { base, cr8, mod, ...vendorRest } = vO;
+        const { base, cr8, mod, exp, ...vendorRest } = vO;
         return vendorRest;
     };
     
-    Vendor.prototype.prepareForShare = async function(plainPinString = false){ // TO DOOOOOOOOOOOOOOOOOOOOO
+    Vendor.prototype.prepareForShare = async function(plainPinString = false, getPlainText = false){ // TO DOOOOOOOOOOOOOOOOOOOOO
         const {plainString} = await this.getCurrentPassword();
         const vO = JSON.stringify({
             ps: plainString,
@@ -423,6 +423,8 @@ function Crypto(){
             ul: this.url,
             tg: this.tags,
         });
+        
+        if(getPlainText) return vO;
 
         const vOBuffer = await compressedBufferFromIterable(vO); // compress JSON string
         const persistId = await randomU8Ary(32).buffer; //ArrayBuffer
@@ -449,14 +451,15 @@ function Crypto(){
         this.exists = false;
     };
     
-    DatabaseObject.prototype.prepare = function(encryptFunction){
-        const writeVendors = this.vendors.map(vendObj => vendObj.prepareForSend());
-        const prepared = JSON.stringify({
+    DatabaseObject.prototype.prepare = function(filteredVendors){
+        const sendVendors = filteredVendors || this.vendors;
+        return JSON.stringify({
             mod: this.mod,
-            vendors: writeVendors
+            vendors: sendVendors.map(vendObj => vendObj.prepareForSend())
         });
-        return prepared;
     };
+
+    
 
     /* -------------------------------------------- Declared Crypto Module Methods and Properties ------------------------------------------------------- */
     this.getEncryptedCryptoKeyUseOnline = getEncryptedCryptoKeyUseOnline; //ASYNC requires cryptoKey, plainPinString //Returns [persistId, cryptoKeyCipher]=([ArrayBuffer, Uint8Array])

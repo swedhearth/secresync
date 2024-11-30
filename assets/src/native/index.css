@@ -1,4 +1,4 @@
-/* 'frequent_0.047_GitHub' */
+/* 'frequent_0.052_GitHub' */
 
 :root {
     --body-height: 100vh;
@@ -83,7 +83,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: height 0.3s ease-out;
+    /* transition: height 0.3s ease-out; */
     
 display: flex;
     justify-content: center;
@@ -1744,7 +1744,7 @@ line-height: 1.5rem;
     transform: translateX(-50vw);
 }
 
-.uiBlur{
+.uiBlur, .killablePopUp{
     position: fixed;
     top:0;
     left:0;
@@ -1752,6 +1752,60 @@ line-height: 1.5rem;
     height: 100vh;
     backdrop-filter: blur(10px);
     z-index:2;
+}
+
+.killablePopUp .crosx{
+    padding: 3rem;
+}
+
+/* Barcode Share*/
+
+.barcodeContainer{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width: 85vmin;
+    height: 85vmin;
+    background: white;
+    padding: 5vmin;
+    display: flex;
+    box-shadow: 1vmin 1vmin 2vmin var(--app-shade-grey-100);
+    border-radius: 5vmin;
+}
+
+.secreSyncBarcode{
+    position: absolute;
+    padding: 3rem;
+    background-image: url(../../../assets/static/appSvg/sprite.svg#secreSyncBarcode);
+}
+/*Export Filter*/
+.exportFilteredWrp{
+    overflow:auto;
+}
+.exportVend{
+padding: 2vh;
+    text-indent: max(5vw, 2rem);
+    background: white;
+    display: block;
+    margin: 1vh 3vw;
+}
+
+.exportVend:before{
+
+    margin: -0.25em min(-5vw, -2rem);
+}
+
+.willExport{
+    background: rgb(0, 255, 30);
+}
+.exportFilteredBar{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 2vh;
+    /* text-indent: max(5vw, 2rem); */
+    background: #e7e7e7;
 }
 
 /* CONTEXT MENU*/

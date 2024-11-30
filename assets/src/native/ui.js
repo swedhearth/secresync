@@ -1,7 +1,7 @@
-/* 'frequent_0.051_GitHub' */
+/* 'frequent_0.052_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.051_GitHub - MobileOptimisation_23";
+    let tempVer = "frequent_0.052_GitHub - MobileOptimisation_24";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -893,8 +893,45 @@ passHint = credFormPassHint // only new
             const shareVendor = async _ => { //shareCredentials
                 console.log("----------------SHARE MODULE-------------------TO DO-----------------------------SHARE MODULE-------------------TO DO-----------------------------");
                 
+                addModalToHistory(true); //force adding to history
+                const killablePopUp = dom.addDiv("killablePopUp").attach(dom.addDiv("crosx").onClick(_ => history.back())).attachTo(document.body);
                 
                 
+                const drawBarcode = async _ => {
+                    const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
+                    const {height, width} = window.visualViewport;
+                    const size = Math.min(height, width) * 0.82;
+                    
+                    ;
+                    
+                    try{
+                        const barcodeContainer = dom.addDiv("barcodeContainer")
+                        QrCreator.render({
+                            text: vPass, //max 2900 char
+                            radius: 0.5, // 0.0 to 0.5
+                            ecLevel: 'L', // L, M, Q, H
+                            fill: '#000', // foreground color
+                            background: "#fff", // color or null for transparent
+                            size: size // in pixels
+                        }, barcodeContainer);
+                      
+                      killablePopUp.ridKids(1).attach(barcodeContainer);
+                    }catch(err){
+                        console.log(err);
+                    }
+                    
+                };
+                
+                killablePopUp.attach(
+                    dom.addDiv("shareContainer").attach(
+                        getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode)
+                    )
+                );
+                
+
+                
+                
+                return;
                 
                 const device = await navigator.bluetooth.requestDevice({
                     //acceptAllDevices: true,
@@ -1407,7 +1444,47 @@ passHint = credFormPassHint // only new
             };
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Download a copy of the snc database file  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const downloadCopyDB = async _ => await thisApp.alert.downloadDbCopy() && thisApp.dbStore.localFile.download();
+            //const downloadCopyDB = async _ => await thisApp.alert.downloadDbCopy() && thisApp.dbStore.localFile.download();
+            
+            
+            
+            const downloadCopyDB = async _ =>{
+                const downloadFullDbObj = await thisApp.alert.downloadDbCopy();
+                if(downloadFullDbObj === null) return;
+                    // TO DO!!!!!!!!!!!!!!! - make add to history. Make History popstate to remove all class="whatever"
+                    const getFilteredVendors = _ => new Promise((res, rej) => {
+
+                        dom.addDiv("killablePopUp exportFilteredWrp")
+                        .attach(
+                            dom.addDiv("exportFilteredBar").attach(
+                                dom.addDiv("exportFilteredDbObj", "exportFilteredDbObj").onClick(e => {
+                                    e.currentTarget.forebear(2).kill();
+                                    res(thisApp.dbObj.vendors.filter(exportVendObj => exportVendObj.exp));
+
+                                })
+                            )
+                        )
+                        .attachAry(
+                            thisApp.dbObj.vendors.map(
+                                exportVendObj => dom.addDiv("exportVend vEntry " + (exportVendObj.isNote ? "vNote" : "vLog"), exportVendObj.name).onClick(e => {
+                                    e.currentTarget.toggleClass("willExport");
+                                    exportVendObj.exp = !exportVendObj.exp;
+                                })
+                            )
+                        )
+                        .attachTo(document.body);
+                    });
+
+                
+                const filteredVendors = downloadFullDbObj ? null : await getFilteredVendors();
+                
+                console.log(filteredVendors);
+                return;
+                
+                const downloadedFileName = downloadFile(await thisApp.cryptoHandle.getFilteredDbFileBlobForExport(filteredVendors), "secre.snc");
+                await new Promise(res => setTimeout(res, 1000));
+                thisApp.message.dbFileDownloaded(downloadedFileName);
+            }
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
@@ -1923,6 +2000,12 @@ passHint = credFormPassHint // only new
     window.addEventListener('popstate', e => {
         if(settings.hasClosed()) return;
         if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
+        
+        const killablePopUps = document.body.kidsByClass("killablePopUp");
+        if(killablePopUps.length){
+            killablePopUps.forEach(killablePopUp => killablePopUp.remove());
+            return;
+        }
 
         mainGui.reset(); //resetUI - hide form, show list
         modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)

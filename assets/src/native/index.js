@@ -41,6 +41,7 @@ Settings:
  - app colour mode
  
 
+Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="killablePopUp". Remove Trash from the list to export!!!!!!!
 */
 
 // get url search parameters
@@ -55,12 +56,22 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         if(wasHistoryLength){ // Maybe if no history - then don;t do it?
         
-            alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (wasHistoryLength - window.history.length -2));
+           
             
             //mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
-            window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
+            let goBackBy = wasHistoryLength - window.history.length -2;
+            
+             alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
+            if(window.history.length + goBackBy < 1){
+                alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
+                
+                window.history.go(1 - window.history.length);
+            }else{
+                window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
+            }
+            // maybe it should be (wasHistoryLength - window.history.length - 1) e.g 5 - 2  + 1 = 3 + 1 = go(-4)
             return null;
         }
         locationSearch = "";

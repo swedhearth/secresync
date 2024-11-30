@@ -1,4 +1,4 @@
-/* 'frequent_0.046_GitHub */
+/* 'frequent_0.052_GitHub */
 function App(urlSearchParams){
     "use strict";
     /*  -----------------------------------  **************************** App Objects Constructors **************************** -----------------------------------  */
@@ -23,6 +23,8 @@ function App(urlSearchParams){
         
         this.getDbCipher = async _ => (dbCipher = (dbCipher || this.encryptString(thisApp.dbObj.prepare())));
         this.getDbFileBlob = _ => this.getDbCipher().then(getFileBlob);
+        
+        this.getFilteredDbFileBlobForExport = filteredVendors => this.encryptString(thisApp.dbObj.prepare(filteredVendors)).then(getFileBlob);
         
         this.setDbObj = (dbObj, doUpdateMod) => {
             dbCipher = null;
@@ -188,7 +190,7 @@ function App(urlSearchParams){
             return this.get().then(persistedCredentials => persistedCredentials.filter(Boolean).length);
         };
         Persisted.prototype.delete = async function() {
-            await thisApp.cryptoHandle.clearOpfs();
+            await thisApp.cryptoHandle.clearOpfs().catch(err => console.error(err));
             thisApp.localStorage.delete("persistPepper");
             
             return this.exist().then(len => len && Promise.all(Object.values(this).map(methods => methods.delete())).then(thisApp.message.persistedDeleted))
@@ -272,8 +274,10 @@ function App(urlSearchParams){
                 if(registerAuth === false){
                     const persistOnline = await thisApp.alert.persistOnline();
                     console.log(persistOnline);
-                    if(persistOnline) persistType = "online";
-                    if(persistOnline === false) persistType = "device";
+
+                    if(persistOnline === false) {
+                        persistType = developerMode && !location.host ? "online" : "device";
+                    }
                 }
                 return persistType;//if registerAuth === null (user cancelled) then persistType = null - will mean not persists at all
 
