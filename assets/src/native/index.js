@@ -132,7 +132,7 @@ let viewPortDelay;
             //if(origHeight === e.target.height){ //will make full screen
 
             
-            if(origHeight !== e.target.height){
+            if(origHeight === e.target.height){
                 virtualKeyboardIsDisplayed = true;
             }
             
