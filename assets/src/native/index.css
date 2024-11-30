@@ -1,7 +1,8 @@
-/* 'frequent_0.052_GitHub' */
+/* 'frequent_0.054_GitHub' */
 
 :root {
     --body-height: 100vh;
+    --body-top-translateY: 0px;
     
     --max-app-width: 900px;
     --min-app-width: 300px;
@@ -87,6 +88,8 @@ body{
     
 display: flex;
     justify-content: center;
+    
+    transform: translateY(var(--body-top-translateY));
 }
 
 body *{
