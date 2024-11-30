@@ -1,6 +1,6 @@
-/* 'frequent_0.50_GitHub' */
+/* 'frequent_0.53_GitHub' */
 "use strict";
-console.log("index core_0.050_GitHub");
+console.log("index core_0.053_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -128,7 +128,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
         };
         const viewportHandlerb = e => {
-            document.documentElement.style.setProperty("--body-height", `${(e.target.height + e.target.offsetTop)}px`);
+            e.preventDefault(e);
+            //document.documentElement.style.setProperty("--body-height", `${(e.target.height + e.target.offsetTop)}px`);
         };
         window.visualViewport.addEventListener('scroll', viewportHandlerb);
         window.visualViewport.addEventListener('resize', viewportHandler);
