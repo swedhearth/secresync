@@ -123,16 +123,32 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-//let viewPortDelay;
+        const origHeight = window.visualViewport.height;
+        let virtualKeyboardIsDisplayed = false;
+        
+let viewPortDelay;
 //let viewPortDelayb;
         const viewportHandler = e => {
-            
-           //clearTimeout(viewPortDelay);
-           //viewPortDelay = setTimeout(_ => {
-                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); //translateY(0px)                
-            //}, 500);
+            if(origHeight === e.target.height){ //will make full screen
 
+            
+            if(origHeight !== e.target.height){
+                virtualKeyboardIsDisplayed = true;
+            }
+            
+            if(virtualKeyboardIsDisplayed){
+                clearTimeout(viewPortDelay)
+                viewPortDelay = setTimeout(_ => {
+                    virtualKeyboardIsDisplayed = false;
+                    
+                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                    document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
+                    
+                },100);
+            }else{
+                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
+            }
         };
         const viewportHandlerb = e => {
            // clearTimeout(viewPortDelayb);
