@@ -1,7 +1,7 @@
-/* 'frequent_0.054_GitHub' */
+/* 'frequent_0.055_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.054_GitHub - MobileOptimisation_25";
+    let tempVer = "frequent_0.055_GitHub - MobileOptimisation_26";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     

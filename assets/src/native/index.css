@@ -1,4 +1,4 @@
-/* 'frequent_0.054_GitHub' */
+/* 'frequent_0.055_GitHub' */
 
 :root {
     --body-height: 100vh;
@@ -63,9 +63,10 @@
     font-stretch:normal;
 }
 
-/* html {
-    height: 100vh;
-} */
+html {
+    height: var(--body-height);
+background: blue;
+}
 
 html *{
     scrollbar-width: none;
