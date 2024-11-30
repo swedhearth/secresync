@@ -76,7 +76,7 @@ html *{
 }
 
 body{
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: var(--body-height);
     margin: 0;
@@ -87,7 +87,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: all 0.3s ease-out;
+    /* transition: all 0.3s ease-out; */
     
 display: flex;
     justify-content: center;
