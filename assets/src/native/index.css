@@ -87,7 +87,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: all 0.3s ease-out;
+    transition: transform 0.3s ease-out;
     
 display: flex;
     justify-content: center;
@@ -781,6 +781,7 @@ legend.url:before{
 
 .fullArchive .beforeMsgModule{
     opacity: 0;
+    
 }
 
 .msgModule.popUp{
@@ -794,12 +795,13 @@ legend.url:before{
     transform:unset;
     transition: all 0.2s ease-out;
     backdrop-filter: blur(10px);
-    /* overflow:auto; */
+    overflow:auto;
+    left:0;
 }
 .msgHistoryContentWrp{
     overflow:auto;
         height: calc(100% - 3em);
-        min-width: calc(var(--min-app-width)* 1.5);
+        /* min-width: calc(var(--min-app-width)* 1.5); */
 }
 
 .msgModule.slideDown{
@@ -859,7 +861,7 @@ legend.url:before{
     top:0;
     padding: 0;
     justify-content: space-between;
-   min-width: calc(var(--min-app-width)* 1.5);
+   /* min-width: calc(var(--min-app-width)* 1.5); */
 }
 
 .closeFullArchive{
@@ -1911,7 +1913,7 @@ width: 100vw;
     bottom: 0vh;
     left: 0;
     padding: 0.75rem;
-    background: magenta;
+    background: yellow;
     z-index: 2;
 
 }

@@ -1,6 +1,6 @@
-/* 'frequent_0.77_GitHub' */
+/* 'frequent_0.78_GitHub' */
 "use strict";
-console.log("index core_0.077_GitHub");
+console.log("index core_0.078_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -158,35 +158,25 @@ let viewPortDelayb;
                         isShrunk = false;
                         document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                         //mobileDebug("isShrunk was true. restored full screen: ");
-                    }else if(eventViewPortHeightInt > shrunkViewPortHeightInt){ // unshrink 400 to 500
+                    }else if(eventViewPortHeightInt > shrunkViewPortHeightInt){ // expand 400 to 500
                     
-                        //mobileDebug("isShrunk is true. eventViewPortHeightInt > shrunkViewPortHeightInt. Will delay. eventViewPortHeightInt - shrunkViewPortHeightInt =  ", eventViewPortHeightInt - shrunkViewPortHeightInt);
+                        mobileDebug("isShrunk is true. eventViewPortHeightInt > shrunkViewPortHeightInt. Will delay. eventViewPortHeightInt - shrunkViewPortHeightInt =  ", eventViewPortHeightInt - shrunkViewPortHeightInt);
                         unshrinkDelay = setTimeout(_ => { //wait as it may be
-                            //mobileDebug("unshrinkDelay fired. current eventViewPortHeightInt: ", eventViewPortHeightInt);
+                            mobileDebug("unshrinkDelay fired. current eventViewPortHeightInt: ", eventViewPortHeightInt);
                             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                        }, 300);
+                        }, 500);
                         
                     }else{ // shrinking 500 to 400
                         
-                       // mobileDebug("isShrunk is true. shrinking back (500 to 400)- : ");
+                        mobileDebug("isShrunk is true. shrinking back (500 to 400)- : ");
                         
                         document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                     }
                    
                }else{
-                   mobileDebug("This should not happen: ", "viewportHandler resize. e.target.height", e.target.height, "eventViewPortHeightInt: ", eventViewPortHeightInt);
-                   alert("This should not happen");
-               }
-               
-/*                else if(origViewPortHeightInt === eventViewPortHeightInt){ //keyboard hides totally
-                    //mobileDebug("Back to full height: ", e.target.height);
                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-               }else{
-                   clearTimeout(viewPortDelay);
-                   viewPortDelay = setTimeout(_ => {
-                    mobileDebug("Else e.target.height: ", e.target.height, "origViewPortHeightInt: ", origViewPortHeightInt, "origViewPortHeightInt === e.target.height: ", origViewPortHeightInt === e.target.height);
-                   }, 50)
-               } */
+               }
+
             }
 
         };
