@@ -1,6 +1,6 @@
-/* 'frequent_0.71_GitHub' */
+/* 'frequent_0.72_GitHub' */
 "use strict";
-console.log("index core_0.071_GitHub");
+console.log("index core_0.072_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -138,11 +138,14 @@ let viewPortDelay;
                     viewPortDelay = setTimeout(_ => {
                         mobileDebug("Shrinking to: ", e.target.height);
                         document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                    }, 100)
+                    }, 50)
                
                }else if(origHeigh === e.target.height){ //keyboard hides
                     mobileDebug("Back to full height: ", e.target.height);
                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+               }else{
+                   
+                   mobileDebug("Else: ", e.target.height, "origHeight: ", origHeight, "origHeigh === e.target.height: ", origHeigh === e.target.height);
                }
             }
             
