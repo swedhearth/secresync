@@ -1,6 +1,6 @@
-/* 'frequent_0.59_GitHub' */
+/* 'frequent_0.71_GitHub' */
 "use strict";
-console.log("index core_0.059_GitHub");
+console.log("index core_0.071_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -127,11 +127,24 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         let virtualKeyboardIsDisplayed = false;
         
         mobileDebug("window.visualViewport.height:", window.visualViewport.height);
-//let viewPortDelay;
+let viewPortDelay;
 //let viewPortDelayb;
         const viewportHandler = e => {
-            //if(origHeight === e.target.height){ //will make full screen
-
+            if(e.type === "resize"){
+                mobileDebug("viewportHandler resize. e.target.height", e.target.height);
+               if(origHeight > e.target.height){ //body is shrinking // keyboard shows
+                    
+                    clearTimeout(viewPortDelay);
+                    viewPortDelay = setTimeout(_ => {
+                        mobileDebug("Shrinking to: ", e.target.height);
+                        document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                    }, 100)
+               
+               }else if(origHeigh === e.target.height){ //keyboard hides
+                    mobileDebug("Back to full height: ", e.target.height);
+                   document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+               }
+            }
             
 /*             if(origHeight === e.target.height){
                 virtualKeyboardIsDisplayed = true;
@@ -151,10 +164,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }else{ */
                 
                 
-                mobileDebug("viewportHandler e type = ", e.type, "e.target.offsetTop: ", e.target.offsetTop, "e.target.height", e.target.height);
+/*                 mobileDebug("viewportHandler e type = ", e.type, "e.target.offsetTop: ", e.target.offsetTop, "e.target.height", e.target.height);
                 
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
-                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                document.documentElement.style.setProperty("--body-height", `${e.target.height}px`); */
                 
             //}
         };
