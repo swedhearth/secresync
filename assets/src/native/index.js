@@ -1,6 +1,6 @@
-/* 'frequent_0.72_GitHub' */
+/* 'frequent_0.73_GitHub' */
 "use strict";
-console.log("index core_0.072_GitHub");
+console.log("index core_0.073_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -123,29 +123,31 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-        const origHeight = window.visualViewport.height;
+        const origViewPortHeightInt = parseInt(window.visualViewport.height);
         let virtualKeyboardIsDisplayed = false;
         
         mobileDebug("window.visualViewport.height:", window.visualViewport.height);
 let viewPortDelay;
-//let viewPortDelayb;
+let shrunkViewPortHeightInt;
         const viewportHandler = e => {
+            const eventViewPortHeightInt = e.target.height;
             if(e.type === "resize"){
                 mobileDebug("viewportHandler resize. e.target.height", e.target.height);
-               if(origHeight > e.target.height){ //body is shrinking // keyboard shows
+               if(origViewPortHeightInt > eventViewPortHeightInt){ //body is shrinking // keyboard shows
                     
                     clearTimeout(viewPortDelay);
                     viewPortDelay = setTimeout(_ => {
+                        shrunkViewPortHeightInt = eventViewPortHeightInt
                         mobileDebug("Shrinking to: ", e.target.height);
                         document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                     }, 50)
                
-               }else if(origHeigh === e.target.height){ //keyboard hides
+               }else if(origViewPortHeightInt === eventViewPortHeightInt){ //keyboard hides
                     mobileDebug("Back to full height: ", e.target.height);
                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                }else{
                    
-                   mobileDebug("Else: ", e.target.height, "origHeight: ", origHeight, "origHeigh === e.target.height: ", origHeigh === e.target.height);
+                   mobileDebug("Else: ", e.target.height, "origViewPortHeightInt: ", origHeight, "origViewPortHeightInt === e.target.height: ", origViewPortHeightInt === e.target.height);
                }
             }
             
