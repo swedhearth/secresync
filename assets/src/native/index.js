@@ -123,7 +123,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-        const origViewPortHeightInt = parseInt(window.visualViewport.height);
+        const origViewPortHeightInt = parseInt(window.visualViewport.height); 
         let virtualKeyboardIsDisplayed = false;
         
         mobileDebug("window.visualViewport.height:", window.visualViewport.height, "eventViewPortHeightInt: ", origViewPortHeightInt);
@@ -216,7 +216,7 @@ let viewPortDelayb;
             
            viewPortDelayb = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-            }, 300);
+            }, 100);
         };
         window.visualViewport.addEventListener('scroll', viewportHandlerb);
         window.visualViewport.addEventListener('resize', viewportHandler);

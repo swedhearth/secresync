@@ -1,7 +1,7 @@
-/* 'frequent_0.070_GitHub' */
+/* 'frequent_0.076_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.070_GitHub - MobileOptimisation_29";
+    let tempVer = "frequent_0.076_GitHub - MobileOptimisation_45";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1848,8 +1848,8 @@ passHint = credFormPassHint // only new
         const startSwipe = (e) => {
             const { clientX, clientY } = e.touches[0];
             touchStart = { x: clientX, y: clientY, time: Date.now() };
-
-            if (this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
+// && !window.visualViewport.offsetTop if virtual keyboard keyboard is open, the 
+            if (!window.visualViewport.offsetTop && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
                 isVerticalSwipe = true;
                 this.messages.paintFullArchive();
             } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
@@ -1923,7 +1923,7 @@ passHint = credFormPassHint // only new
             };
 
             // Handle vertical or horizontal swipe based on the state
-            if (isVerticalSwipe) {
+            if (isVerticalSwipe) { 
                 if (this.messages.isFullArchive()) {
                     if (isValidSwipe(true)) history.back();
                 } else if (isValidSwipe(false)) {
