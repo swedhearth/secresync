@@ -1,6 +1,6 @@
-/* 'frequent_0.74_GitHub' */
+/* 'frequent_0.75_GitHub' */
 "use strict";
-console.log("index core_0.074_GitHub");
+console.log("index core_0.075_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -132,6 +132,10 @@ let shrunkDelay;
 let unshrinkDelay;
 let shrunkViewPortHeightInt;
 let isShrunk = false;
+
+let viewPortDelayb;
+
+
         const viewportHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
             if(e.type === "resize"){
@@ -143,7 +147,7 @@ let isShrunk = false;
                         isShrunk = true;
                         shrunkViewPortHeightInt = eventViewPortHeightInt;
                         mobileDebug("isShrunk is true. shrunkViewPortHeightInt: ", shrunkViewPortHeightInt);
-                    }, 50);
+                    }, 100);
                     
                     mobileDebug("Shrinking to: ", e.target.height);
                     document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
@@ -162,7 +166,7 @@ let isShrunk = false;
 
                             mobileDebug("unshrinkDelay fired. current eventViewPortHeightInt: ", eventViewPortHeightInt);
                             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                        }, 50);
+                        }, 500);
                         
                     }else{ // shrinking 500 to 400
                         
@@ -208,13 +212,13 @@ let isShrunk = false;
             //}
         };
         const viewportHandlerb = e => {
-           // clearTimeout(viewPortDelayb);
+            clearTimeout(viewPortDelayb);
             
-           //viewPortDelayb = setTimeout(_ => {
+           viewPortDelayb = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-           // }, 1000);
+            }, 300);
         };
-        window.visualViewport.addEventListener('scroll', viewportHandler);
+        window.visualViewport.addEventListener('scroll', viewportHandlerb);
         window.visualViewport.addEventListener('resize', viewportHandler);
         
 /* window.addEventListener('touchmove', (e) => {
