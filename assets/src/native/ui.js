@@ -1,7 +1,7 @@
-/* 'frequent_0.077_GitHub' */
+/* 'frequent_0.079_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.077_GitHub - MobileOptimisation_46";
+    let tempVer = "frequent_0.079_GitHub - MobileOptimisation_48";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -380,10 +380,13 @@ function Interface(thisApp){
             const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
             const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")];
             const submitCredentialsLabel =  dom.add("label").setAttr("for", "submitCredentials").cssName("credInpWrp submitCredentialsLabel").attachAry(isUnlock ? unlockDbAry : protectDbAry);
-            const submitCredentials = e =>{
+            const submitCredentials = async e =>{
                 e.preventDefault(); 
-                modalSectionPromise.fulfill([passInputObj._value, pinInputObj._value, persistCheckboxInputEl.checked]); // instead of passing the persistCheckboxInputEl.checked - return persistType // TO DO!!!!!!!!!!!!!!!
+                await new Promise(res => setTimeout(res, 300)); //wait until the virtual keyboard returns the full body height if in mobile and potentially the viewport.offsetTop is non zero,
                 spinner.start("in submitCredentials");
+                await new Promise(res => requestAnimationFrame(_ => requestAnimationFrame(res)));
+                modalSectionPromise.fulfill([passInputObj._value, pinInputObj._value, persistCheckboxInputEl.checked]); // instead of passing the persistCheckboxInputEl.checked - return persistType // TO DO!!!!!!!!!!!!!!!
+                
             };
 
             return dom.addDiv("credFormWrp").attach(
