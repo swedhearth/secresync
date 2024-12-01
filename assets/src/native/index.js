@@ -126,6 +126,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         const origHeight = window.visualViewport.height;
         let virtualKeyboardIsDisplayed = false;
         
+        mobileDebug("window.visualViewport.height:", window.visualViewport.height);
 //let viewPortDelay;
 //let viewPortDelayb;
         const viewportHandler = e => {
@@ -148,6 +149,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 
                 
             }else{ */
+                
+                
+                mobileDebug("viewportHandler e type = ", e.type, "e.target.offsetTop: ", e.target.offsetTop, "e.target.height", e.target.height);
+                
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`); 
                 document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                 

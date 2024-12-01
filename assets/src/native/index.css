@@ -87,7 +87,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: all 0.1s ease-out;
+    /* transition: all 0.1s ease-out; */
     
 display: flex;
     justify-content: center;
@@ -737,7 +737,7 @@ legend.url:before{
 
 /* ------------------------------------------------------ Message Module ----------------------------------------------------------*/
 .msgModule{
-    display:none;
+    /* display:none; */
     position: fixed;
     /* position: absolute; */
     bottom: 0;
