@@ -1,7 +1,7 @@
-/* 'frequent_0.058_GitHub' */
+/* 'frequent_0.070_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.058_GitHub - MobileOptimisation_29";
+    let tempVer = "frequent_0.070_GitHub - MobileOptimisation_29";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -2029,14 +2029,24 @@ passHint = credFormPassHint // only new
     
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
-            document.body.kidsByClass("svgIcon").forEach(el => { el.toggleClass("noDrop");});
+            dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())
+            .attach(dom.addDiv("msgHistoryContentWrp").attachAry(mobileDebugAry.map(msgAry => 
+                    dom.addDiv("msgHistoryRow dev")
+                    .attach(
+                        dom.addDiv("msgBody")
+                        .attach(dom.addSpan("msgDate", msgAry[0]))
+                        .attach(dom.addSpan("msgText", msgAry[1]))
+                    )
+                ))
+            ).attachTo(document.body);
+/*             document.body.kidsByClass("svgIcon").forEach(el => { el.toggleClass("noDrop");});
             document.body.kidsByClass("pinInput").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("padded").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("submitCredentialsLabel").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("unlockDbIcon").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("protectDb").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("vEntry").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("vName").forEach(el => { el.toggleClass("alt"); });
+            document.body.kidsByClass("vName").forEach(el => { el.toggleClass("alt"); }); */
         })
     );
 }
