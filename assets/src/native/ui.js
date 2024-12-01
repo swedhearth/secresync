@@ -1,7 +1,7 @@
-/* 'frequent_0.079_GitHub' */
+/* 'frequent_0.080_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.079_GitHub - MobileOptimisation_48";
+    let tempVer = "frequent_0.080_GitHub - MobileOptimisation_49";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -377,8 +377,11 @@ function Interface(thisApp){
             }).hide();
             const inputAry = isPinOnly ? [getInputFieldset(pinInputObj)] : [getInputFieldset(passInputObj), getInputFieldset(pinInputObj)];
             const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnCloseForm", _ => modalSectionPromise.fulfill([]));
-            const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
-            const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")];
+/*             const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
+            const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")]; */
+            
+            const unlockDbAry = [getSvgIcon("unlockDbIcon active", "unlockDb")];
+            const protectDbAry = [getSvgIcon("protectDb active", "protectDb")];
             const submitCredentialsLabel =  dom.add("label").setAttr("for", "submitCredentials").cssName("credInpWrp submitCredentialsLabel").attachAry(isUnlock ? unlockDbAry : protectDbAry);
             const submitCredentials = async e =>{
                 e.preventDefault(); 
@@ -399,9 +402,10 @@ function Interface(thisApp){
                         )
                     )
                     .attachAry(inputAry)
-                    .attach(presistFieldset)
+                    
                     .attach(submitCredentialsLabel)
                     .attach(sumbitInpEl)
+                    .attach(presistFieldset)
                     .on("submit", submitCredentials)
             );
         };
@@ -686,60 +690,6 @@ passHint = credFormPassHint // only new
         const adoSorts = ado.sorts;
 
         let listScrollWrpPrevTopPosition = 0;
-        
-
-/*         let visualViewportHeight = window.visualViewport.height;
-        let formHeadEdit = null; */
-       // const viewportHandler = e => {
-            //mobileDebug("viewportHandler Triggered");
-
-          //  console.log(e)
-         //   const offsetTop = visualViewportHeight - e.target.height;// + viewport.offsetTop;
-            //console.log(offsetTop);
-            
-           // mobileDebug("viewportHandler was height in pixels = ", visualViewportHeight);
-          //  mobileDebug("viewportHandler is height in pixels = ", e.target.height);
-            
-           // mobileDebug("viewportHandler offsetTop in pixels = ", offsetTop);
-            
-        //    if(e.target.height < visualViewportHeight){
-                //console.log("FIX", formHeadEdit, `${e.target.offsetTop}px`)
-                
-
-                 
-                 
-
-                //if(formHeadEdit) formHeadEdit.style.transform = `translateY(${offsetTop}px)`; //scale(${1 / viewport.scale  })
-                    
-        //        if(formHeadEdit){
-        //            formHeadEdit.addClass("fix");
-        //            mobileDebug("e.target.height < visualViewportHeight = Transformed by ", `translateY(${offsetTop}px)`, "e.offsetTop =", e.target.offsetTop);
-         //           formHeadEdit.style.top = `${e.target.offsetTop}px`; //scale(${1 / viewport.scale  })
-         //       }
-                    
-                
-                
-//.scrollTo(0, formHeadEdit.parentElement.parentElement.scrollHeight);
-/* formHeadEdit.parentElement.scrollTo(0, document.body.scrollHeight); */
-        //    }else{
-                //console.log("sticky", formHeadEdit)
-                //formHeadEdit && 
-        //        if(formHeadEdit){
-        //            formHeadEdit.killClass("fix");
-        ///            formHeadEdit.style.top = "0px";
-        //        }
-                
-                //if(formHeadEdit)formHeadEdit.style.top = "0px";
-        //    }
-/*             console.log("visualViewportHeight", visualViewportHeight);
-            console.log("e", e.target.height); */
-       // };
-        
-        //if(window.TOUCH_DEVICE){
-/*             window.visualViewport.addEventListener('scroll', viewportHandler);
-            window.visualViewport.addEventListener('resize', viewportHandler); */
-       // }
-
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
@@ -748,7 +698,6 @@ passHint = credFormPassHint // only new
             const boxNoteElMaxLen = 10000;
             const maxRevisions = 10;// UserSettings?
             let vFormScrollTop = 0;
-            //visualViewportHeight = window.visualViewport.height;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
                 vFormScrollTop = e.target.scrollTop;
@@ -1533,12 +1482,13 @@ passHint = credFormPassHint // only new
                 };
                 const clearSearch = e => {
                     searchInputEl.value = "";
-                    searchEvent(e)
+                    searchEvent(e);
                 };
                 const hideForm = e => {
                     searchFormEl.addClass("searchFormHide");
                     clearSearch(e);
-                    searchInputEl.blur();
+                    requestAnimationFrame(_ => requestAnimationFrame(_ => searchInputEl.blur()));
+                    //searchInputEl.blur();
                 };
                 const hideFormEl = getSvgIcon("arrowUp", "hide", hideForm);
                 const searchResetBtn = getClearInputIcon(e => {
