@@ -65,7 +65,7 @@
 
 html {
     /* height: var(--body-height); */
-background: blue;
+    background: var(--app-bckg-opaque-80);
 scrollbar-width: none;
 height:100%;
 }
@@ -87,7 +87,7 @@ body{
     overflow-x: hidden;
     overscroll-behavior: contain;
     
-    transition: transform 0.1s ease-out;
+    transition: all 0.3s ease-out;
     
 display: flex;
     justify-content: center;

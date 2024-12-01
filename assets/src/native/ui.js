@@ -1,7 +1,7 @@
-/* 'frequent_0.076_GitHub' */
+/* 'frequent_0.077_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.076_GitHub - MobileOptimisation_45";
+    let tempVer = "frequent_0.077_GitHub - MobileOptimisation_46";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -67,7 +67,7 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                        /* if(inpEl.isBlured) entry.target.blur(); */
+                        if(inpEl.isBlured) entry.target.blur();
                     },500);
                 }
             });
