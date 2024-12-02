@@ -1,4 +1,4 @@
-/* 'frequent_0.035_GitHub */
+/* 'frequent_0.081_GitHub */
 const txtBankObj = {
   "EN": {
     "alert": {
@@ -117,7 +117,7 @@ const txtBankObj = {
         }
       },
       "localFileLoadOrCreate": {
-        "q": "Do you already have a file with the copy of the Database?",// Do you already have a file with a copy of the database that you want synchronise? //Device Database File
+        "q": "Do you already have a file with the copy of the Database?",
         "y": "Yes, I do.<br>I want to choose the file.",
         "n": "No, I don't.<br>I need to create and save a new file.",
         "i": "localFile"
@@ -154,8 +154,8 @@ const txtBankObj = {
       },
       "downloadDbCopy": {
         "q": "A copy of the SecreSync database will be downloaded.<br><br>This file can be used as a ${ localFileName } or imported into another database.",
-        "y": "Okay, download the whole SecreSync database copy.",
-        "n": "I want to choose the accounts for export.<br><br>To skip the export, close the form.",
+        "y": "Okay, download the whole SecreSync database copy.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "n": "I want to choose the accounts for export.<br><br>To skip the export, close the form.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "i": "downDb"
       },
       "catchLoad": {
@@ -274,7 +274,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Successfully connected to ${ sName }.",
       "storeConnectionFalse": "${ sName } has been disconnected.",
       "storeConnectFail": "Oops! There's an issue... Unable to connect to the ${ sName } database.",
-      "existingDb": "Please enter your Database password.",
+      "existingDb": "Please unlock your Database.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Please enter your Database password. 
       "loggedOff": "The database has been secured due to inactivity. Unlock to access data.",
       "loadDbStandard": "SecreSync is operating in Standard Mode. Load an existing database or create a new one.",
       "loadDbPrivate": "SecreSync is operating in Private Mode. Load an existing database or create a new one.",
@@ -300,8 +300,8 @@ const txtBankObj = {
       "pickFile": "Please select a Database File...",
       "offline": "No internet connection detected. Unable to sync with the cloud.",
       "online": "Internet connection restored. You are now online.",
-      //"offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>",
-      //"offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.",
+      //"offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //"offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "The entered PIN is too long.",
       "credFormPassTooLong": "The entered password is too long.",
       "persistedSucess": "The encrypted password has been saved on the device. You will log in with a PIN next time.",
@@ -389,7 +389,7 @@ const txtBankObj = {
         "toggleToNote": "Convert Login Credentials to a Note",
         "changeLang": "Change Language",
         "donate": "Support Our Work!",
-        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -640,8 +640,8 @@ const txtBankObj = {
       },
       "downloadDbCopy": {
         "q": "Se descargará una copia de la base de datos SecreSync.<br><br>Este archivo puede ser utilizado como ${ localFileName } o puede ser importado a otra base de datos.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "i": "downDb"
       },
       "catchLoad": {
@@ -761,7 +761,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Conexión exitosa a ${ sName }.",
       "storeConnectionFalse": "${ sName } se ha desconectado.",
       "storeConnectFail": "¡Vaya! Hay un problema... No se pudo conectar a la base de datos ${ sName }.",
-      "existingDb": "Por favor, ingrese la contraseña de su base de datos.",
+      "existingDb": "Por favor, ingrese la contraseña de su base de datos.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "loggedOff": "La base de datos ha sido asegurada debido a la inactividad. Desbloquee para acceder a los datos.",
       "loadDbStandard": "SecreSync está en Modo Estándar. Cargue una base de datos existente o cree una nueva.",
       "loadDbPrivate": "SecreSync está en Modo Privado. Cargue una base de datos existente o cree una nueva.",
@@ -787,8 +787,8 @@ const txtBankObj = {
       "pickFile": "Seleccione un archivo de base de datos...",
       "offline": "No hay conexión a Internet. No se puede sincronizar con la nube.",
       "online": "Ha vuelto a estar en línea.",
-      //"offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>",
-      //"offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.",
+      //"offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //"offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "El PIN ingresado es demasiado largo.",
       "credFormPassTooLong": "La contraseña ingresada es demasiado larga.",
       "persistedSucess": "La contraseña cifrada se ha guardado en el dispositivo. La próxima vez iniciará sesión con un PIN.",
@@ -876,7 +876,7 @@ const txtBankObj = {
         "toggleToNote": "Convertir Credenciales de Inicio de Sesión en Nota",
         "changeLang": "Cambiar Idioma",
         "donate": "¡Apoya nuestro trabajo!",
-        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -1127,8 +1127,8 @@ const txtBankObj = {
       },
       "downloadDbCopy": {
         "q": "Une copie de la base de données SecreSync sera téléchargée.<br><br>Ce fichier peut être utilisé comme ${ localFileName } ou être importé dans une autre base de données.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "i": "downDb"
       },
       "catchLoad": {
@@ -1247,7 +1247,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Connexion réussie à ${ sName }.",
       "storeConnectionFalse": "${ sName } a été déconnecté.",
       "storeConnectFail": "Oups ! Il y a un problème... Impossible de se connecter à la base de données ${ sName }.",
-      "existingDb": "Veuillez entrer votre mot de passe de base de données.",
+      "existingDb": "Veuillez entrer votre mot de passe de base de données.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "loggedOff": "La base de données a été sécurisée en raison d'une inactivité. Déverrouillez pour accéder aux données.",
       "loadDbStandard": "SecreSync est en Mode Standard. Chargez une base de données existante ou créez-en une nouvelle.",
       "loadDbPrivate": "SecreSync est en Mode Privé. Chargez une base de données existante ou créez-en une nouvelle.",
@@ -1273,8 +1273,8 @@ const txtBankObj = {
       "pickFile": "Veuillez sélectionner un fichier de base de données...",
       "offline": "Aucune connexion Internet détectée. Impossible de synchroniser avec le cloud.",
       "online": "Connexion Internet rétablie. Vous êtes maintenant en ligne.",
-      //"offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>",
-      //"offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.",
+      //"offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //"offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "Le PIN saisi est trop long.",
       "credFormPassTooLong": "Le mot de passe saisi est trop long.",
       "persistedSucess": "Le mot de passe chiffré a été enregistré sur l'appareil. Vous vous connecterez avec un PIN la prochaine fois.",
@@ -1362,7 +1362,7 @@ const txtBankObj = {
         "toggleToNote": "Convertir des Identifiants de Connexion en Note",
         "changeLang": "Changer de Langue",
         "donate": "Soutenez Notre Travail !",
-        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1613,8 +1613,8 @@ const txtBankObj = {
       },
       "downloadDbCopy": {
         "q": "Kopia bazy danych SecreSync zostanie pobrana.<br><br>Ten plik może być używany jako ${ localFileName } lub może być zaimportowany do innej bazy danych.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "i": "downDb"
       },
       "catchLoad": {
@@ -1733,7 +1733,7 @@ const txtBankObj = {
       "storeConnectionTrue": "${ sName } zostala polaczona.",
       "storeConnectionFalse": "${ sName } zostala odlaczona.",
       "storeConnectFail": "Ups! Wystąpił problem... Nie udało się połączyć z bazą danych ${ sName }.",
-      "existingDb": "Proszę wprowadzić hasło do bazy danych.",
+      "existingDb": "Odblokuj bazę danych.", //"Proszę wprowadzić hasło do bazy danych." // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "loggedOff": "Baza danych zostala zabezpieczona z powodu braku aktywności. Odblokuj, aby uzyskać dostęp danych.",
       "loadDbStandard": "SecreSync jest w Trybie Standardowym. Załaduj istniejącą bazę danych lub utwórz nową.",
       "loadDbPrivate": "SecreSync jest w Trybie Prywatnym. Załaduj istniejącą bazę danych lub utwórz nową.",
@@ -1759,8 +1759,8 @@ const txtBankObj = {
       "pickFile": "Proszę wybrać plik bazy danych...",
       "offline": "Brak połączenia z Internetem. Nie można zsynchronizować z chmurą.",
       "online": "Połączenie z Internetem zostało przywrócone.",
-      //"offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>",
-      //"offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.",
+      //"offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //"offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "Wprowadzony PIN jest za długi.",
       "credFormPassTooLong": "Wprowadzone hasło jest za długie.",
       "persistedSucess": "Zaszyfrowane hasło zostało zapisane na urządzeniu. Następnym razem zalogujesz się za pomocą PIN-u.",
@@ -1848,7 +1848,7 @@ const txtBankObj = {
         "toggleToNote": "Konwertuj Dane Logowania na Notatkę",
         "changeLang": "Zmień Język",
         "donate": "Wesprzyj Naszą Pracę!",
-        "swapTheme": "swapTheme", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",

@@ -18,6 +18,8 @@ function Interface(thisApp){
             return this;
         }
     });
+    
+    
     //if(developerMode) console.log(dom.getHandles());
     
     //  --------------------------------------------------------------- submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
@@ -200,7 +202,8 @@ function Interface(thisApp){
                 null: dom.addDiv("noConsent", getTxtBankHtmlTxt("browserIsPrivate")),
             }[thisApp.consent];
             const titleSpanArray = _ => thisApp.longName.split("").map((ch, idx) => dom.addSpan((idx > 4 && idx < 8) || idx > 11 ? "appTitleFadeOut" : "", ch));
-            const loaderBody = dom.addDiv(getScrollWrpClass()).attachAry([
+            const loaderBody = dom.addDiv(getScrollWrpClass()).attach(
+                dom.addDiv("loaderWrp").attachAry([
                     langModule(thisApp, _ =>  modalSectionPromise.fulfill(thisApp.start)),
                     dom.addDiv("appTitle").attachAry([
                         getSvgIcon("secreSyncIcon", "secreSync"),
@@ -215,6 +218,7 @@ function Interface(thisApp){
                     ]),
                     consentDiv
                 ])
+            )
             return modalSectionPromise.make(loaderBody);
         };
         return detectIncognito().then(paintLoader).catch(error => paintLoader({error: error}));
@@ -377,11 +381,11 @@ function Interface(thisApp){
             }).hide();
             const inputAry = isPinOnly ? [getInputFieldset(pinInputObj)] : [getInputFieldset(passInputObj), getInputFieldset(pinInputObj)];
             const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnCloseForm", _ => modalSectionPromise.fulfill([]));
-/*             const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
-            const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")]; */
+            const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
+            const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")];
             
-            const unlockDbAry = [getSvgIcon("unlockDbIcon active", "unlockDb")];
-            const protectDbAry = [getSvgIcon("protectDb active", "protectDb")];
+/*             const unlockDbAry = [getSvgIcon("unlockDbIcon active", "unlockDb")];
+            const protectDbAry = [getSvgIcon("protectDb active", "protectDb")]; */
             const submitCredentialsLabel =  dom.add("label").setAttr("for", "submitCredentials").cssName("credInpWrp submitCredentialsLabel").attachAry(isUnlock ? unlockDbAry : protectDbAry);
             const submitCredentials = async e =>{
                 e.preventDefault(); 
@@ -1361,9 +1365,9 @@ passHint = credFormPassHint // only new
             };
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getDonate = _ => {
+/*             const getDonate = _ => {
                  console.log("TO DO getDonate");
-            }
+            } */
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Import Database from another lpm Database file - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const importDb = async _ => {
@@ -1440,6 +1444,51 @@ passHint = credFormPassHint // only new
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
+            
+
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const getDonate = _ => {
+                 console.log("TO DO getDonate");
+            }
+            
+            const swapTheme = _ => {
+                
+                document.body.toggleClass("invert");
+                
+                thisApp.localStorage.set("darkTheme", document.body.hasClass("invert"));
+            }
+            
+            const openSettings = e => {
+                const contextIcons = [
+                    langModule(thisApp, async _ => {
+                        window.addEventListener('popstate',  openSettings, {once: true});
+                        history.back();
+                        repaintUI();
+                    }),
+                    getSvgIcon("changeDbPass", true, thisApp.dbObj 
+                        ? _ => {
+                            history.back();
+                            getChangePassword();
+                        }
+                        : null),
+                    getSvgIcon("donate", true, getDonate),
+                    [],
+                    
+                    getSvgIcon("swapTheme", true, swapTheme)
+                ];
+                
+                dom.addDiv("killablePopUp settingsSection").attach(
+                    dom.addDiv("settingsWrp").attachAry(
+                        contextIcons
+                    )
+                ).onClick(function(e){
+                    if(e.target === e.currentTarget) history.back();
+                }).attachTo(document.body);
+
+                addModalToHistory(true); //force adding to history
+            };
+            
+            
 
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -- BARS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
@@ -1455,7 +1504,7 @@ passHint = credFormPassHint // only new
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
                     
                     //langModule(thisApp, repaintUI),
-                    getSvgIcon("settings", true, settings.open)
+                    getSvgIcon("settings", true, openSettings)
                 ]),
                 getSvgIcon("arrowUp", "hide", (e => e.target.forebear(1).toggleClass("appMoreTaskbarShow")))
             ]);
@@ -1902,56 +1951,12 @@ passHint = credFormPassHint // only new
     
     
     /* **************************************************** */
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
-            
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getDonate = _ => {
-                 console.log("TO DO getDonate");
-            }
-            
-            const swapTheme = _ => {
-                document.body.toggleClass("invert");
-            }
-            
-    const settings = (_ => {
-        let settingsSection = null;
 
-        const openSetting = e =>{
-            e.preventDefault();
-            if(settingsSection) return;
-            
-            const contextIcons = [getSvgIcon("changeDbPass", true, thisApp.dbObj ? getChangePassword : null), getSvgIcon("donate", true, getDonate), [], langModule(thisApp, this.init), getSvgIcon("swapTheme", true, swapTheme)];
-            
-            settingsSection = dom.addDiv("settingsSection").attach(
-                dom.addDiv("settingsWrp").attachAry(
-                    contextIcons
-                )
-            ).onClick(function(e){
-                if(e.target === e.currentTarget) history.back();
-            }).attachTo(document.body);
-
-            addModalToHistory(true); //force adding to history
-        
-        };
-        
-        const hasClosed = _ =>{
-            if(!settingsSection) return false;
-            settingsSection.kill();
-            settingsSection = null;
-            return true;
-        };
-        
-        return {
-            open: openSetting,
-            hasClosed: hasClosed,
-        };
-    })();
 
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-        if(settings.hasClosed()) return;
+        //if(this.settings.hasClosed()) return;
         if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
         
         const killablePopUps = document.body.kidsByClass("killablePopUp");
@@ -1978,6 +1983,8 @@ passHint = credFormPassHint // only new
     .on("touchmove", touchHandler.swiping)
     .on("touchend", touchHandler.endSwipe)
     .on("touchcancel", touchHandler.endSwipe)
+
+    if(thisApp.localStorage.get("darkTheme") === "true") document.body.addClass("invert");
     //.on("contextmenu", contextHandler.open);
     
     document.body.attach(

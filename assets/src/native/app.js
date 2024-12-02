@@ -387,6 +387,71 @@ function App(urlSearchParams){
             }
         };
     }
+    
+    const uninstallServiceWorker = async thisApp => {
+        try {
+            const keys = await caches.keys();
+            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
+            if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
+
+            const regs = await navigator.serviceWorker.getRegistrations();
+            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
+             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
+        } catch (err) {
+             if(developerMode) console.error("Error during service worker unregistration:", err);
+             // do nothing? or message that not all have been cleared
+        }
+    };
+    
+    const installServiceWorker = async thisApp => {
+        
+        // Install Service Worker
+        if (!navigator.serviceWorker || !navigator.onLine || !location.host || !thisApp.consent) {
+            if (developerMode) {
+                console.log("navigator.serviceWorker:", navigator.serviceWorker);
+                console.log("navigator.onLine:", navigator.onLine);
+                console.log("thisApp.consent:", thisApp.consent);
+                console.log("location.host:", location.host, "RETURNING");
+            }
+            return;
+        }
+        
+        navigator.serviceWorker.register('service-worker.js', { scope: '/secresync/' })
+        .then(reg => {
+            reg.addEventListener('updatefound', function() {
+                if (developerMode) console.log("service-worker.js update found");
+                reg.installing.addEventListener('statechange', async function () {
+                    switch (this.state) {
+                        case 'installed':
+                            if (developerMode) console.log('Service worker installed');
+                            this.postMessage({ action: 'skipWaiting' });
+                            break;
+                        case "activating":
+                            if (developerMode) console.log("Service worker activating");
+                            break;
+                        case "activated":
+                            if (developerMode) console.log('Service worker activated');
+                            const doUpdate = await thisApp.ui.installApp(true);
+                            if(doUpdate) thisApp.reload();
+                    }
+                });
+            });
+            return reg.update();
+        })
+        .then(_ => {
+            //this.serviceWorkerInstalled = true;
+            developerMode && console.log("service-worker.js registered and fetched. Will check if update available.")
+        })
+        .catch(err => {
+            if (developerMode) console.error("Service worker registration error:", err);
+            mobileDebug("In Index. navigator.serviceWorker.register catch error: ", JSON.stringify(err));
+            
+            if(confirm("Service Worker update failed. Reload app?. TRUE = Reload. FALSE = Do not reload, I will examin the error.")){
+                thisApp.reload();
+            }
+            
+        });
+    };
 
 /**  -----------------------------------  ****----  ****----  **************************** END Objects Constructors ****************************----  ****----  ****----  **** -----------------------------------  */
 /**  -----------------------------------  ****----  ****----  **************************** END Objects Constructors ****************************----  ****----  ****----  **** -----------------------------------  */
@@ -404,39 +469,9 @@ function App(urlSearchParams){
 
     //let lastActiveTime = 0;
     
-    const logOffApp = async type => {
+/*     const logOffApp = async type => {
         this.reload();
-
-/*         mobileDebug("logOffApp Start. type = ", type);
-        if(!this.dbObj){ // logOffApp has already been triggered
-            mobileDebug("logOffApp Start. NO this.dbObj!!!!!! Will return. type = ", type);
-            return;
-        }
-        this.ui.clear();
-        this.dbObj = null;
-        
-        if(Date.now() - lastActiveTime > 600000){ // 600000 = 100 minutes
-            //alert("in logOffApp - Date.now() - lastActiveTime > 6000000. Will reload" + (Date.now() - lastActiveTime));
-            this.reload();
-            return;
-        }
-
-        mobileDebug("logOffApp Start. Cleared UI (and unblured). this.dbObj made null. window.history.state = ", JSON.stringify(window.history.state));
-
-        while (!window.history.state.lastBackExists) {
-            await new Promise(res => {
-                window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
-                window.history.back();
-            });
-        }
-
-        if(this.hidden){
-            alert("This should not happen. The app is hidded. Will re
-        }
-
-        this.start(this.message.loggedOff(), false); */
-
-    };
+    }; */
 
     this.online = navigator.onLine;
     
@@ -466,7 +501,8 @@ function App(urlSearchParams){
             this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                logOffApp("visibilityChange");
+                //logOffApp("visibilityChange");
+                this.reload();
             }else{
                 setTimeout(_ => {
                     this.ui.blur(false);
@@ -481,33 +517,28 @@ function App(urlSearchParams){
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            //lastActiveTime = Date.now();
-            inactivityTimer = setTimeout(_ => logOffApp("setTimeout"), 600000);//600000 ms = 10 minutes
+            inactivityTimer = setTimeout(_ => this.reload(), 600000);//600000 ms = 10 minutes
         }
     })();
 
-    this.uninstallServiceWorker = async _ => { // NOT USED YET!!!!!!!!
-        try {
-            const keys = await caches.keys();
-            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
-            if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
 
-            const regs = await navigator.serviceWorker.getRegistrations();
-            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
-             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
-        } catch (err) {
-             if(developerMode) console.error("Error during service worker unregistration:", err);
-        }
-    };
     
-    this.clearAllStorage = _ => {
+/*     this.clearAllStorage = _ => {
         this.localStorage.clear();
         this.sessionStorage.clear();
         return this.idxDb.clear();
-    };
+    }; */
 
     this.makePrivate = async _ =>{
-        await this.clearAllStorage();
+        //await this.clearAllStorage();
+        
+        this.localStorage.clear();
+        this.sessionStorage.clear();
+        
+        await uninstallServiceWorker(this);
+        
+        await this.idxDb.clear();
+        
         await this.idxDb.destroySelf();
         this.consent = null;
         this.init();
@@ -535,10 +566,14 @@ function App(urlSearchParams){
         this.displayOptions = new DisplayOptions(this.localStorage);
         this.languages = Object.keys(txtBankObj);
         this.lang = this.languages.find(validLang => validLang === (this.lang || this.localStorage.get("lang") || window.sessionStorage.getItem("lang") || navigator.language.split("-")[0].toUpperCase())) || "EN";
+        
         this.txtBank = new TextBank(this.lang); //txtBankObj
         this.crypto = new Crypto();
         this.credentials = new Credentials(this);
         this.idxDb = this.consent ? await new IdxDb("SecreSync", 1, "assets", "name", "value", idxDbErrorHandler) : new Storage(null);
+        
+        installServiceWorker(this);
+        
         this.dbStore = new AppDbStore(this); //appDbStore;
         this.ui = new Interface(this);
         this.alert = this.ui.alerts;

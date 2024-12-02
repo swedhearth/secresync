@@ -64,7 +64,11 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             let goBackBy = wasHistoryLength - window.history.length -2;
             
              alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
-            if(window.history.length + goBackBy < 1){
+             
+            if(wasHistoryLength > window.history.length){
+                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + window.history.length);
+                window.history.go(window.history.length);
+            }else if(window.history.length + goBackBy < 1){
                 alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
                 
                 window.history.go(1 - window.history.length);
@@ -123,12 +127,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
-        const origViewPortHeightInt = parseInt(window.visualViewport.height); 
+ /*        const origViewPortHeightInt = parseInt(window.visualViewport.height); 
 
 let shrunkDelay;
 let unshrinkDelay;
 let shrunkViewPortHeightInt;
-let isShrunk = false;
+let bodySqueezed = false;
 
 let viewPortDelayb;
 
@@ -136,21 +140,21 @@ let viewPortDelayb;
         const viewportHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
             if(e.type === "resize"){
-               if(!isShrunk && origViewPortHeightInt > eventViewPortHeightInt){ //Not shrunk -> body is shrinking // keyboard shows 813 > 538
+               if(!bodySqueezed && origViewPortHeightInt > eventViewPortHeightInt){ //Not shrunk -> body is shrinking // keyboard shows 813 > 538
                     
                     clearTimeout(shrunkDelay);
                     shrunkDelay = setTimeout(_ => {
-                        isShrunk = true;
+                        bodySqueezed = true;
                         shrunkViewPortHeightInt = eventViewPortHeightInt;
 
                     }, 100);
 
                     document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                     
-               }else if(isShrunk){
+               }else if(bodySqueezed){
                     clearTimeout(unshrinkDelay);
                     if(origViewPortHeightInt === eventViewPortHeightInt){ //ushrink to 500 to 800 (original)
-                        isShrunk = false;
+                        bodySqueezed = false;
                         document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
                     }else if(eventViewPortHeightInt > shrunkViewPortHeightInt){ // expand 400 to 500
                         unshrinkDelay = setTimeout(_ => { //wait as it may be
@@ -166,28 +170,49 @@ let viewPortDelayb;
 
             }
 
-        };
-        const viewportHandlerb = e => {
-            clearTimeout(viewPortDelayb);
+        }; */
+        
+        
+        const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
+        let squeezedViewPortHeightInt = 0;
+        let resizeDelay;
+        let transformDelay;
+        
+        const viewportResizeHandler = e => {
+            const eventViewPortHeightInt = parseInt(e.target.height);
             
-           viewPortDelayb = setTimeout(_ => {
+            clearTimeout(resizeDelay);
+            
+            if(squeezedViewPortHeightInt && eventViewPortHeightInt > squeezedViewPortHeightInt){// expand 400 to 500
+                resizeDelay = setTimeout(_ => { //wait as it may be squeezing back from 500 to 400
+                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                }, 500);
+                return;
+            }
+            
+            if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
+                squeezedViewPortHeightInt = 0;
+            }
+
+            if(origViewPortHeightInt > eventViewPortHeightInt){ // body was not squeezed, now will be squeezed
+                resizeDelay = setTimeout(_ => {
+                    squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
+                }, 500);
+            }
+            
+            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+
+        };
+        
+        const viewportTransformHandler = e => {
+            clearTimeout(transformDelay);
+            transformDelay = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
             }, 100);
         };
-        window.visualViewport.addEventListener('scroll', viewportHandlerb);
-        window.visualViewport.addEventListener('resize', viewportHandler);
         
-/* window.addEventListener('touchmove', (e) => {
-    if (document.body.scrollTop > 0) {
-        document.body.scrollTop = 0;
-    }
-}, { passive: false });
-
-document.body.addEventListener('scroll', () => {
-    if (document.body.scrollTop > 0) {
-        document.body.scrollTop = 0;
-    }
-}, { passive: false }); */
+        window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+        window.visualViewport.addEventListener('resize', viewportResizeHandler);
 
 
         let appInstalled = false;
@@ -206,48 +231,7 @@ document.body.addEventListener('scroll', () => {
             }
         });
 
-        // Install Service Worker
-        if (!navigator.serviceWorker || !navigator.onLine || !location.host) {
-            if (developerMode) {
-                console.log("navigator.serviceWorker:", navigator.serviceWorker);
-                console.log("navigator.onLine:", navigator.onLine);
-                console.log("location.host:", location.host, "RETURNING");
-            }
-            return;
-        }
 
-        navigator.serviceWorker.register('service-worker.js', { scope: '/secresync/' })
-        .then(reg => {
-            reg.addEventListener('updatefound', function() {
-                if (developerMode) console.log("service-worker.js update found");
-                reg.installing.addEventListener('statechange', async function () {
-                    switch (this.state) {
-                        case 'installed':
-                            if (developerMode) console.log('Service worker installed');
-                            this.postMessage({ action: 'skipWaiting' });
-                            break;
-                        case "activating":
-                            if (developerMode) console.log("Service worker activating");
-                            break;
-                        case "activated":
-                            if (developerMode) console.log('Service worker activated');
-                            const doUpdate = await thisApp.ui.installApp(true);
-                            if(doUpdate) thisApp.reload();
-                    }
-                });
-            });
-            return reg.update();
-        })
-        .then(_ => developerMode && console.log("service-worker.js registered and fetched. Will check if update available."))
-        .catch(err => {
-            if (developerMode) console.error("Service worker registration error:", err);
-            mobileDebug("In Index. navigator.serviceWorker.register catch error: ", JSON.stringify(err));
-            
-            if(confirm("Service Worker update failed. Reload app?. TRUE = Reload. FALSE = Do not reload, I will examin the error.")){
-                thisApp.reload();
-            }
-            
-        });
     }).catch(err => {
         console.log(err);
         mobileDebug("In Index.  new App(urlSearchParams).init() catch error: ", JSON.stringify(err));
