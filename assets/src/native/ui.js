@@ -1,4 +1,4 @@
-/* 'frequent_0.080_GitHub' */
+/* 'frequent_0.082_GitHub' */
 
 function Interface(thisApp){
     let tempVer = "frequent_0.080_GitHub - MobileOptimisation_49";

@@ -1,4 +1,4 @@
-/* 'frequent_0.081_GitHub' */
+/* 'frequent_0.082_GitHub' */
 
 :root {
     --body-height: 100vh;
@@ -128,8 +128,15 @@ body.invert{
 }
 
 .spinnerSection:before{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
-    filter: drop-shadow(2px 2px 2px rgb(215 177 165)) invert(1);
+    /* background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync); */
+    background-image: url(../../../assets/static/icons/android/android-chrome-512x512.png);
+    filter: drop-shadow(1px 1px 1px rgb(80 105 125));
+    
+    animation: spinloader 6s cubic-bezier(0.46, 0.03, 0.52, 0.96) infinite;    
+}
+
+body.invert .spinnerSection:before{
+    filter: invert(1);
 }
 
 .spinnerSection:before,
@@ -143,7 +150,10 @@ body.invert{
     background-position: center;
     background-repeat: no-repeat;
     content: "";
-    background-size: min(20vmin, 60px);
+    background-size: min(20vmin, 80px);
+    
+    /* transform: translate(-50%, -50%) rotateY(180deg); */
+
 }
 
 .spinnerWrp:after,
@@ -155,7 +165,7 @@ body.invert{
     padding: min(20vmin, 60px);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: -2px -2px 1px 0px rgb(54 111 142);
+
     filter: drop-shadow(1px 1px 1px rgb(50 90 110));
     box-shadow: -2px -2px 1px 0px rgb(30 100 130);
 
@@ -168,7 +178,16 @@ body.invert{
 .spinnerWrp:after {
     animation: animloader 1.7s cubic-bezier(0.46, 0.03, 0.52, 0.96) infinite;
 }
+@keyframes spinloader {
+  0% {
+    transform: translate(-50%, -50%) rotateY(0deg);
 
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateY(360deg);
+
+  }
+}
 @keyframes animloader {
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
@@ -239,10 +258,18 @@ body.invert .svgIcon.active:active{
     padding: 0.5em 0em;
 }
 
+body.invert .inpEl[type="range"]{
+    filter:invert(1);
+}
+
 input:focus-visible, textarea:focus-visible{
     /* outline: 0; */
     /* outline: var(--trace-gray-240); */
-    outline: var(--trace-gray-235);
+    
+    
+    /* outline: var(--trace-gray-235); */
+    
+    outline: 1px solid var(--app-shade-grey-190);
 
     background: var(--app-shade-grey-255);
     box-shadow: unset;
@@ -415,13 +442,14 @@ legend.url:before{
     max-width: var(--min-app-width);
 }
 .credForm{
-    min-width: var(--min-app-width);
+    /* min-width: var(--min-app-width); */
     height: 100%;
+    overflow:auto;
 }
 .credForm .padded:last-child{
     position: sticky;
     top: 100%;
-    margin-bottom:5vh;
+  margin-bottom: max(5vh, calc(var(--db-mod-bar-height) + 1rem));
 }
 .credTaskbar{
     display: flex;
@@ -573,6 +601,13 @@ legend.url:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#protectDb);
 }
 
+.bodyFiller{
+    position: relative;
+    bottom:0;
+    padding:2px;
+    background:purple;
+}
+
 /* ------------------------------------------------------ Loader ----------------------------------------------------------*/
 
 .loaderWrp{
@@ -709,10 +744,11 @@ legend.url:before{
 
 .loadIcon {
     display: inline-block;
-    /* padding: var(--svgIcon-padding-big); */
     margin-top: var(--svgIcon-padding-small);
         padding: max(min(var(--svgIcon-padding-big), 7.5vmin), var(--svgIcon-padding-medium));
 }
+
+
 
 .dbxFileIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#dbxFile);
@@ -1631,6 +1667,10 @@ line-height: 1.5rem;
     border-radius: 0.25em;
 }
 
+body.invert .passGradeBarWrp div{ /*passGradeBar*/
+    filter:invert(1);
+}
+
 /* __ Application Form Icons __ */
 .formIconTypeLog{
     background-image: url(../../../assets/static/appSvg/sprite.svg#typeLog);
@@ -2002,7 +2042,7 @@ body.invert .settingsWrp{
     bottom: 0vh;
     left: 0;
     padding: 0.75rem;
-    background: brown;
+    background: dodgerblue;
     z-index: 2;
 
 }

@@ -1,4 +1,4 @@
-/* 'frequent_0.79_GitHub' */
+/* 'frequent_0.82_GitHub' */
 "use strict";
 console.log("index core_0.080_GitHub");
 /* 
@@ -127,17 +127,15 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
         
- /*        const origViewPortHeightInt = parseInt(window.visualViewport.height); 
+        /* const origViewPortHeightInt = parseInt(window.visualViewport.height); 
+        let shrunkDelay;
+        let unshrinkDelay;
+        let shrunkViewPortHeightInt;
+        let bodySqueezed = false;
 
-let shrunkDelay;
-let unshrinkDelay;
-let shrunkViewPortHeightInt;
-let bodySqueezed = false;
+        let transformDelay;
 
-let viewPortDelayb;
-
-
-        const viewportHandler = e => {
+        const viewportResizeHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
             if(e.type === "resize"){
                if(!bodySqueezed && origViewPortHeightInt > eventViewPortHeightInt){ //Not shrunk -> body is shrinking // keyboard shows 813 > 538
@@ -170,40 +168,7 @@ let viewPortDelayb;
 
             }
 
-        }; */
-        
-        
-        const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
-        let squeezedViewPortHeightInt = 0;
-        let resizeDelay;
-        let transformDelay;
-        
-        const viewportResizeHandler = e => {
-            const eventViewPortHeightInt = parseInt(e.target.height);
-            
-            clearTimeout(resizeDelay);
-            
-            if(squeezedViewPortHeightInt && eventViewPortHeightInt > squeezedViewPortHeightInt){// expand 400 to 500
-                resizeDelay = setTimeout(_ => { //wait as it may be squeezing back from 500 to 400
-                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                }, 500);
-                return;
-            }
-            
-            if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
-                squeezedViewPortHeightInt = 0;
-            }
-
-            if(origViewPortHeightInt > eventViewPortHeightInt){ // body was not squeezed, now will be squeezed
-                resizeDelay = setTimeout(_ => {
-                    squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
-                }, 500);
-            }
-            
-            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-
         };
-        
         const viewportTransformHandler = e => {
             clearTimeout(transformDelay);
             transformDelay = setTimeout(_ => {
@@ -211,6 +176,42 @@ let viewPortDelayb;
             }, 100);
         };
         
+        window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+        window.visualViewport.addEventListener('resize', viewportResizeHandler); */
+        
+        const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
+        let squeezedViewPortHeightInt = 0;
+        let resizeDelay;
+        let transformDelay;
+
+        const viewportResizeHandler = e => {
+            const eventViewPortHeightInt = parseInt(e.target.height);
+            clearTimeout(resizeDelay);
+
+            if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
+                squeezedViewPortHeightInt = 0;
+            }else if(squeezedViewPortHeightInt && eventViewPortHeightInt !== squeezedViewPortHeightInt){ // contract 500 to 400 or other way
+                resizeDelay = setTimeout(_ => { //wait as it may be squeezing back from 500 to 400
+                    squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
+                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+                }, 500);
+                return;
+            }else{ // if body was not squeezed, now it will be squeezed
+                resizeDelay = setTimeout(_ => {
+                    squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
+                }, 500);
+            }
+
+            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+        };
+
+        const viewportTransformHandler = e => {
+            clearTimeout(transformDelay);
+            transformDelay = setTimeout(_ => {
+                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
+            }, 100);
+        };
+
         window.visualViewport.addEventListener('scroll', viewportTransformHandler);
         window.visualViewport.addEventListener('resize', viewportResizeHandler);
 
