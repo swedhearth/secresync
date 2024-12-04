@@ -163,26 +163,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }, 20);
         };
         
-/*     const bodyResizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-
-            const scrolWrp = document.body.kidsByClass("appForm")[0].kid();
-            //console.log(scrolWrp);
-            if(scrolWrp){
-                console.log('entry.contentRect.height', entry.contentRect.height, 'scrolWrp.clientHeight', scrolWrp.clientHeight, 'scrolWrp.scrollTop', scrolWrp.scrollTop)
-                console.log('scrolWrp.clientHeight - entry.contentRect.height', scrolWrp.clientHeight - entry.contentRect.height)
-            }
-        }
-      
-    })
-        bodyResizeObserver.observe(document.body); */
-        
         if ("virtualKeyboard" in navigator) {
           navigator.virtualKeyboard.overlaysContent = true;
-mobileDebug("virtualKeyboard detected");
+//mobileDebug("virtualKeyboard detected");
           navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
             const { x, y, width, height } = event.target.boundingRect;
-            mobileDebug("virtualKeyboard detected. Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
+            mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
             document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - height}px`);
           });
         }
