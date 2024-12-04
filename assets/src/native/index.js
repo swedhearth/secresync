@@ -162,15 +162,15 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
             }, 20);
         };
-        
-        if ("virtualKeyboard" in navigator) {
-          navigator.virtualKeyboard.overlaysContent = true;
-//mobileDebug("virtualKeyboard detected");
-          navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
-            const { x, y, width, height } = event.target.boundingRect;
-            mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
-            document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - height}px`);
-          });
+
+        window.testWithVitualKeyboard = true;
+
+        if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+            navigator.virtualKeyboard.overlaysContent = true;
+            navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
+                //mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
+                document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
+            });
         }
         
         

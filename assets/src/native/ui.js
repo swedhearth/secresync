@@ -75,21 +75,17 @@ function Interface(thisApp){
             });
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
-        inpEl.on("focus", e=> {
-            mobileDebug("inpEl.on focus fired in ", inpEl.name || inpEl.id);
-            //console.log(e);
-           // if(e.clientY > document.body.clientHeight / 2){
-                ///const scrollBy = document.body.clientHeight / 2;
-                
-                //setTimeout(_ => {
-                    //appSectionForm.kid().scrollBy(0, scrollBy);
+        
+        if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+            inpEl.on("focus", e=> {
+                mobileDebug("inpEl.on focus fired in ", inpEl.name || inpEl.id);
+                 navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
+                    inpEl.isBlured = false;
                     inpEl.scrollIntoView({ block: "center"});
                     inpEl.focus();
-               // },200);
-                
-           // }
-
-        });
+                 }, {once: true})
+            });
+        }
 
         return inpEl;
     };
@@ -1138,11 +1134,18 @@ passHint = credFormPassHint // only new
                     
                     boxNoteFitContent();
                 })
-                .on("transitionend", boxNoteFitContent) // fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
-                .on("focus", e=> {
-                    boxNoteEl.scrollIntoView(false);
-                    boxNoteEl.focus();
-                });
+                .on("transitionend", boxNoteFitContent);// fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
+                
+                
+                if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+                    boxNoteEl.on("focus", e=> {
+                        navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
+                            boxNoteEl.scrollIntoView(false);
+                            vForm.scrollBy(0, formFoot.clientHeight + REM);
+                            boxNoteEl.focus();
+                        }, {once: true})
+                    });
+                }
             
             boxNoteEl.value = vendObj.note || "";
 
