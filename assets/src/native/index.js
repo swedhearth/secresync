@@ -1,6 +1,6 @@
-/* 'frequent_0.82_GitHub' */
+/* 'frequent_0.84_GitHub' */
 "use strict";
-console.log("index core_0.080_GitHub");
+console.log("index core_0.084_GitHub");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -126,58 +126,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
         if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
-        
-        /* const origViewPortHeightInt = parseInt(window.visualViewport.height); 
-        let shrunkDelay;
-        let unshrinkDelay;
-        let shrunkViewPortHeightInt;
-        let bodySqueezed = false;
 
-        let transformDelay;
-
-        const viewportResizeHandler = e => {
-            const eventViewPortHeightInt = parseInt(e.target.height);
-            if(e.type === "resize"){
-               if(!bodySqueezed && origViewPortHeightInt > eventViewPortHeightInt){ //Not shrunk -> body is shrinking // keyboard shows 813 > 538
-                    
-                    clearTimeout(shrunkDelay);
-                    shrunkDelay = setTimeout(_ => {
-                        bodySqueezed = true;
-                        shrunkViewPortHeightInt = eventViewPortHeightInt;
-
-                    }, 100);
-
-                    document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                    
-               }else if(bodySqueezed){
-                    clearTimeout(unshrinkDelay);
-                    if(origViewPortHeightInt === eventViewPortHeightInt){ //ushrink to 500 to 800 (original)
-                        bodySqueezed = false;
-                        document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                    }else if(eventViewPortHeightInt > shrunkViewPortHeightInt){ // expand 400 to 500
-                        unshrinkDelay = setTimeout(_ => { //wait as it may be
-                            document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                        }, 500);
-                    }else{
-                        document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                    }
-                   
-               }else{
-                   document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-               }
-
-            }
-
-        };
-        const viewportTransformHandler = e => {
-            clearTimeout(transformDelay);
-            transformDelay = setTimeout(_ => {
-                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-            }, 100);
-        };
-        
-        window.visualViewport.addEventListener('scroll', viewportTransformHandler);
-        window.visualViewport.addEventListener('resize', viewportResizeHandler); */
         
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
         let squeezedViewPortHeightInt = 0;
@@ -186,6 +135,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         const viewportResizeHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
+            mobileDebug("viewportResizeHandler triggered");
             clearTimeout(resizeDelay);
 
             if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
@@ -209,8 +159,24 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             clearTimeout(transformDelay);
             transformDelay = setTimeout(_ => {
                 document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-            }, 100);
+            }, 20);
         };
+        
+        
+        
+        if ("virtualKeyboard" in navigator) {
+          navigator.virtualKeyboard.overlaysContent = true;
+mobileDebug("virtualKeyboard detected");
+          navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
+            const { x, y, width, height } = event.target.boundingRect;
+            mobileDebug("virtualKeyboard detected. Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
+            document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - height}px`);
+          });
+        }
+        
+        
+        
+        
 
         window.visualViewport.addEventListener('scroll', viewportTransformHandler);
         window.visualViewport.addEventListener('resize', viewportResizeHandler);

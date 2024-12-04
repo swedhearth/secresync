@@ -1,7 +1,7 @@
-/* 'frequent_0.082_GitHub' */
+/* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.080_GitHub - MobileOptimisation_49";
+    let tempVer = "frequent_0.084_GitHub - MobileOptimisation_49";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1499,7 +1499,7 @@ passHint = credFormPassHint // only new
                 dom.addDiv("flexIconWrp").attachAry([
                     //getSvgIcon("changeDbPass", true, getChangePassword),
                     //getSvgIcon("donate", "donate", getDonate),
-                    getSvgIcon("downDbIcon", "downDb", downloadCopyDB),
+                    getSvgIcon("expDbIcon", "expDb", downloadCopyDB),
                     getSvgIcon("impDbIcon", "impDb", importDb),
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
                     

@@ -65,7 +65,7 @@
 
 html {
     /* height: var(--body-height); */
-    background: var(--app-bckg-opaque-80);
+    /* background: var(--app-bckg-opaque-80); */
 scrollbar-width: none;
 height:100%;
 }
@@ -132,7 +132,8 @@ body.invert{
     background-image: url(../../../assets/static/icons/android/android-chrome-512x512.png);
     filter: drop-shadow(1px 1px 1px rgb(80 105 125));
     
-    animation: spinloader 6s cubic-bezier(0.46, 0.03, 0.52, 0.96) infinite;    
+    /* animation: spinloader 6s cubic-bezier(0.46, 0.03, 0.52, 0.96) infinite;     */
+    animation: spinloader 2s cubic-bezier(0.13, 0.72, 0.29, 0.64) infinite alternate
 }
 
 body.invert .spinnerSection:before{
@@ -167,8 +168,14 @@ body.invert .spinnerSection:before{
     transform: translate(-50%, -50%);
 
     filter: drop-shadow(1px 1px 1px rgb(50 90 110));
-    box-shadow: -2px -2px 1px 0px rgb(30 100 130);
+    /* box-shadow: -2px -2px 1px 0px rgb(30 100 130); */
+    box-shadow: -2px -2px 1px 0px rgb(110 148 173);
 
+}
+
+body.invert .spinnerWrp:after,
+body.invert .spinnerWrp:before{
+    filter: drop-shadow(1px 1px 1px rgb(50 90 110)) invert(1);
 }
 
  .spinnerWrp:before{
@@ -180,7 +187,7 @@ body.invert .spinnerSection:before{
 }
 @keyframes spinloader {
   0% {
-    transform: translate(-50%, -50%) rotateY(0deg);
+    transform: translate(-50%, -50%) rotateY(180deg);
 
   }
   100% {
@@ -748,26 +755,44 @@ legend.url:before{
         padding: max(min(var(--svgIcon-padding-big), 7.5vmin), var(--svgIcon-padding-medium));
 }
 
-
-
 .dbxFileIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#dbxFile);
+}
+
+body.invert .dbxFileIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#dbxFileInvert);
 }
 
 .oneDriveFileIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#oneDriveFile);
 }
 
+body.invert .oneDriveFileIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#oneDriveFileInvert);
+}
+
 .localFileIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#localFile);
+}
+
+body.invert .localFileIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#localFileInvert);
 }
 
 .newDbIcon{
   background-image: url(../../../assets/static/appSvg/sprite.svg#newDb);
 }
 
+body.invert .newDbIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#newDbInvert);
+}
+
 .localIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#local);
+}
+
+body.invert .localIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#localInvert);
 }
 
 .consent, .noConsent{
@@ -922,13 +947,26 @@ legend.url:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#info);
 }
 
+body.invert .msgHistoryRow.info:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#infoInvert);
+}
+
 .msgHistoryRow.error:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#crossRed);
+}
+
+body.invert .msgHistoryRow.error:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#crossRedInvert);
 }
 
 .msgHistoryRow.flash:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#tickGreen);
 }
+
+body.invert .msgHistoryRow.flash:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#tickGreenInvert);
+}
+
 
 .msgHistoryRow.dev:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
@@ -1235,18 +1273,28 @@ body.invert .scrollWrpPrivate:before, body.invert .scrollWrpPastRevision:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#swapTheme);
 }
 
-.downDbIcon{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#downDb);
+.expDbIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#expDb);
+}
+
+body.invert .expDbIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#expDbInvert);
 }
 
 .impDbIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#impDb);
 }
 
+body.invert .impDbIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#impDbInvert);
+}
+
 .emergDbIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#emergDb);
 }
-
+body.invert .emergDbIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#emergDbInvert);
+}
 .settings{
     background-image: url(../../../assets/static/appSvg/sprite.svg#cog);
 }

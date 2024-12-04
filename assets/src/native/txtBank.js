@@ -156,7 +156,7 @@ const txtBankObj = {
         "q": "A copy of the SecreSync database will be downloaded.<br><br>This file can be used as a ${ localFileName } or imported into another database.",
         "y": "Okay, download the whole SecreSync database copy.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "I want to choose the accounts for export.<br><br>To skip the export, close the form.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "downDb"
+        "i": "expDb"
       },
       "catchLoad": {
         "q": "An unexpected connection problem occurred.<br><br>${ sName } was not loaded.",
@@ -365,7 +365,7 @@ const txtBankObj = {
         "changeDbPass": "Change the Application Database Password",
         "emergDb": "Download an Emergency Copy of the Database",
         "impDb": "Import Data from Another Database",
-        "downDb": "Download a Copy of the Database",
+        "expDb": "Download a Copy of the Database",
         "addVendorBtn": "Add an Account",
         "submitFormBtn": "Save Changes",
         "editFormBtn": "Edit an Account",
@@ -642,7 +642,7 @@ const txtBankObj = {
         "q": "Se descargará una copia de la base de datos SecreSync.<br><br>Este archivo puede ser utilizado como ${ localFileName } o puede ser importado a otra base de datos.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "downDb"
+        "i": "expDb"
       },
       "catchLoad": {
         "q": "Hay un problema con la conexión ${sName}.",
@@ -852,7 +852,7 @@ const txtBankObj = {
         "changeDbPass": "Cambiar la Contraseña de la Base de Datos de la Aplicación",
         "emergDb": "Descargar una Copia de Emergencia de la Base de Datos",
         "impDb": "Importar Datos de Otra Base de Datos",
-        "downDb": "Descargar una Copia de la Base de Datos",
+        "expDb": "Descargar una Copia de la Base de Datos",
         "addVendorBtn": "Añadir una Cuenta",
         "submitFormBtn": "Guardar Cambios",
         "editFormBtn": "Editar una Cuenta",
@@ -1129,7 +1129,7 @@ const txtBankObj = {
         "q": "Une copie de la base de données SecreSync sera téléchargée.<br><br>Ce fichier peut être utilisé comme ${ localFileName } ou être importé dans une autre base de données.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "downDb"
+        "i": "expDb"
       },
       "catchLoad": {
         "q": "Il y a un problème avec la connexion ${sName}.",
@@ -1338,7 +1338,7 @@ const txtBankObj = {
         "changeDbPass": "Changer le Mot de Passe de la Base de Données de l'Application",
         "emergDb": "Télécharger une Copie d'Urgence de la Base de Données",
         "impDb": "Importer des Données d'une Autre Base de Données",
-        "downDb": "Télécharger une Copie de la Base de Données",
+        "expDb": "Télécharger une Copie de la Base de Données",
         "addVendorBtn": "Ajouter un Compte",
         "submitFormBtn": "Enregistrer les Modifications",
         "editFormBtn": "Éditer un Compte",
@@ -1615,7 +1615,7 @@ const txtBankObj = {
         "q": "Kopia bazy danych SecreSync zostanie pobrana.<br><br>Ten plik może być używany jako ${ localFileName } lub może być zaimportowany do innej bazy danych.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "downDb"
+        "i": "expDb"
       },
       "catchLoad": {
         "q": "Wystąpił nieoczekiwany problem połączenia.<br><br>${ sName } nie została wczytana.",
@@ -1824,7 +1824,7 @@ const txtBankObj = {
         "changeDbPass": "Zmień Hasło Bazy Danych Aplikacji",
         "emergDb": "Pobierz Awaryjną Kopię Bazy Danych",
         "impDb": "Importuj Dane z Innej Bazy Danych",
-        "downDb": "Pobierz Kopię Bazy Danych",
+        "expDb": "Pobierz Kopię Bazy Danych",
         "addVendorBtn": "Dodaj Konto",
         "submitFormBtn": "Zapisz Zmiany",
         "editFormBtn": "Edytuj Konto",
