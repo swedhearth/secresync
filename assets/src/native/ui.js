@@ -77,14 +77,26 @@ function Interface(thisApp){
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         
         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-            inpEl.on("focus", e=> {
+/*             inpEl.on("focus", e=> {
                 mobileDebug("inpEl.on focus fired in ", inpEl.name || inpEl.id);
                  navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
                     inpEl.isBlured = false;
                     inpEl.scrollIntoView({ block: "center"});
                     inpEl.focus();
                  }, {once: true})
-            });
+            }); */
+            
+            
+                inpEl.on("focus", e => {
+                    const scrollInput  = _ => {
+                        inpEl.isBlured = false;
+                        inpEl.scrollIntoView({ block: "center"});
+                        inpEl.focus();
+                    }
+                    navigator.virtualKeyboard.addEventListener("geometrychange", scrollInput, {once: true});
+                    boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
+                });
+            
         }
 
         return inpEl;
@@ -1138,12 +1150,14 @@ passHint = credFormPassHint // only new
                 
                 
                 if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-                    boxNoteEl.on("focus", e=> {
-                        navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
+                    boxNoteEl.on("focus", e => {
+                        const scrollNote  = _ => {
                             boxNoteEl.scrollIntoView(false);
                             vForm.scrollBy(0, formFoot.clientHeight + REM);
                             boxNoteEl.focus();
-                        }, {once: true})
+                        }
+                        navigator.virtualKeyboard.addEventListener("geometrychange", scrollNote, {once: true});
+                        boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollNote, {once: true}));
                     });
                 }
             
