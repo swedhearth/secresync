@@ -129,6 +129,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
+        console.log('origViewPortHeightInt',origViewPortHeightInt);
         let squeezedViewPortHeightInt = 0;
         let resizeDelay;
         let transformDelay;
@@ -162,7 +163,19 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }, 20);
         };
         
-        
+/*     const bodyResizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+
+            const scrolWrp = document.body.kidsByClass("appForm")[0].kid();
+            //console.log(scrolWrp);
+            if(scrolWrp){
+                console.log('entry.contentRect.height', entry.contentRect.height, 'scrolWrp.clientHeight', scrolWrp.clientHeight, 'scrolWrp.scrollTop', scrolWrp.scrollTop)
+                console.log('scrolWrp.clientHeight - entry.contentRect.height', scrolWrp.clientHeight - entry.contentRect.height)
+            }
+        }
+      
+    })
+        bodyResizeObserver.observe(document.body); */
         
         if ("virtualKeyboard" in navigator) {
           navigator.virtualKeyboard.overlaysContent = true;
