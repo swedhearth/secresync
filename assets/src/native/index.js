@@ -130,6 +130,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
         console.log('origViewPortHeightInt',origViewPortHeightInt);
+        mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
         let squeezedViewPortHeightInt = 0;
         let resizeDelay;
         let transformDelay;
@@ -169,7 +170,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             navigator.virtualKeyboard.overlaysContent = true;
             navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
                 window.virtualKeboardIsVisible = e.target.boundingRect.height;
-                //mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
+                mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", e.target.boundingRect.height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - e.target.boundingRect.height);
                 document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
             });
         }else{
