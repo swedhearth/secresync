@@ -31,7 +31,8 @@ function Interface(thisApp){
     const getTxtBankAlertTxt = getTxtBankParsedTxt("alert");
     
     // -------------- Helper to get app HTML elements ----------------------------------//
-    const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml)).on("pointerdown", function(e){
+    const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml))
+/*     .on("pointerdown", function(e){
         
         if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
         const isPinFieldset = this.hasClass("pinFieldset");
@@ -52,7 +53,7 @@ function Interface(thisApp){
             }
 
             if(isPinFieldset) this.addClass("pinFieldset");
-        }, {capture: true});
+    }, {capture: true}); */
 
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
@@ -69,7 +70,7 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                        if(inpEl.isBlured) entry.target.blur();
+                        //if(inpEl.isBlured) entry.target.blur();
                     },500);
                 }
             });
@@ -89,12 +90,12 @@ function Interface(thisApp){
             
                 inpEl.on("focus", e => {
                     const scrollInput  = _ => {
-                        inpEl.isBlured = false;
+                        //inpEl.isBlured = false;
                         inpEl.scrollIntoView({ block: "center"});
                         inpEl.focus();
                     }
                     navigator.virtualKeyboard.addEventListener("geometrychange", scrollInput, {once: true});
-                    boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
+                    //boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
                 });
             
         }
@@ -1149,7 +1150,7 @@ passHint = credFormPassHint // only new
                 .on("transitionend", boxNoteFitContent);// fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
                 
                 
-                if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+/*                 if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
                     boxNoteEl.on("focus", e => {
                         const scrollNote  = _ => {
                             boxNoteEl.scrollIntoView(false);
@@ -1159,7 +1160,7 @@ passHint = credFormPassHint // only new
                         navigator.virtualKeyboard.addEventListener("geometrychange", scrollNote, {once: true});
                         boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollNote, {once: true}));
                     });
-                }
+                } */
             
             boxNoteEl.value = vendObj.note || "";
 

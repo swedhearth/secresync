@@ -171,14 +171,16 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 //mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - height);
                 document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
             });
+        }else{
+            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+            window.visualViewport.addEventListener('resize', viewportResizeHandler);            
         }
         
         
         
         
 
-        window.visualViewport.addEventListener('scroll', viewportTransformHandler);
-        window.visualViewport.addEventListener('resize', viewportResizeHandler);
+
 
 
         let appInstalled = false;
