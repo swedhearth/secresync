@@ -94,7 +94,9 @@ function Interface(thisApp){
                         inpEl.scrollIntoView({ block: "center"});
                         inpEl.focus();
                     }
-                    navigator.virtualKeyboard.addEventListener("geometrychange", scrollInput, {once: true});
+                    if(!window.virtualKeboardIsVisible){
+                        navigator.virtualKeyboard.addEventListener("geometrychange", scrollInput, {once: true});
+                    }
                     //boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
                 });
             
