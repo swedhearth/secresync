@@ -179,8 +179,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                         navigator.virtualKeyboard.overlaysContent = false;
                     }, 5000);
                 }else{
-                    vForm.scrollBy(0, navigator.virtualKeyboard.boundingRect.height);
-                     mobileDebug("viewportTransformHandler overlaysContent is true. vForm will be scrolled by: ", navigator.virtualKeyboard.boundingRect.height, "is vForm? = ", !!vForm);                    
+                    vForm.scrollBy(0, origViewPortHeightInt - squeezedViewPortHeightInt);
+                     mobileDebug("viewportTransformHandler overlaysContent is true. vForm will be scrolled by: ", origViewPortHeightInt - squeezedViewPortHeightInt);
                 }
                 
             }else{
