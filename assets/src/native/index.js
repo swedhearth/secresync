@@ -167,29 +167,15 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         };
 
         const viewportTransformHandler = e => {
-            
             if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-                //navigator.virtualKeyboard.overlaysContent = !!e.target.offsetTop;
-                
-                
                 if(e.target.offsetTop){
                     stopResizing = true;
                     navigator.virtualKeyboard.overlaysContent = true;
-
-/*                     document.body.kidsByClass("scrollWrpOverflow").forEach(wrap => {
-                       
-                        wrap.scrollBy(0, navigator.virtualKeyboard.boundingRect.height);
-                        vForm.scrollBy(0, navigator.virtualKeyboard.boundingRect.height)
-                    }); */
                     setTimeout(_ => {
                         stopResizing = false;
                         navigator.virtualKeyboard.overlaysContent = false;
-                    }, 5000);
-                }else{
-                    //vForm.scrollBy(0, origViewPortHeightInt - squeezedViewPortHeightInt);
-                    // mobileDebug("viewportTransformHandler overlaysContent is true. vForm will be scrolled by: ", origViewPortHeightInt - squeezedViewPortHeightInt);
+                    }, 300);
                 }
-                
             }else{
                 clearTimeout(transformDelay);
                 transformDelay = setTimeout(_ => {
