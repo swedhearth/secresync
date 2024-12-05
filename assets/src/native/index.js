@@ -35,13 +35,15 @@ DONE!!! Change the remember password hint and the checkbox text to: remember pas
 DONE!!! Make hint for new Password 
 
 Settings: 
- - history versions
- - app max width (if not mobile)
+ - history versions - DONE !!! 
+ - app max width (if not mobile) - DONE !!! FOR ALL
  - AppLogOff seconds
  - app colour mode
  
 
 Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="killablePopUp". Remove Trash from the list to export!!!!!!!
+
+killablePopUp - sort history back!!!!!!!!!!!!!
 */
 
 // get url search parameters
@@ -66,8 +68,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
              alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
              
             if(wasHistoryLength > window.history.length){
-                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + window.history.length);
-                window.history.go(window.history.length);
+                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (0 - window.history.length));
+                window.history.go(0 - window.history.length);
             }else if(window.history.length + goBackBy < 1){
                 alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
                 
@@ -134,6 +136,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         let squeezedViewPortHeightInt = 0;
         let resizeDelay;
         let transformDelay;
+        
+        window.testWithVitualKeyboard = true;
 
         const viewportResizeHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
@@ -158,28 +162,36 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         };
 
         const viewportTransformHandler = e => {
-            clearTimeout(transformDelay);
-            transformDelay = setTimeout(_ => {
-                document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
-            }, 20);
+            
+            if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+                navigator.virtualKeyboard.overlaysContent = !!e.target.offsetTop;
+                mobileDebug("viewportTransformHandler overlaysContent = ", navigator.virtualKeyboard.overlaysContent);
+            }else{
+                clearTimeout(transformDelay);
+                transformDelay = setTimeout(_ => {
+                    document.documentElement.style.setProperty("--body-top-translateY", `${e.target.offsetTop}px`);
+                }, 20);
+            }
         };
 
-        window.testWithVitualKeyboard = true;
+        
 
         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-            navigator.virtualKeyboard.overlaysContent = true;
+            //navigator.virtualKeyboard.overlaysContent = true;
             navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
                 window.virtualKeboardIsVisible = e.target.boundingRect.height;
                 mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", e.target.boundingRect.height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - e.target.boundingRect.height);
-                document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
-            });
-        }else{
-            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
-            window.visualViewport.addEventListener('resize', viewportResizeHandler);            
+                //document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
+            }, {capture: true, passive: true});
         }
+/*         else{
+            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+            window.visualViewport.addEventListener('resize', viewportResizeHandler);
+        } */
         
         
-        
+            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+            window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
 

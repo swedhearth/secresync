@@ -32,7 +32,7 @@ function Interface(thisApp){
     
     // -------------- Helper to get app HTML elements ----------------------------------//
     const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml))
-/*     .on("pointerdown", function(e){
+    .on("pointerdown", function(e){ // select first empty input element in the fieldset
         
         if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
         const isPinFieldset = this.hasClass("pinFieldset");
@@ -53,7 +53,7 @@ function Interface(thisApp){
             }
 
             if(isPinFieldset) this.addClass("pinFieldset");
-    }, {capture: true}); */
+    }, {capture: true});
 
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
@@ -77,16 +77,7 @@ function Interface(thisApp){
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         
-        if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-/*             inpEl.on("focus", e=> {
-                mobileDebug("inpEl.on focus fired in ", inpEl.name || inpEl.id);
-                 navigator.virtualKeyboard.addEventListener("geometrychange", (event) => {
-                    inpEl.isBlured = false;
-                    inpEl.scrollIntoView({ block: "center"});
-                    inpEl.focus();
-                 }, {once: true})
-            }); */
-            
+/*         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
             
                 inpEl.on("focus", e => {
                     const scrollInput  = _ => {
@@ -100,7 +91,7 @@ function Interface(thisApp){
                     //boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
                 });
             
-        }
+        } */
 
         return inpEl;
     };
@@ -727,7 +718,7 @@ passHint = credFormPassHint // only new
 
             const nameLogMinLen = 3;
             const boxNoteElMaxLen = 10000;
-            const maxRevisions = 10;// UserSettings?
+            const maxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;// UserSettings?
             let vFormScrollTop = 0;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
@@ -1492,11 +1483,86 @@ passHint = credFormPassHint // only new
             }
             
             const swapTheme = _ => {
-                
                 document.body.toggleClass("invert");
-                
                 thisApp.localStorage.set("darkTheme", document.body.hasClass("invert"));
-            }
+            };
+            
+            const rangeInpFieldset = (fieldsetLegendHtml, fieldsetLegendClass, rangeInputName, min, max, value, step, onInput) => {
+                const rangeInputEl = getInpEl({
+                    type: "range",
+                    name: rangeInputName,
+                    min: min,
+                    max: max,
+                    value: value,
+                    _onInput: onInput,
+                    _noBlur: true
+                });
+                const changeRangeInputValue = val => {
+                    rangeInputEl.value = parseInt(rangeInputEl.value) + val;
+                    rangeInputEl.dispatchEvent(new Event('input'));
+                };
+                
+                return getFieldsetEl("", fieldsetLegendHtml, fieldsetLegendClass).attachAry([
+                    getSvgIcon("decrease", true, _ => changeRangeInputValue(-step)),
+                    rangeInputEl,
+                    getSvgIcon("increase", true, _ => changeRangeInputValue(step))
+                ]);
+            };
+            
+            const changeAppWidth = e => {
+                let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
+                if(appWidthWrp) return appWidthWrp.kill();
+                const settingsSection = e.currentTarget.forebear(1);
+                const getFieldsetLabelHtml = integer => "appWidthWrp TODO ( " + integer + " pixels )";
+                const settAppWidth = async e => {
+                    const appWidthStyle = `${parseInt(e.target.value)}px`
+                    document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
+                    thisApp.localStorage.set("appWidth", appWidthStyle);
+                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
+                };
+
+                const appWidthFieldset = rangeInpFieldset(
+                    getTxtBankHtmlTxt("appWidth", {value: settingsSection.clientWidth}),
+                    "appWidthLegend",
+                    "appWidthInpEl",
+                    300, //min
+                    document.body.clientWidth, //max
+                    settingsSection.clientWidth, //value
+                    5, //step
+                    settAppWidth // onInput
+                );
+
+                dom.addDiv("appWidthWrp").attach(appWidthFieldset).attachTo(settingsSection);
+            };
+            
+            const changeMaxRevisions = e => {
+                let maxRevisionsWrp = document.body.kidsByClass("maxRevisionsWrp")[0];
+                if(maxRevisionsWrp) return maxRevisionsWrp.kill();
+                
+                const settingsSection = e.currentTarget.forebear(1);
+
+                const currentMaxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;
+                
+                const settMaxRevision = async e => {
+                    thisApp.localStorage.set("maxRevisions", e.target.value);
+                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("maxRevisions", {value: e.target.value}));
+                };
+                
+                dom.addDiv("maxRevisionsWrp").attach( 
+                    rangeInpFieldset(
+                        getTxtBankHtmlTxt("maxRevisions", {value: currentMaxRevisions}),
+                        "maxRevisionsLegend",
+                        "maxRevisionsInpEl",
+                        0, //min
+                        20, // max
+                        currentMaxRevisions, // value
+                        1, // step
+                        settMaxRevision // onInput
+                    )
+                ).attachTo(settingsSection);
+            };
+
+
             
             const openSettings = e => {
                 const contextIcons = [
@@ -1512,8 +1578,8 @@ passHint = credFormPassHint // only new
                         }
                         : null),
                     getSvgIcon("donate", true, getDonate),
-                    [],
-                    
+                    getSvgIcon("revisionHistory", true, changeMaxRevisions),
+                     getSvgIcon("appWidth", true, changeAppWidth),
                     getSvgIcon("swapTheme", true, swapTheme)
                 ];
                 
@@ -1523,12 +1589,13 @@ passHint = credFormPassHint // only new
                     )
                 ).onClick(function(e){
                     if(e.target === e.currentTarget) history.back();
-                }).attachTo(document.body);
+                }).attachTo(document.body)
+                
 
                 addModalToHistory(true); //force adding to history
             };
             
-            
+
 
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -- BARS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
@@ -2024,9 +2091,14 @@ passHint = credFormPassHint // only new
     .on("touchend", touchHandler.endSwipe)
     .on("touchcancel", touchHandler.endSwipe)
 
+
+/* Apply settings */
     if(thisApp.localStorage.get("darkTheme") === "true") document.body.addClass("invert");
-    //.on("contextmenu", contextHandler.open);
+    const appWidthStyle = thisApp.localStorage.get("appWidth");
+    if(appWidthStyle) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
     
+    
+// /* Temp and tests */
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
             dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())

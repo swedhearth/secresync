@@ -362,7 +362,7 @@ const txtBankObj = {
         "unlinkDb": "Disconnect Database",
         "loadNewDb": "Create a New Database",
         "reloadApp": "Log Out / Reload the Application",
-        "changeDbPass": "Change the Application Database Password",
+        "changeDbPass": "Change application database password",
         "emergDb": "Download an Emergency Copy of the Database",
         "impDb": "Import Data from Another Database",
         "expDb": "Download a Copy of the Database",
@@ -389,7 +389,8 @@ const txtBankObj = {
         "toggleToNote": "Convert Login Credentials to a Note",
         "changeLang": "Change Language",
         "donate": "Support Our Work!",
-        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "Switch application theme",
+        "appWidth" : "Application width",
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -476,7 +477,9 @@ const txtBankObj = {
         "dowloadJson": "Download Unprotected Database JSON",
         "downloadCsv": "Download Unprotected Database CVS",
         "downloadSnc": "Download Protected Database SecreSync File",
-        "revision": "Version modified: ${ revisionDate }"
+        "revision": "Version modified: ${ revisionDate }",
+        "maxRevisions": "Adjust the maximum accounts revisions stored by the application. Current revisions stored: ${ value }.",
+        "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels."
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -849,7 +852,7 @@ const txtBankObj = {
         "unlinkDb": "Desconectar la Base de Datos",
         "loadNewDb": "Crear una Nueva Base de Datos",
         "reloadApp": "Cerrar Sesión / Recargar la Aplicación",
-        "changeDbPass": "Cambiar la Contraseña de la Base de Datos de la Aplicación",
+        "changeDbPass": "Cambiar la contraseña de la base de datos de la aplicación",
         "emergDb": "Descargar una Copia de Emergencia de la Base de Datos",
         "impDb": "Importar Datos de Otra Base de Datos",
         "expDb": "Descargar una Copia de la Base de Datos",
@@ -876,7 +879,8 @@ const txtBankObj = {
         "toggleToNote": "Convertir Credenciales de Inicio de Sesión en Nota",
         "changeLang": "Cambiar Idioma",
         "donate": "¡Apoya nuestro trabajo!",
-        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "Cambiar el tema de la aplicación",
+        "appWidth" : "Ancho de la aplicación",
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -963,7 +967,9 @@ const txtBankObj = {
         "dowloadJson": "Descargar JSON de base de datos no protegida",
         "downloadCsv": "Descargar CSV de base de datos no protegida",
         "downloadSnc": "Descargar archivo SecreSync de base de datos protegida",
-        "revision": "Versión modificada: ${ revisionDate }"
+        "revision": "Versión modificada: ${ revisionDate }",
+        "maxRevisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación. Revisiones actuales almacenadas: ${ value }.",
+        "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles."
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1335,7 +1341,7 @@ const txtBankObj = {
         "unlinkDb": "Déconnecter la Base de Données",
         "loadNewDb": "Créer une Nouvelle Base de Données",
         "reloadApp": "Se Déconnecter / Recharger l'Application",
-        "changeDbPass": "Changer le Mot de Passe de la Base de Données de l'Application",
+        "changeDbPass": "Changer le mot de passe de la base de données de l'application",
         "emergDb": "Télécharger une Copie d'Urgence de la Base de Données",
         "impDb": "Importer des Données d'une Autre Base de Données",
         "expDb": "Télécharger une Copie de la Base de Données",
@@ -1362,7 +1368,8 @@ const txtBankObj = {
         "toggleToNote": "Convertir des Identifiants de Connexion en Note",
         "changeLang": "Changer de Langue",
         "donate": "Soutenez Notre Travail !",
-        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "Changer le thème de l'application",
+        "appWidth" : "Largeur de l'application",
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1449,7 +1456,9 @@ const txtBankObj = {
         "dowloadJson": "Télécharger le JSON de la base de données non protégée",
         "downloadCsv": "Télécharger le CSV de la base de données non protégée",
         "downloadSnc": "Télécharger le fichier SecreSync de la base de données protégée",
-        "revision": "Version modifiée: ${ revisionDate }"
+        "revision": "Version modifiée: ${ revisionDate }",
+        "maxRevisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application. Révisions actuelles stockées : ${ value }.",
+        "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels."
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1821,7 +1830,7 @@ const txtBankObj = {
         "unlinkDb": "Odłącz Bazę Danych",
         "loadNewDb": "Utwórz Nową Bazę Danych",
         "reloadApp": "Wyloguj się / Przeładuj Aplikację",
-        "changeDbPass": "Zmień Hasło Bazy Danych Aplikacji",
+        "changeDbPass": "Zmień hasło bazy danych aplikacji",
         "emergDb": "Pobierz Awaryjną Kopię Bazy Danych",
         "impDb": "Importuj Dane z Innej Bazy Danych",
         "expDb": "Pobierz Kopię Bazy Danych",
@@ -1848,7 +1857,8 @@ const txtBankObj = {
         "toggleToNote": "Konwertuj Dane Logowania na Notatkę",
         "changeLang": "Zmień Język",
         "donate": "Wesprzyj Naszą Pracę!",
-        "swapTheme": "swapTheme", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "swapTheme": "Zmień motyw aplikacji",
+        "appWidth" : "Szerokość aplikacji",
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",
@@ -1935,7 +1945,9 @@ const txtBankObj = {
         "dowloadJson": "Pobierz niechroniony JSON bazy danych",
         "downloadCsv": "Pobierz niechroniony CSV bazy danych",
         "downloadSnc": "Pobierz chroniony plik SecreSync bazy danych",
-        "revision": "Wersja zmodyfikowana: ${ revisionDate }"
+        "revision": "Wersja zmodyfikowana: ${ revisionDate }",
+        "maxRevisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację. Obecnie przechowywane wersje: ${ value }.",
+        "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli."
       },
       "values": {
         "badPass": "Nieprawidłowe hasło... Usuwanie wszystkich połączen z bazą danych...",
