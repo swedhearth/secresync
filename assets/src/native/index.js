@@ -169,6 +169,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 
                 if(e.target.offsetTop){
                     navigator.virtualKeyboard.overlaysContent = true;
+                    document.body.kidsByClass("scrollWrpOverflow").forEach(wrap => wrap.scrollBy(0, navigator.virtualKeyboard.boundingRect.height));
                     setTimeout(_ => {
                         navigator.virtualKeyboard.overlaysContent = false;
                     }, 1000);
