@@ -132,7 +132,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
         console.log('origViewPortHeightInt',origViewPortHeightInt);
-        mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
+        //mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
         let squeezedViewPortHeightInt = 0;
         let resizeDelay;
         let transformDelay;
@@ -141,7 +141,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         const viewportResizeHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
-            mobileDebug("viewportResizeHandler triggered");
+            //mobileDebug("viewportResizeHandler triggered");
             clearTimeout(resizeDelay);
 
             if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
@@ -165,14 +165,22 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             
             if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
                 //navigator.virtualKeyboard.overlaysContent = !!e.target.offsetTop;
-                mobileDebug("viewportTransformHandler overlaysContent = ", navigator.virtualKeyboard.overlaysContent);
+                
                 
                 if(e.target.offsetTop){
                     navigator.virtualKeyboard.overlaysContent = true;
-                    document.body.kidsByClass("scrollWrpOverflow").forEach(wrap => wrap.scrollBy(0, navigator.virtualKeyboard.boundingRect.height));
+
+/*                     document.body.kidsByClass("scrollWrpOverflow").forEach(wrap => {
+                       
+                        wrap.scrollBy(0, navigator.virtualKeyboard.boundingRect.height);
+                        vForm.scrollBy(0, navigator.virtualKeyboard.boundingRect.height)
+                    }); */
                     setTimeout(_ => {
                         navigator.virtualKeyboard.overlaysContent = false;
-                    }, 1000);
+                    }, 5000);
+                }else{
+                    vForm.scrollBy(0, navigator.virtualKeyboard.boundingRect.height);
+                     mobileDebug("viewportTransformHandler overlaysContent is true. vForm will be scrolled by: ", navigator.virtualKeyboard.boundingRect.height, "is vForm? = ", !!vForm);                    
                 }
                 
             }else{
@@ -185,14 +193,14 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         
 
-        if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+/*         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
             //navigator.virtualKeyboard.overlaysContent = true;
             navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
                 window.virtualKeboardIsVisible = e.target.boundingRect.height;
                 mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", e.target.boundingRect.height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - e.target.boundingRect.height);
                 //document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
             }, {capture: true, passive: true});
-        }
+        } */
 /*         else{
             window.visualViewport.addEventListener('scroll', viewportTransformHandler);
             window.visualViewport.addEventListener('resize', viewportResizeHandler);

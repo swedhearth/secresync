@@ -726,6 +726,9 @@ passHint = credFormPassHint // only new
                 
                 if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
             });
+        
+        vForm.id = "vForm";
+        
             if(addHistory) addModalToHistory();
             
             let isNew = !vendObj || vendObj.isNew || false;
@@ -1147,7 +1150,7 @@ passHint = credFormPassHint // only new
                     boxNoteEl.on("focus", e => {
                         const scrollNote  = _ => {
                             boxNoteEl.scrollIntoView(false);
-                            vForm.scrollBy(0, formFoot.clientHeight + REM);
+                            vForm.scrollBy(0, formFoot.clientHeight + REM); scrollWrpOverflow
                             boxNoteEl.focus();
                         }
                         navigator.virtualKeyboard.addEventListener("geometrychange", scrollNote, {once: true});
