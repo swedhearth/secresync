@@ -175,8 +175,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
                     }, 300); */
                 }else{
+                    setTimeout(_ => {
                         stopResizing = false;
                         navigator.virtualKeyboard.overlaysContent = false;
+                    }, 500);
                 }
             }else{
                 clearTimeout(transformDelay);
