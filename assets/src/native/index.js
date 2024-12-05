@@ -164,8 +164,16 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         const viewportTransformHandler = e => {
             
             if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-                navigator.virtualKeyboard.overlaysContent = !!e.target.offsetTop;
+                //navigator.virtualKeyboard.overlaysContent = !!e.target.offsetTop;
                 mobileDebug("viewportTransformHandler overlaysContent = ", navigator.virtualKeyboard.overlaysContent);
+                
+                if(e.target.offsetTop){
+                    navigator.virtualKeyboard.overlaysContent = true;
+                    setTimeout(_ => {
+                        navigator.virtualKeyboard.overlaysContent = false;
+                    }, 1000);
+                }
+                
             }else{
                 clearTimeout(transformDelay);
                 transformDelay = setTimeout(_ => {
