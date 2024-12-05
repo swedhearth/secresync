@@ -185,7 +185,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         };
 
-            window.visualViewport.addEventListener('scroll', viewportScrollHandler, {capture: true});
+            window.visualViewport.addEventListener('scroll', viewportScrollHandler); //, {capture: true}
             window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
