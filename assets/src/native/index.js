@@ -166,15 +166,17 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
         };
 
-        const viewportTransformHandler = e => {
+        const viewportScrollHandler = e => {
             if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
                 if(e.target.offsetTop){
                     stopResizing = true;
                     navigator.virtualKeyboard.overlaysContent = true;
-                    setTimeout(_ => {
+/*                     setTimeout(_ => {
+
+                    }, 300); */
+                }else{
                         stopResizing = false;
                         navigator.virtualKeyboard.overlaysContent = false;
-                    }, 300);
                 }
             }else{
                 clearTimeout(transformDelay);
@@ -200,7 +202,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         } */
         
         
-            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+            window.visualViewport.addEventListener('scroll', viewportScrollHandler, {capture: true, passive: true});
             window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
