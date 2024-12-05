@@ -171,9 +171,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 if(e.target.offsetTop){
                     stopResizing = true;
                     navigator.virtualKeyboard.overlaysContent = true;
-/*                     setTimeout(_ => {
-
-                    }, 300); */
                 }else{
                     setTimeout(_ => {
                         stopResizing = false;
@@ -188,23 +185,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         };
 
-        
-
-/*         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-            navigator.virtualKeyboard.overlaysContent = true;
-            navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
-                window.virtualKeboardIsVisible = e.target.boundingRect.height;
-                mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", e.target.boundingRect.height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - e.target.boundingRect.height);
-                //document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
-            }, {capture: true, passive: true});
-        } */
-/*         else{
-            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
-            window.visualViewport.addEventListener('resize', viewportResizeHandler);
-        } */
-        
-        
-            window.visualViewport.addEventListener('scroll', viewportScrollHandler, {capture: true, passive: true});
+            window.visualViewport.addEventListener('scroll', viewportScrollHandler, {capture: true});
             window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
