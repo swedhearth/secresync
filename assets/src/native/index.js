@@ -68,8 +68,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
              alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
              
             if(wasHistoryLength > window.history.length){
-                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (0 - window.history.length));
-                window.history.go(0 - window.history.length);
+                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (1 - window.history.length));
+                window.history.go(1 - window.history.length);
             }else if(window.history.length + goBackBy < 1){
                 alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
                 
@@ -141,7 +141,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         const viewportResizeHandler = e => {
             const eventViewPortHeightInt = parseInt(e.target.height);
-            //mobileDebug("viewportResizeHandler triggered");
+            
             clearTimeout(resizeDelay);
 
             if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
@@ -159,6 +159,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
 
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
+            
+            mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
         };
 
         const viewportTransformHandler = e => {
@@ -193,21 +195,21 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         
 
-/*         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-            //navigator.virtualKeyboard.overlaysContent = true;
+        if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
+            navigator.virtualKeyboard.overlaysContent = true;
             navigator.virtualKeyboard.addEventListener("geometrychange", (e) => {
                 window.virtualKeboardIsVisible = e.target.boundingRect.height;
                 mobileDebug("virtualKeyboard geometrychange. VirKeyboardHeight = ", e.target.boundingRect.height, ". Body height set to origViewPortHeightInt - virtualKeyboard.height: ", origViewPortHeightInt - e.target.boundingRect.height);
-                //document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
+                document.documentElement.style.setProperty("--body-height", `${origViewPortHeightInt - e.target.boundingRect.height}px`);
             }, {capture: true, passive: true});
-        } */
+        }
 /*         else{
             window.visualViewport.addEventListener('scroll', viewportTransformHandler);
             window.visualViewport.addEventListener('resize', viewportResizeHandler);
         } */
         
         
-            window.visualViewport.addEventListener('scroll', viewportTransformHandler);
+           // window.visualViewport.addEventListener('scroll', viewportTransformHandler);
             window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
