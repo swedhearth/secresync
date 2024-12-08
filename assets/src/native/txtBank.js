@@ -26,6 +26,24 @@ const txtBankObj = {
         "n": "No!<br>Just leave it as it is!",
         "i": "deleteVendorBtn"
       },
+      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
       "newVersion": {
         "q": "A new version of SecreSync is available.",
         "y": "Okay, update now.<br><br>The application will be restarted.",
@@ -282,6 +300,9 @@ const txtBankObj = {
       "logShort": "The login must be at least 3 characters.",
       "nameShort": "The Account Name must be at least 3 characters.",
       "deleteVendorReject": "The '${ vName }' Account has not been deleted.",
+      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
       "deleteVendorFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been removed, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
       "submitFormFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been updated, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
       "submitFormSucess": "The '${ vName }' Account has been updated.",
@@ -391,6 +412,7 @@ const txtBankObj = {
         "donate": "Support Our Work!",
         "swapTheme": "Switch application theme",
         "appWidth" : "Application width",
+        "logOffApp": "Logoff delay",
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -479,7 +501,8 @@ const txtBankObj = {
         "downloadSnc": "Download Protected Database SecreSync File",
         "revision": "Version modified: ${ revisionDate }",
         "maxRevisions": "Adjust the maximum accounts revisions stored by the application. Current revisions stored: ${ value }.",
-        "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels."
+        "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels.",
+        "logOffTime": "Adjust the application delay time. Current delay: ${value} seconds."
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -513,6 +536,24 @@ const txtBankObj = {
         "q": "¿Estás seguro de que quieres eliminar permanentemente a ${ vName }?",
         "y": "¡Sí, definitivamente!<br>Entiendo que no hay vuelta atrás.",
         "n": "¡No!<br>¡Déjalo como está!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
         "i": "deleteVendorBtn"
       },
       "newVersion": {
@@ -772,6 +813,9 @@ const txtBankObj = {
       "logShort": "El inicio de sesión debe tener al menos 3 caracteres.",
       "nameShort": "El nombre de la cuenta debe tener al menos 3 caracteres.",
       "deleteVendorReject": "La cuenta '${ vName }' no ha sido eliminada.",
+      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
       "deleteVendorFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha eliminado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
       "submitFormFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha actualizado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
       "submitFormSucess": "La cuenta '${ vName }' se ha actualizado.",
@@ -881,6 +925,7 @@ const txtBankObj = {
         "donate": "¡Apoya nuestro trabajo!",
         "swapTheme": "Cambiar el tema de la aplicación",
         "appWidth" : "Ancho de la aplicación",
+        "logOffApp": "Retraso de cierre de sesión",
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -969,7 +1014,8 @@ const txtBankObj = {
         "downloadSnc": "Descargar archivo SecreSync de base de datos protegida",
         "revision": "Versión modificada: ${ revisionDate }",
         "maxRevisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación. Revisiones actuales almacenadas: ${ value }.",
-        "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles."
+        "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles.",
+        "logOffTime": "Ajuste el tiempo de retraso de la aplicación. Retraso actual: ${value} segundos."
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1003,6 +1049,24 @@ const txtBankObj = {
         "q": "Êtes-vous sûr de vouloir supprimer définitivement ${ vName }?",
         "y": "Oui, absolument!<br>Je comprends qu'il n'y a pas de retour en arrière.",
         "n": "Non!<br>Laissez-le tel quel!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
         "i": "deleteVendorBtn"
       },
       "newVersion": {
@@ -1261,6 +1325,9 @@ const txtBankObj = {
       "logShort": "Le login doit comporter au moins 3 caractères.",
       "nameShort": "Le nom du compte doit comporter au moins 3 caractères.",
       "deleteVendorReject": "Le compte '${ vName }' n'a pas été supprimé.",
+      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
       "deleteVendorFailed": "Oups ! Il y a un problème... Aucune base de données n'est disponible pour des modifications. Le compte '${ vName }' a été supprimé, mais les changements ne persisteront que jusqu'à la fermeture de l'application. Rétablissez la connexion à une base de données externe ou téléchargez une copie de la base de données.",
       "submitFormFailed": "Oups ! Il y a un problème... Aucune base de données n'est disponible pour des modifications. Le compte '${ vName }' a été mis à jour, mais les changements ne persisteront que jusqu'à la fermeture de l'application. Rétablissez la connexion à une base de données externe ou téléchargez une copie de la base de données.",
       "submitFormSucess": "Le compte '${ vName }' a été mis à jour avec succès.",
@@ -1370,6 +1437,7 @@ const txtBankObj = {
         "donate": "Soutenez Notre Travail !",
         "swapTheme": "Changer le thème de l'application",
         "appWidth" : "Largeur de l'application",
+        "logOffApp": "Délai de déconnexion",
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1458,7 +1526,8 @@ const txtBankObj = {
         "downloadSnc": "Télécharger le fichier SecreSync de la base de données protégée",
         "revision": "Version modifiée: ${ revisionDate }",
         "maxRevisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application. Révisions actuelles stockées : ${ value }.",
-        "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels."
+        "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels.",
+        "logOffTime": "Ajustez le temps de délai de l'application. Délai actuel : ${value} secondes."
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1490,6 +1559,24 @@ const txtBankObj = {
       },
       "deleteVendorPermanent": {
         "q": "Czy na pewno chcesz trwale usunąć ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
+        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
+        "n": "Nie!<br>Zostaw to tak, jak jest!",
+        "i": "deleteVendorBtn"
+      },
+      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
         "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
         "n": "Nie!<br>Zostaw to tak, jak jest!",
         "i": "deleteVendorBtn"
@@ -1750,6 +1837,9 @@ const txtBankObj = {
       "logShort": "Login musi mieć co najmniej 3 znaki.",
       "nameShort": "Nazwa konta musi mieć co najmniej 3 znaki.",
       "deleteVendorReject": "Konto '${ vName }' nie zostało usunięte.",
+      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
       "deleteVendorFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało usunięte, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
       "submitFormFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało zaktualizowane, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
       "submitFormSucess": "Konto '${ vName }' zostało zaktualizowane.",
@@ -1859,6 +1949,7 @@ const txtBankObj = {
         "donate": "Wesprzyj Naszą Pracę!",
         "swapTheme": "Zmień motyw aplikacji",
         "appWidth" : "Szerokość aplikacji",
+        "logOffApp": "Opóźnienie wylogowania",
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",
@@ -1947,7 +2038,8 @@ const txtBankObj = {
         "downloadSnc": "Pobierz chroniony plik SecreSync bazy danych",
         "revision": "Wersja zmodyfikowana: ${ revisionDate }",
         "maxRevisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację. Obecnie przechowywane wersje: ${ value }.",
-        "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli."
+        "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli.",
+        "logOffTime": "Dostosuj czas opóźnienia aplikacji. Aktualne opóźnienie: ${value} sekund."
       },
       "values": {
         "badPass": "Nieprawidłowe hasło... Usuwanie wszystkich połączen z bazą danych...",

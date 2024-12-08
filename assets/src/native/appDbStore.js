@@ -238,7 +238,7 @@ function AppDbStore(thisApp){
                     mobileDebug("In storeObj.getTokenFromRedirect. Is OneDrive token due for refresh? ", thisApp.localStorage.get(storeObj.key + "RefreshBy") < Date.now());
                 }
                 if(refreshExpiredToken && storeObj.handle && thisApp.localStorage.get(storeObj.key + "RefreshBy") < Date.now()){
-                    alert("In storeObj.getTokenFromRedirect. Will set the storeObj.refreshExpiredToken - the OneDrive should refresh. Will this cause the issue?");
+                    //alert("In storeObj.getTokenFromRedirect. Will set the storeObj.refreshExpiredToken - the OneDrive should refresh. Will this cause the issue?");
                     mobileDebug("In storeObj.getTokenFromRedirect. Will set the storeObj.refreshExpiredToken - the OneDrive should refresh");
                     storeObj.refreshExpiredToken = refreshExpiredToken; // add a new storeObj method assigning function that will enable refresh of the handle in the thisApp.start
                 }

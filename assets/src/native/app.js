@@ -466,6 +466,8 @@ function App(urlSearchParams){
     this.urlReplace = url => url && location.replace(url);
     this.reload = _ => this.urlReplace(this.URL);
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
+    
+
 
     //let lastActiveTime = 0;
     
@@ -492,13 +494,13 @@ function App(urlSearchParams){
 
     this.visibilityChange = e => {
         if(!this.dbObj) return;
-        mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
+        //mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
+        
         this.hidden = document.visibilityState === "hidden";
 
         if(this.hidden){
-            //this.ui.blur(true);
-            this.sessionStorage.set(reloadBy, Date.now() + 60000); //60000 ms = 1 minute
+            this.sessionStorage.set(reloadBy, Date.now() + this.settings.logOffTime.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
                 //logOffApp("visibilityChange");
@@ -557,6 +559,28 @@ function App(urlSearchParams){
         this.idxDb = new Storage(null);
         await this.makePrivate();
     };
+    
+    function Setting(thisApp, name, min, max, def, step = 1){
+        this.min = min;
+        this.max = max;
+        this.def = def;
+        this.step = step;
+
+        this.get = _ => parseInt(thisApp.localStorage.get(name)) || this.current || this.def;
+        this.set = string => {
+            console.log(string);
+            thisApp.localStorage.set(name, string);
+            this.current = parseInt(string);
+        };
+        this.current = this.get();
+    }
+    
+    function AppSettings(thisApp){
+        this.logOffTime = new Setting(thisApp, "logOffTime", 0, 600, 60); //Infinity
+        this.maxRevisions = new Setting(thisApp, "maxRevisions", 0, 20, 10);
+        this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, 900, 5);
+        this.darkTheme = thisApp.localStorage.get("darkTheme") === "true";
+    }
 
     /* Initiate App*/
     this.init = async function(){
@@ -574,12 +598,17 @@ function App(urlSearchParams){
         
         installServiceWorker(this);
         
+        this.settings = new AppSettings(this);
+
         this.dbStore = new AppDbStore(this); //appDbStore;
         this.ui = new Interface(this);
         this.alert = this.ui.alerts;
         this.message = this.ui.messages;
         this.spinner = this.ui.spinner;
         this.ui.localiseDbStores();
+        
+
+        
         this.start(null, false);
         return this;
     };

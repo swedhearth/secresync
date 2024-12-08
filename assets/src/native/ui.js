@@ -76,22 +76,6 @@ function Interface(thisApp){
             });
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
-        
-/*         if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-            
-                inpEl.on("focus", e => {
-                    const scrollInput  = _ => {
-                        //inpEl.isBlured = false;
-                        inpEl.scrollIntoView({ block: "center"});
-                        inpEl.focus();
-                    }
-                    if(!window.virtualKeboardIsVisible){
-                        navigator.virtualKeyboard.addEventListener("geometrychange", scrollInput, {once: true});
-                    }
-                    //boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollInput, {once: true}));
-                });
-            
-        } */
 
         return inpEl;
     };
@@ -142,7 +126,7 @@ function Interface(thisApp){
     const msgModule = dom.addDiv("msgModule");
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
-    const dbModifiedBar = dom.addDiv("dbModifiedBar").hide(); // DB Modified bar
+    const dbModifiedBar = dom.addDiv("dbModifiedBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
         const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerWrp"));// make it visible at the start of app
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
@@ -534,6 +518,12 @@ passHint = credFormPassHint // only new
         this.remoteFileDelete = sKey => appAlert("remoteFileDelete", {sKey});
         
         
+        
+        this.restoreRevision = vendName => appAlert("restoreRevision", {vName: vendName});
+        this.deleteRevision = vendName => appAlert("deleteRevision", {vName: vendName});
+        this.restoreTrashed = vendName => appAlert("restoreTrashed", {vName: vendName});
+        
+        
         this.registerAuth = _ => appAlert("registerAuth");
         this.persistOnline = _ => appAlert("persistOnline");
         this.oneDriveRefreshAccess = _ => appAlert("oneDriveRefreshAccess");
@@ -696,6 +686,9 @@ passHint = credFormPassHint // only new
         this.noSessionStorage = _ => msgErr("noSessionStorage");//appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("noSessionStorage"), sKey: "secreSync"});
         this.remoteRedirectError = err => msgErr("remoteRedirectError", null, err);//appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("remoteRedirectError"), sKey});
         
+        this.restoreRevisionReject = vName => msgTxt("restoreRevisionReject", {vName});
+        this.deleteRevisionReject = vName => msgTxt("deleteRevisionReject", {vName});
+        this.restoreTrashedReject = vName => msgTxt("restoreTrashedReject", {vName});
         
         //temps
         this.tempAppInstalled = _ => msgShow(new MsgObj("_TEMP_ Application has already been installed on this device", "flash"));
@@ -718,7 +711,7 @@ passHint = credFormPassHint // only new
 
             const nameLogMinLen = 3;
             const boxNoteElMaxLen = 10000;
-            const maxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;// UserSettings?
+            //const maxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;// UserSettings?
             let vFormScrollTop = 0;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
@@ -790,11 +783,17 @@ passHint = credFormPassHint // only new
             function updateRevision (vendObjPrevious) {
                 vendObj.rev = vendObj.rev || []; // create revisions array if doesnt't exist
                 vendObj.rev.push(JSON.stringify(vendObjPrevious.prepareForSend(true)));
-                if(vendObj.rev.length > maxRevisions) vendObj.rev.shift();
+                //if(vendObj.rev.length > maxRevisions) vendObj.rev.shift();
+                //if(vendObj.rev.length > thisApp.settings.maxRevisions.current) vendObj.rev.shift(); //!!!!!!!!!!!!!!!! TO DO
+                while (vendObj.rev.length > thisApp.settings.maxRevisions.current){
+                    vendObj.rev.shift();
+                }
+                
                 return vendObj;
             };
             
-            const restoreRevision = _ => {
+            const restoreRevision = async _ => {
+                if(!await thisApp.alert.restoreRevision(vendObj.name)) return thisApp.message.restoreRevisionReject(vendObj.name);
                 //vendObj is the past revision to be restored, revAry[0] was the most current vendObj to become a past revision
                 vendObj.rev = revAry[0].rev; //assign revisions Array of the current vendObj to the past revision of the vendObj to be restored
                 vendObj.mod = null;
@@ -802,6 +801,7 @@ passHint = credFormPassHint // only new
             };
             
             const deleteRevision = async _ => {
+                if(!await thisApp.alert.deleteRevision(vendObj.name)) return thisApp.message.deleteRevisionReject(vendObj.name);
                 //vendObj is the past revision to be deleted, revAry[0] is the most current vendObj to have the revision removed from .rev array
                 vendObj = revAry[0]; // reassign the most current vendObj to the active vendObj for minification purpose
                 const removeIndex = vendObj.rev.length - revisionIdx;
@@ -811,7 +811,8 @@ passHint = credFormPassHint // only new
                 paintFormSection(true, vendObj); // repaint form with the most current vendObj and add to history afret the alert
             };
 
-            const restoreTrashed = _ => {
+            const restoreTrashed = async _ => {
+                if(!await thisApp.alert.restoreTrashed(vendObj.name)) return thisApp.message.restoreTrashedReject(vendObj.name);
                 const existingVendor = thisApp.dbObj.vendors.find(vObj => vObj.id === vendObj.id);
                 existingVendor.name = existingVendor.name + "  _ x _  " + new Date(vendObj.isTrash).toUKstring();
                 existingVendor.isTrash = null;// remove isTrash from the original array as to not saving the vObj.isTrash in the revisions array
@@ -1475,6 +1476,12 @@ passHint = credFormPassHint // only new
                 await new Promise(res => setTimeout(res, 1000));
                 thisApp.message.dbFileDownloaded(downloadedFileName);
             }
+            
+            /** ----------------- ---------------------- -------------- SETTINGS ------------------ -------------------- ------------------ ----------------------- --------------- --------------**/
+            /** ----------------- ---------------------- -------------------- -------------- SETTINGS ------------------ ------------------ ----------------------- --------------- --------------**/
+            /** ----------------- ---------------------- -------------------------------- --------------------  SETTINGS ------------------ ----------------------- --------------- --------------**/
+            /** ----------------- ---------------------- -------------------- -------------- SETTINGS ------------------ ------------------ ----------------------- --------------- --------------**/
+            /** ----------------- ---------------------- -------------- SETTINGS ------------------ -------------------- ------------------ ----------------------- --------------- --------------**/
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
@@ -1516,21 +1523,26 @@ passHint = credFormPassHint // only new
                 let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
                 if(appWidthWrp) return appWidthWrp.kill();
                 const settingsSection = e.currentTarget.forebear(1);
-                const getFieldsetLabelHtml = integer => "appWidthWrp TODO ( " + integer + " pixels )";
+                
+                const currentAppWidth = thisApp.settings.appWidth.get();
+
                 const settAppWidth = async e => {
-                    const appWidthStyle = `${parseInt(e.target.value)}px`
-                    document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
-                    thisApp.localStorage.set("appWidth", appWidthStyle);
+                    //const appWidthStyle = `${parseInt(e.target.value)}px`;
+                    document.documentElement.style.setProperty("--max-app-width", `${parseInt(e.target.value)}px`);
+                    //thisApp.localStorage.set("appWidth", appWidthStyle);
+                    thisApp.settings.appWidth.set(e.target.value);
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
+                    
+                    e.target.value > 800 ? document.body.killClass("alternateLayout") : document.body.addClass("alternateLayout");
                 };
 
                 const appWidthFieldset = rangeInpFieldset(
-                    getTxtBankHtmlTxt("appWidth", {value: settingsSection.clientWidth}),
+                    getTxtBankHtmlTxt("appWidth", {value: currentAppWidth}),
                     "appWidthLegend",
                     "appWidthInpEl",
-                    300, //min
-                    document.body.clientWidth, //max
-                    settingsSection.clientWidth, //value
+                    thisApp.settings.appWidth.min, //320, //min
+                    thisApp.settings.appWidth.max, //max
+                    currentAppWidth, //value
                     5, //step
                     settAppWidth // onInput
                 );
@@ -1544,10 +1556,11 @@ passHint = credFormPassHint // only new
                 
                 const settingsSection = e.currentTarget.forebear(1);
 
-                const currentMaxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;
+                const currentMaxRevisions = thisApp.settings.maxRevisions.get(); //parseInt(thisApp.localStorage.get("maxRevisions")) || 10;
                 
                 const settMaxRevision = async e => {
-                    thisApp.localStorage.set("maxRevisions", e.target.value);
+                    //thisApp.localStorage.set("maxRevisions", e.target.value);
+                    thisApp.settings.maxRevisions.set(e.target.value);
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("maxRevisions", {value: e.target.value}));
                 };
                 
@@ -1556,14 +1569,41 @@ passHint = credFormPassHint // only new
                         getTxtBankHtmlTxt("maxRevisions", {value: currentMaxRevisions}),
                         "maxRevisionsLegend",
                         "maxRevisionsInpEl",
-                        0, //min
-                        20, // max
+                        thisApp.settings.maxRevisions.min, //0, //min
+                        thisApp.settings.maxRevisions.max, //20, // max
                         currentMaxRevisions, // value
-                        1, // step
+                        thisApp.settings.maxRevisions.step, // step
                         settMaxRevision // onInput
                     )
                 ).attachTo(settingsSection);
             };
+            
+            const changeLogOffApp = e => {
+                let logOffAppWrp = document.body.kidsByClass("logOffAppWrp")[0];
+                if(logOffAppWrp) return logOffAppWrp.kill();
+                
+                const settingsSection = e.currentTarget.forebear(1);
+
+                const currentLogOffTime = thisApp.settings.logOffTime.get();
+                
+                const settLogOffApp = async e => {
+                    thisApp.settings.logOffTime.set(e.target.value);
+                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("logOffTime", {value: e.target.value}));
+                };
+                
+                dom.addDiv("logOffAppWrp").attach( 
+                    rangeInpFieldset(
+                        getTxtBankHtmlTxt("logOffTime", {value: currentLogOffTime}),
+                        "logOffTimeLegend",
+                        "logOffTimeInpEl",
+                        thisApp.settings.logOffTime.min, //min
+                        thisApp.settings.logOffTime.max, // max
+                        currentLogOffTime, // value
+                        thisApp.settings.logOffTime.step, // step
+                        settLogOffApp // onInput
+                    )
+                ).attachTo(settingsSection);
+            }
 
 
             
@@ -1582,8 +1622,11 @@ passHint = credFormPassHint // only new
                         : null),
                     getSvgIcon("donate", true, getDonate),
                     getSvgIcon("revisionHistory", true, changeMaxRevisions),
-                     getSvgIcon("appWidth", true, changeAppWidth),
-                    getSvgIcon("swapTheme", true, swapTheme)
+                    
+                    getSvgIcon("appWidth", true, changeAppWidth),
+                    getSvgIcon("swapTheme", true, swapTheme),
+                    getSvgIcon("logOffApp", true, changeLogOffApp)
+                    
                 ];
                 
                 dom.addDiv("killablePopUp settingsSection").attach(
@@ -1694,10 +1737,14 @@ passHint = credFormPassHint // only new
                 const vListSortBar = dom.addDiv("vListSortBar");
                 const vListChangeBar = dom.addDiv("vListChangeBar");
                 console.log(ado.sortTypes);
-                const getSortIcons = _ => ado.sortTypes.map(iconName => 
-                    getSvgIcon("sortIcon " + (iconName + adoSorts.sortOrder) + (adoSorts.sortBy === iconName ? "" : " elDimmed"), iconName, e => changeSorts(e.target, iconName))
-                );
-                
+                const getSortIcons = _ => {
+                    const sortIcons = ado.sortTypes.map(iconName => 
+                        getSvgIcon("sortIcon " + (iconName + adoSorts.sortOrder) + (adoSorts.sortBy === iconName ? "" : " elDimmed"), iconName, e => changeSorts(e.target, iconName))
+                    );
+                    sortIcons.push(dom.addSpan("divider"));
+                    return sortIcons;
+                };
+
                 const changeSorts = (iconEl, iconName) => {
                     iconEl.forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
                     ado.changeSort(iconName);
@@ -1749,8 +1796,8 @@ passHint = credFormPassHint // only new
                 return [vListChangeBar.attachAry(getChangeIcons()), vListSortBar.attachAry(getSortIcons())];
             };
 
-            const vListBarLabel = getListBarLabel();
-            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attach(vListBarLabel).attachAry(getListTaskBar());
+            //const vListBarLabel = getListBarLabel();
+            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attachAry(getListTaskBar());//.attach(vListBarLabel)
             const vListWrp = dom.addDiv("vListWrp");
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListScrollWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -1862,7 +1909,15 @@ passHint = credFormPassHint // only new
                     const getLabelHtml = (vListHeadsProp, hits) => getTxtBankHtmlTxt(`vListHeads.${hits ? vListHeadsProp : "notFound"}`, {searchStr, hits});
                     const allHits = nameHitAry.length + tagHitAry.length + noteHitAry.length;
                     
-                    vListBarLabel.html(searchStr ? getLabelHtml("nameFound", allHits) : allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true));
+                    //vListBarLabel.html(searchStr ? getLabelHtml("nameFound", allHits) : allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true));
+                    
+                    const statusContent = searchStr 
+                        ? "<span>" + getLabelHtml("nameFound", allHits) + "</span>"
+                        : "<span>" + (new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer) + "</span><span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"
+                    
+                    dbModifiedBar.show().kid().html(statusContent);
+                    
+                    
                     if(tagHitAry.length) tagHitAry.unshift(vListAuxBarWrp(getLabelHtml("tagsFound", tagHitAry.length))); 
                     if(noteHitAry.length) noteHitAry.unshift(vListAuxBarWrp(getLabelHtml("notesFound", noteHitAry.length)));
                     return [nameHitAry, tagHitAry, noteHitAry].flat();
@@ -1883,7 +1938,7 @@ passHint = credFormPassHint // only new
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         const repaintUI = _ => {
-            dbModifiedBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
+            //dbModifiedBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
             paintListSection();
         };
         
@@ -1961,7 +2016,7 @@ passHint = credFormPassHint // only new
             const { clientX, clientY } = e.touches[0];
             touchStart = { x: clientX, y: clientY, time: Date.now() };
 // && !window.visualViewport.offsetTop if virtual keyboard keyboard is open, the 
-            if (!window.visualViewport.offsetTop && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
+            if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
                 isVerticalSwipe = true;
                 this.messages.paintFullArchive();
             } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
@@ -2096,9 +2151,18 @@ passHint = credFormPassHint // only new
 
 
 /* Apply settings */
-    if(thisApp.localStorage.get("darkTheme") === "true") document.body.addClass("invert");
-    const appWidthStyle = thisApp.localStorage.get("appWidth");
-    if(appWidthStyle) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
+    //if(thisApp.localStorage.get("darkTheme") === "true") document.body.addClass("invert");
+    //const appWidth = thisApp.localStorage.get("appWidth");
+    //if(appWidth) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
+    
+
+    if(thisApp.settings.darkTheme) document.body.addClass("invert");
+    document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`); 
+    
+    
+    if(thisApp.settings.appWidth.current < 800){
+        document.body.addClass("alternateLayout");
+    }
     
     
 // /* Temp and tests */

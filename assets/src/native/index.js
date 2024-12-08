@@ -65,13 +65,13 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
             let goBackBy = wasHistoryLength - window.history.length -2;
             
-             alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
+             //alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
              
             if(wasHistoryLength > window.history.length){
-                alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (1 - window.history.length));
+                //alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (1 - window.history.length));
                 window.history.go(1 - window.history.length);
             }else if(window.history.length + goBackBy < 1){
-                alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
+                //alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
                 
                 window.history.go(1 - window.history.length);
             }else{
@@ -133,19 +133,18 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
         console.log('origViewPortHeightInt',origViewPortHeightInt);
         //mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
-        let squeezedViewPortHeightInt = 0;
+        let squeezedViewPortHeightInt = window.virtualKeyboardIsDisplayed = 0;
         let resizeDelay;
         let transformDelay;
+        let disableResize = false;
         
         window.testWithVitualKeyboard = true;
-        
-        let stopResizing = false;
+
 
         const viewportResizeHandler = e => {
-            if(stopResizing) return;
-            const eventViewPortHeightInt = parseInt(e.target.height);
-            
+            if(disableResize) return;
             clearTimeout(resizeDelay);
+            const eventViewPortHeightInt = parseInt(e.target.height);
 
             if(origViewPortHeightInt === eventViewPortHeightInt){//fully expands from 500 to 800 (original)
                 squeezedViewPortHeightInt = 0;
@@ -163,17 +162,17 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
             
-            mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
+            //mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
         };
 
         const viewportScrollHandler = e => {
             if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
                 if(e.target.offsetTop){
-                    stopResizing = true;
+                    disableResize = true;
                     navigator.virtualKeyboard.overlaysContent = true;
                 }else{
                     setTimeout(_ => {
-                        stopResizing = false;
+                        disableResize = false;
                         navigator.virtualKeyboard.overlaysContent = false;
                     }, 500);
                 }
@@ -185,8 +184,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         };
 
-            window.visualViewport.addEventListener('scroll', viewportScrollHandler); //, {capture: true}
-            window.visualViewport.addEventListener('resize', viewportResizeHandler);
+        window.visualViewport.addEventListener('scroll', viewportScrollHandler);
+        window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
 
