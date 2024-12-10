@@ -412,6 +412,7 @@ const txtBankObj = {
         "donate": "Support Our Work!",
         "swapTheme": "Switch application theme",
         "appWidth" : "Application width",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffApp": "Logoff delay",
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
@@ -502,6 +503,7 @@ const txtBankObj = {
         "revision": "Version modified: ${ revisionDate }",
         "maxRevisions": "Adjust the maximum accounts revisions stored by the application. Current revisions stored: ${ value }.",
         "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels.",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffTime": "Adjust the application delay time. Current delay: ${value} seconds."
       },
       "values": {
@@ -925,6 +927,7 @@ const txtBankObj = {
         "donate": "¡Apoya nuestro trabajo!",
         "swapTheme": "Cambiar el tema de la aplicación",
         "appWidth" : "Ancho de la aplicación",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffApp": "Retraso de cierre de sesión",
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
@@ -1015,6 +1018,7 @@ const txtBankObj = {
         "revision": "Versión modificada: ${ revisionDate }",
         "maxRevisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación. Revisiones actuales almacenadas: ${ value }.",
         "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles.",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffTime": "Ajuste el tiempo de retraso de la aplicación. Retraso actual: ${value} segundos."
       },
       "values": {
@@ -1437,6 +1441,7 @@ const txtBankObj = {
         "donate": "Soutenez Notre Travail !",
         "swapTheme": "Changer le thème de l'application",
         "appWidth" : "Largeur de l'application",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffApp": "Délai de déconnexion",
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
@@ -1527,6 +1532,7 @@ const txtBankObj = {
         "revision": "Version modifiée: ${ revisionDate }",
         "maxRevisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application. Révisions actuelles stockées : ${ value }.",
         "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels.",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffTime": "Ajustez le temps de délai de l'application. Délai actuel : ${value} secondes."
       },
       "values": {
@@ -1949,6 +1955,7 @@ const txtBankObj = {
         "donate": "Wesprzyj Naszą Pracę!",
         "swapTheme": "Zmień motyw aplikacji",
         "appWidth" : "Szerokość aplikacji",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffApp": "Opóźnienie wylogowania",
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
@@ -2039,6 +2046,7 @@ const txtBankObj = {
         "revision": "Wersja zmodyfikowana: ${ revisionDate }",
         "maxRevisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację. Obecnie przechowywane wersje: ${ value }.",
         "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli.",
+        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "logOffTime": "Dostosuj czas opóźnienia aplikacji. Aktualne opóźnienie: ${value} sekund."
       },
       "values": {

@@ -568,7 +568,6 @@ function App(urlSearchParams){
 
         this.get = _ => parseInt(thisApp.localStorage.get(name)) || this.current || this.def;
         this.set = string => {
-            console.log(string);
             thisApp.localStorage.set(name, string);
             this.current = parseInt(string);
         };
@@ -580,6 +579,15 @@ function App(urlSearchParams){
         this.maxRevisions = new Setting(thisApp, "maxRevisions", 0, 20, 10);
         this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, 900, 5);
         this.darkTheme = thisApp.localStorage.get("darkTheme") === "true";
+        this.appLayout = new Setting(thisApp, "appLayout", 0, 2, this.appWidth.current < 800 ? 2 : 1, 1); // 0: auto, 1: normal, 2: mobile //&& window.TOUCH_DEVICE
+        this.isMobileLayout = _ => {
+            const userLayoutInt = parseInt(thisApp.localStorage.get("appLayout"));
+            if(userLayoutInt){
+                 if(userLayoutInt === 2) return true;
+                 if(userLayoutInt === 1) return false;
+            }
+            return this.appWidth.current < 800;
+        };
     }
 
     /* Initiate App*/
@@ -599,6 +607,9 @@ function App(urlSearchParams){
         installServiceWorker(this);
         
         this.settings = new AppSettings(this);
+        
+/*         const appLayout = parseInt(this.localStorage.get("appLayout")); // '1' , '2' or nan
+        this.hasMobileLayout = _ => appLayout ? appLayout === 2 : this.settings.appWidth.current < 800 && window.TOUCH_DEVICE; */
 
         this.dbStore = new AppDbStore(this); //appDbStore;
         this.ui = new Interface(this);

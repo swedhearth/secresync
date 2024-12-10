@@ -126,7 +126,7 @@ function Interface(thisApp){
     const msgModule = dom.addDiv("msgModule");
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
-    const dbModifiedBar = dom.addDiv("dbModifiedBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
+    const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
     const spinner = (_ => {// create spinner Section
         const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerWrp"));// make it visible at the start of app
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
@@ -1202,18 +1202,7 @@ passHint = credFormPassHint // only new
                     displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
                 ]);
             };
-
-            const formHead = dom.addDiv("formHead").attachAry([
-                revisionIdx || vendObj.isTrash
-                    ? revisionIdx ? getSvgIcon("restoreRevisionBtn", true, restoreRevision) : getSvgIcon("restoreTrashedBtn", true, restoreTrashed)
-                    : getSvgIcon(displayMode ? "editFormBtn" : "submitFormBtn", true, _ => paintFormSection(false, vendObj, displayMode, !displayMode)),
-                displayMode
-                    ? dom.addDiv("formTitle", vendObj.name || "")
-                    : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true),
-                getSvgIcon("btnCloseForm", true, closeForm)
-            ]);
             
-            //formHeadEdit = displayMode ? null: formHead ;
 
             const recordModWrp = !displayMode // Show only if Display
                 ? null
@@ -1258,28 +1247,46 @@ passHint = credFormPassHint // only new
                 standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
             ];
 
-            const formFoot = dom.addDiv("formFoot").attachAry(
-                displayMode
-                ? [
-                    vendObj.isTrash ? getSvgIcon() : getSvgIcon("share", true, shareVendor),
-                    revisionIdx ?
-                        getSvgIcon("trashBin", "deleteRevisionBtn", deleteRevision)
-                        : vendObj.isTrash 
-                            ? getSvgIcon("trashBin", "deleteTrashedBtn", deleteTrashed) 
-                            : []
-                ] 
-                : [
-                    getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor),
-                    vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor)
-                ]
-            );
 
+const actionBtn = revisionIdx || vendObj.isTrash
+                    ? revisionIdx ? getSvgIcon("restoreRevisionBtn", true, restoreRevision) : getSvgIcon("restoreTrashedBtn", true, restoreTrashed)
+                    : getSvgIcon(displayMode ? "editFormBtn" : "submitFormBtn", true, _ => paintFormSection(false, vendObj, displayMode, !displayMode));
+const middleTopEl = displayMode
+                    ? dom.addDiv("formTitle", vendObj.name || "")
+                    : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
+const closeFormBtn = getSvgIcon("btnCloseForm", true, closeForm);
+
+const oridinaryLayoutHeadEls = [actionBtn, middleTopEl, closeFormBtn]
+const mobileLayoutHeadEls = [middleTopEl];
+const fomHeadEls = thisApp.settings.isMobileLayout() ? mobileLayoutHeadEls : oridinaryLayoutHeadEls;
+
+            
+            
+            //formHeadEdit = displayMode ? null: formHead ;
+
+const shareEl = vendObj.isTrash ? getSvgIcon() : getSvgIcon("share", true, shareVendor);
+const deleteOldBtn = revisionIdx 
+    ? getSvgIcon("trashBin", "deleteRevisionBtn", deleteRevision)
+    : vendObj.isTrash 
+        ? getSvgIcon("trashBin", "deleteTrashedBtn", deleteTrashed) 
+        : [];
+const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
+const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
+
+const oridinaryLayoutFootEls = displayMode ? [shareEl, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
+const mobileLayoutFootEls = displayMode ? [actionBtn, vendObj.isTrash ? [] : shareEl, deleteOldBtn, closeFormBtn] : [actionBtn, toggleVendorBtn, deleteCurrentBtn, closeFormBtn];
+
+const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
+            
+            const formHead = dom.addDiv("formHead").attachAry(fomHeadEls);
+            const formFoot = dom.addDiv("formFoot").attachAry(fomFootEls);
+            
             vForm.attach(formHead).attach(recordModWrp).attach(revisionWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());
             appSectionForm.isDisplay = displayMode;
-            //boxNoteEl.value = vendObj.note || "";
+
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
             toggleScrollWrpOverflow(vForm);
-            //if(vForm.scrollHeight > vForm.clientHeight) vForm.addClass("scrollWrpOverflow");
+
         };
         /////////////////////////////////////////////////END MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1493,8 +1500,10 @@ passHint = credFormPassHint // only new
             }
             
             const swapTheme = _ => {
-                document.body.toggleClass("invert");
-                thisApp.localStorage.set("darkTheme", document.body.hasClass("invert"));
+                document.documentElement.classList.toggle("invert");
+                thisApp.settings.darkTheme = !thisApp.settings.darkTheme;
+
+                thisApp.localStorage.set("darkTheme", thisApp.settings.darkTheme);
             };
             
             const rangeInpFieldset = (fieldsetLegendHtml, fieldsetLegendClass, rangeInputName, min, max, value, step, onInput) => {
@@ -1519,6 +1528,35 @@ passHint = credFormPassHint // only new
                 ]);
             };
             
+            const changeAppLayout = e =>{
+                let appLayoutWrp = document.body.kidsByClass("appLayoutWrp")[0];
+                if(appLayoutWrp) return appLayoutWrp.kill();
+                const settingsSection = e.currentTarget.forebear(1);
+                
+                const currentAppLayout = thisApp.settings.appLayout.get();
+
+                const settAppWidth = async e => {
+
+                    thisApp.settings.appLayout.set(e.target.value);
+                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appLayout", {value: e.target.value}));
+
+                    thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
+                };
+
+                const appLayoutFieldset = rangeInpFieldset(
+                    getTxtBankHtmlTxt("appLayout", {value: currentAppLayout}),
+                    "appLayoutLegend",
+                    "appLayoutInpEl",
+                    thisApp.settings.appLayout.min, //320, //min
+                    thisApp.settings.appLayout.max, //max
+                    currentAppLayout, //value
+                    5, //step
+                    settAppWidth // onInput
+                );
+
+                dom.addDiv("appLayoutWrp").attach(appLayoutFieldset).attachTo(settingsSection);
+            };
+            
             const changeAppWidth = e => {
                 let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
                 if(appWidthWrp) return appWidthWrp.kill();
@@ -1527,13 +1565,11 @@ passHint = credFormPassHint // only new
                 const currentAppWidth = thisApp.settings.appWidth.get();
 
                 const settAppWidth = async e => {
-                    //const appWidthStyle = `${parseInt(e.target.value)}px`;
                     document.documentElement.style.setProperty("--max-app-width", `${parseInt(e.target.value)}px`);
-                    //thisApp.localStorage.set("appWidth", appWidthStyle);
                     thisApp.settings.appWidth.set(e.target.value);
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
-                    
-                    e.target.value > 800 ? document.body.killClass("alternateLayout") : document.body.addClass("alternateLayout");
+
+                    thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
                 };
 
                 const appWidthFieldset = rangeInpFieldset(
@@ -1622,7 +1658,7 @@ passHint = credFormPassHint // only new
                         : null),
                     getSvgIcon("donate", true, getDonate),
                     getSvgIcon("revisionHistory", true, changeMaxRevisions),
-                    
+                    getSvgIcon("appLayout", true, changeAppLayout),
                     getSvgIcon("appWidth", true, changeAppWidth),
                     getSvgIcon("swapTheme", true, swapTheme),
                     getSvgIcon("logOffApp", true, changeLogOffApp)
@@ -1732,7 +1768,7 @@ passHint = credFormPassHint // only new
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListTaskBarWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-            const getListBarLabel = html => dom.addDiv("vListBarLabel").html(html);
+            //const getListBarLabel = html => dom.addDiv("vListBarLabel").html(html);
             const getListTaskBar = _ => {
                 const vListSortBar = dom.addDiv("vListSortBar");
                 const vListChangeBar = dom.addDiv("vListChangeBar");
@@ -1809,7 +1845,7 @@ passHint = credFormPassHint // only new
                     const scrollDifference = listScrollWrpPrevTopPosition - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
                     vListMainBarWrp[appTaskCssMethod]("taskBarWrpZeroTop"); 
-                    vListTaskBarWrp[listTaskCssMethod]("taskBarWrpZeroTop");
+                    vListTaskBarWrp[listTaskCssMethod]("taskBarWrpZeroTop")[listTaskCssMethod]("vListAuxBarWrpDim");
                     vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp[appTaskCssMethod]("taskBarWrpDoubleTop")); // For Bars when Note or Tags are found
                     listScrollWrpPrevTopPosition = e.target.scrollTop;
                 }).attachAry([
@@ -1817,7 +1853,7 @@ passHint = credFormPassHint // only new
                         vListTaskBarWrp,
                         vListWrp
                 ]);
-            
+
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             
             const paintList = (searchStr = searchFormEl.getValue()) => {
@@ -1883,6 +1919,8 @@ passHint = credFormPassHint // only new
                         });
                     }, {}));
                     
+                const getListBarLabel = html => dom.addDiv("vListBarLabel").html(html);
+                
                 const vListAuxBarWrp = html => dom.addDiv("vEmpty")
                     .observedBy(new IntersectionObserver(entries => {
                         entries.forEach(entry => {
@@ -1912,11 +1950,14 @@ passHint = credFormPassHint // only new
                     //vListBarLabel.html(searchStr ? getLabelHtml("nameFound", allHits) : allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true));
                     
                     const statusContent = searchStr 
-                        ? "<span>" + getLabelHtml("nameFound", allHits) + "</span>"
+                        ? getLabelHtml("nameFound", allHits)
                         : "<span>" + (new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer) + "</span><span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"
                     
-                    dbModifiedBar.show().kid().html(statusContent);
+                    //appStatusBar.kid().ridKids().attach(getListBarLabel(statusContent)); //.html(statusContent);
                     
+                    appStatusBar.ridKids().attach(
+                        dom.addDiv("statusContainer" + (searchStr ? " withHit" : "")).attach(getListBarLabel(statusContent))
+                    );
                     
                     if(tagHitAry.length) tagHitAry.unshift(vListAuxBarWrp(getLabelHtml("tagsFound", tagHitAry.length))); 
                     if(noteHitAry.length) noteHitAry.unshift(vListAuxBarWrp(getLabelHtml("notesFound", noteHitAry.length)));
@@ -1933,12 +1974,13 @@ passHint = credFormPassHint // only new
             ]);
             
             paintList();
+            appStatusBar.show();
             vListScrollWrp.scrollTop = listScrollWrpPrevTopPosition;
         }
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         const repaintUI = _ => {
-            //dbModifiedBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
+            //appStatusBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
             paintListSection();
         };
         
@@ -2138,7 +2180,7 @@ passHint = credFormPassHint // only new
     // Attach Sections
     document.body.ridKids()
     .attachAry([
-        appSectionList, appSectionForm, dbModifiedBar,
+        appSectionList, appSectionForm, appStatusBar,
         modalSection,
         msgModule,
         spinner,
@@ -2156,14 +2198,14 @@ passHint = credFormPassHint // only new
     //if(appWidth) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
     
 
-    if(thisApp.settings.darkTheme) document.body.addClass("invert");
-    document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`); 
-    
-    
-    if(thisApp.settings.appWidth.current < 800){
-        document.body.addClass("alternateLayout");
+    if(thisApp.settings.darkTheme){
+        document.documentElement.classList.add("invert");
     }
     
+    document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`); 
+    
+    if(thisApp.settings.isMobileLayout()) document.body.addClass("mobileLayout");
+
     
 // /* Temp and tests */
     document.body.attach(
