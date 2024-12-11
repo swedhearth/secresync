@@ -503,7 +503,6 @@ function App(urlSearchParams){
             this.sessionStorage.set(reloadBy, Date.now() + this.settings.logOffTime.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                //logOffApp("visibilityChange");
                 this.reload();
             }else{
                 setTimeout(_ => {

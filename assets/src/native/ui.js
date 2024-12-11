@@ -64,14 +64,16 @@ function Interface(thisApp){
             entries.forEach(entry => {
                 const inpEl = entry.target;
                 if(entry.isIntersecting) {
-                    if(inpEl.isBlured){
+/*                     if(inpEl.isBlured){
                         inpEl.isBlured = false;
-                    }
+                    } */
                 }else{
-                    inpEl.isBlured = true;
+/*                     inpEl.isBlured = true;
                     setTimeout(_ => {
                         //if(inpEl.isBlured) entry.target.blur();
-                    },500);
+                    },500); */
+                    
+                    entry.target.blur();
                 }
             });
         }, {}));
@@ -538,7 +540,7 @@ passHint = credFormPassHint // only new
         let msgHistory = {};
         let msgIsFullArchive = false;
         
-        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankHtmlTxt("msgHistory")).onClick(_ => this.openFullArchive()).attachTo(msgModule);
+        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankTitleTxt("msgHistory")).onClick(_ => this.openFullArchive()).attachTo(msgModule);
         
         const msgModulePopUp = (css, txt) => msgModule.addClass("popUp").attach(dom.addDiv(`msgHistoryRow ${css}`, txt)); //popUp 
         const msgModuleSlideDown = _ => msgModule.addClass("slideDown");
@@ -572,8 +574,9 @@ passHint = credFormPassHint // only new
         
         this.paintFullArchive = _ => this.resetFullArchive()
             .attach(
-                dom.addDiv("msgHistoryRow title", getTxtBankHtmlTxt("msgHistory") + ":")
-                .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back()))
+                dom.addDiv("msgHistoryRow title", getTxtBankTitleTxt("msgHistory") + ":")
+                /* .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())) */
+                .attach(getSvgIcon("closeFullArchive", "btnCloseForm", _ => window.history.back()))
             )
             .attach(
                 dom.addDiv("msgHistoryContentWrp")
@@ -716,6 +719,8 @@ passHint = credFormPassHint // only new
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
                 vFormScrollTop = e.target.scrollTop;
+                
+                 //document.activeElement.blur(); // lose focus on search input element
                 
                 if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
             });
@@ -1274,7 +1279,7 @@ const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNot
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
 
 const oridinaryLayoutFootEls = displayMode ? [shareEl, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [actionBtn, vendObj.isTrash ? [] : shareEl, deleteOldBtn, closeFormBtn] : [actionBtn, toggleVendorBtn, deleteCurrentBtn, closeFormBtn];
+const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash ? [] : shareEl, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
 
 const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             
@@ -1504,6 +1509,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 thisApp.settings.darkTheme = !thisApp.settings.darkTheme;
 
                 thisApp.localStorage.set("darkTheme", thisApp.settings.darkTheme);
+                const themeColor = thisApp.settings.darkTheme ? '#050505' : '#fafafa';
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+                document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
             };
             
             const rangeInpFieldset = (fieldsetLegendHtml, fieldsetLegendClass, rangeInputName, min, max, value, step, onInput) => {
@@ -1645,15 +1653,15 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             
             const openSettings = e => {
                 const contextIcons = [
-                    langModule(thisApp, async _ => {
+                    langModule(thisApp, _ => {
                         window.addEventListener('popstate',  openSettings, {once: true});
                         history.back();
                         repaintUI();
                     }),
                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
                         ? _ => {
+                            window.addEventListener('popstate',  getChangePassword, {once: true});
                             history.back();
-                            getChangePassword();
                         }
                         : null),
                     getSvgIcon("donate", true, getDonate),
@@ -1845,7 +1853,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     const scrollDifference = listScrollWrpPrevTopPosition - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
                     vListMainBarWrp[appTaskCssMethod]("taskBarWrpZeroTop"); 
-                    vListTaskBarWrp[listTaskCssMethod]("taskBarWrpZeroTop")[listTaskCssMethod]("vListAuxBarWrpDim");
+                    vListTaskBarWrp[listTaskCssMethod]("elDimmed"); //[listTaskCssMethod]("taskBarWrpZeroTop")
                     vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp[appTaskCssMethod]("taskBarWrpDoubleTop")); // For Bars when Note or Tags are found
                     listScrollWrpPrevTopPosition = e.target.scrollTop;
                 }).attachAry([
@@ -1990,7 +1998,6 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         };
         
         const blurUI = doBlur => {
-            console.log("blurUI -> doBlur = ", doBlur);
             doBlur ? thisApp.dbObj && uiBlur.show() : uiBlur.hide();
         }
         

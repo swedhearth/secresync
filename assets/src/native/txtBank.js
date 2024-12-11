@@ -431,6 +431,7 @@ const txtBankObj = {
         "secreSync": "SecreSync",
         "share": "Share",
         "settings": "Settings",
+        "msgHistory": "Notification History",
         "installApp": "Install SecreSync on this device",
         "updateApp": "A new version of SecreSync is available. Update the application"
       },
@@ -494,7 +495,7 @@ const txtBankObj = {
         "removeConsent": "<br>Click to activate the app's Private Mode<br>(The app will not have access to the device storage).",
         "noConsent": "The app is in Private Mode.<br>Click to enable app storage.",
         "browserIsPrivate": "The browser window is in Private mode.<br>The app will not have access to the device storage.",
-        "msgHistory": "Notification History",
+
         "inputBoxSearch": "Search...",
         "showBtnTxt": "Show Database Records",
         "dowloadJson": "Download Unprotected Database JSON",
@@ -946,6 +947,7 @@ const txtBankObj = {
         "secreSync": "SecreSync",
         "share": "Share",
         "settings": "Configuración",
+        "msgHistory": "Historial de Notificaciones",
         "installApp": "Instala SecreSync en este dispositivo",
         "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación"
       },
@@ -1009,7 +1011,7 @@ const txtBankObj = {
         "removeConsent": "Haga clic para activar el modo privado de la aplicación (la aplicación no tendrá acceso al almacenamiento del dispositivo).",
         "noConsent": "La aplicación está en modo privado. Haga clic para habilitar el almacenamiento de la aplicación.",
         "browserIsPrivate": "La aplicación está en modo privado. La ventana del navegador está en modo privado. La aplicación no tiene acceso al almacenamiento del dispositivo.",
-        "msgHistory": "Historial de Notificaciones",
+
         "inputBoxSearch": "Buscar...",
         "showBtnTxt": "Mostrar registros de la base de datos",
         "dowloadJson": "Descargar JSON de base de datos no protegida",
@@ -1460,6 +1462,7 @@ const txtBankObj = {
         "secreSync": "SecreSync",
         "share": "Share",
         "settings": "Paramètres",
+        "msgHistory": "Historique des Notifications",
         "installApp": "Installez SecreSync sur cet appareil",
         "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application"
       },
@@ -1523,7 +1526,7 @@ const txtBankObj = {
         "removeConsent": "Cliquez pour activer le mode Privé de l'application (l'application n'aura pas accès au stockage de l'appareil).",
         "noConsent": "L'application est en mode Privé. Cliquez pour activer le stockage de l'application.",
         "browserIsPrivate": "L'application est en mode Privé. La fenêtre du navigateur est en mode Privé. L'application n'a pas accès au stockage de l'appareil.",
-        "msgHistory": "Historique des Notifications",
+
         "inputBoxSearch": "Rechercher...",
         "showBtnTxt": "Afficher les enregistrements de la base de données",
         "dowloadJson": "Télécharger le JSON de la base de données non protégée",
@@ -1974,6 +1977,7 @@ const txtBankObj = {
         "secreSync": "SecreSync",
         "share": "Share",
         "settings": "Ustawienia",
+        "msgHistory": "Historia Powiadomień",
         "installApp": "Zainstaluj SecreSync na tym urządzeniu",
         "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
       },
@@ -2037,7 +2041,7 @@ const txtBankObj = {
         "removeConsent": "<br>Kliknij, aby aktywować tryb prywatny aplikacji<br>(aplikacja nie będzie miała dostępu do pamięci urządzenia).",
         "noConsent": "Aplikacja jest w trybie prywatnym.<br>Kliknij, by umożliwic aplikacji dostep do pamięci urządzenia.",
         "browserIsPrivate": "Aplikacja jest w trybie prywatnym.<br>Okno przeglądarki jest w trybie prywatnym.<br>Aplikacja nie ma dostępu do pamięci urządzenia.",
-        "msgHistory": "Historia Powiadomień",
+
         "inputBoxSearch": "Szukaj...",
         "showBtnTxt": "Pokaż rekordy bazy danych",
         "dowloadJson": "Pobierz niechroniony JSON bazy danych",

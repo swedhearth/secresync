@@ -44,6 +44,9 @@ Settings:
 Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="killablePopUp". Remove Trash from the list to export!!!!!!!
 
 killablePopUp - sort history back!!!!!!!!!!!!!
+
+
+beforeMsgModule - hide when popping up!!!!!!!!!!!!!
 */
 
 // get url search parameters
