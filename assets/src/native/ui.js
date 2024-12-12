@@ -422,15 +422,6 @@ function Interface(thisApp){
             const credentialsBody = getCredentialsBody(canDelete, canPersist, isPersisted, isPinOnly, isUnlock, msgObj, new InputObject(false, msgObj), new InputObject(true, msgObj)); // getPass, getPin
             return modalSectionPromise.make(credentialsBody);
         }
-        
-
-/* title = credFormTitleNew || credFormTitle || credFormTitleImport //all _new || _pi
-passInputLabel = credFormPass || credFormImpPass // not in PIN
-pinInputLabel = credFormPin // ALL
-persistLabel = credFormPersist || credFormPersistRemove // not in inpott
-pinHint = credFormPinHint // only new
-passHint = credFormPassHint // only new
- */
 
         this.pinPassNewChange = (canDelete, canPersist) => showCredentials(canDelete, canPersist, false, false, false,{ //canDelete, canPersist, isPersisted, isPinOnly, isUnlock
             title: getTxtBankHtmlTxt("credFormTitleNew"), //"Create New Database",
@@ -1232,19 +1223,7 @@ passHint = credFormPassHint // only new
                     boxNoteFitContent();
                 })
                 .on("transitionend", boxNoteFitContent);// fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
-                
-                
-/*                 if (testWithVitualKeyboard && "virtualKeyboard" in navigator) {
-                    boxNoteEl.on("focus", e => {
-                        const scrollNote  = _ => {
-                            boxNoteEl.scrollIntoView(false);
-                            vForm.scrollBy(0, formFoot.clientHeight + REM); scrollWrpOverflow
-                            boxNoteEl.focus();
-                        }
-                        navigator.virtualKeyboard.addEventListener("geometrychange", scrollNote, {once: true});
-                        boxNoteEl.on("blur", _ => navigator.virtualKeyboard.removeEventListener("geometrychange", scrollNote, {once: true}));
-                    });
-                } */
+
             
             boxNoteEl.value = vendObj.note || "";
 
@@ -1290,7 +1269,16 @@ passHint = credFormPassHint // only new
                 ]);
             };
             
-
+            const formSectionsAry = [ //htmls
+                standardSection("name", getTxtBankHtmlTxt("formLabelName")),
+                vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
+                vendObj.isNote ? [] : await passSection(getTxtBankHtmlTxt("formLabelPass")),
+                vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
+                notesSection(getTxtBankHtmlTxt("formLabelNote")),
+                urlSection(getTxtBankHtmlTxt("formLabelUrl")),
+                standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
+            ];
+            
             const recordModWrp = !displayMode // Show only if Display
                 ? null
                 : dom.addDiv("recordModWrp").attachAry([ 
@@ -1308,7 +1296,6 @@ passHint = credFormPassHint // only new
             const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
                 ? null
                 : dom.addDiv("revisionWrp").attachAry([ 
-                    //revisionIdx ? dom.addDiv("revisionCaption", getTxtBankHtmlTxt("revision", {revisionDate: new Date(vendObj.mod).toUKstring()})) : [],
                     revisionIdx ? dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()) : [],
                     dom.addDiv("revisionScroll").attachAry([
                         revisionIdx && revAry[revisionIdx + 1]
@@ -1324,15 +1311,7 @@ passHint = credFormPassHint // only new
                     ])
                 ]);
                 
-            const formSectionsAry = [ //htmls
-                standardSection("name", getTxtBankHtmlTxt("formLabelName")),
-                vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
-                vendObj.isNote ? [] : await passSection(getTxtBankHtmlTxt("formLabelPass")),
-                vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
-                notesSection(getTxtBankHtmlTxt("formLabelNote")),
-                urlSection(getTxtBankHtmlTxt("formLabelUrl")),
-                standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
-            ];
+                const modWrp = revisionWrp && revisionIdx ? revisionWrp : recordModWrp;
 
 
 const actionBtn = revisionIdx || vendObj.isTrash
@@ -1359,16 +1338,22 @@ const deleteOldBtn = revisionIdx
         : [];
 const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
+const revisionsBtn = revisionWrp 
+    ? getSvgIcon("revisionHistory", true, revisionIdx 
+            ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
+            :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
+        )
+    : [];
 
-const oridinaryLayoutFootEls = displayMode ? [shareEl, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash || vendObj.isNote ? [] : shareEl, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
+const oridinaryLayoutFootEls = displayMode ? [shareEl, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
+const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash || vendObj.isNote ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
 
 const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             
             const formHead = dom.addDiv("formHead").attachAry(fomHeadEls);
             const formFoot = dom.addDiv("formFoot").attachAry(fomFootEls);
             
-            vForm.attach(formHead).attach(recordModWrp).attach(revisionWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());
+            vForm.attach(formHead).attach(modWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());//.attach(revisionWrp)
             appSectionForm.isDisplay = displayMode;
 
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section

@@ -21,6 +21,7 @@
 
     --app-shade-grey-100: #646464; /* rgb(100 100 100); #646464*/
     --app-shade-grey-190: #bebebe; /* rgb(190 190 190); #bebebe; */
+    --app-shade-grey-150: #969696; /* rgb(150 150 150); #bebebe; */
     --app-shade-grey-220: #dcdcdc; /* rgb(220 220 220); #dcdcdc; */
     --app-shade-grey-230: #e6e6e6; /* rgb(230 230 230); #e6e6e6; */
     --app-shade-grey-235: #ebebeb; /* rgb(235 235 235); #ebebeb; */
@@ -47,11 +48,11 @@
 }
 
 :scope{
-    
-    --module-bckg: var(--app-shade-grey-245);
     --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-245));
-    --trace-input-outline: 1px solid var(--app-shade-grey-235); /*outline / #ebebeb border rgb(235 235 235)*/
+    --module-bckg: var(--app-shade-grey-245);
+    --trace-input-outline: 1px solid var(--module-bckg);
     --trace-input-outline-focus: 1px solid var(--app-shade-grey-220);
+    --trace-fieldset-outline: 1px solid var(--app-shade-grey-190);
 }
 
 @font-face {
@@ -83,12 +84,12 @@ html.invert{
 }
 @scope (html.invert){
     :scope{
-        --module-bckg: var(--app-shade-grey-220);
-        --trace-input-outline: 1px solid var(--app-shade-grey-190); /*outline / #ebebeb border rgb(235 235 235)*/
-        --trace-input-outline-focus: 1px solid var(--app-shade-grey-100);
-/*         --app-bckg: linear-gradient(0deg, var(--app-shade-grey-220), var(--app-shade-grey-230), var(--app-shade-grey-235), var(--app-shade-grey-220)); */
-        
         --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
+        --module-bckg: var(--app-shade-grey-220);
+        --trace-input-outline: 1px solid var(--module-bckg);
+        --trace-input-outline-focus: 1px solid var(--app-shade-grey-150);
+        --trace-fieldset-outline: 1px solid var(--app-shade-grey-190);
+        
     }
 }
 
@@ -261,14 +262,11 @@ html.invert .svgIcon.active:active{
     word-break: break-word;
     white-space: pre-line;
     border: 0;
-    /* border-bottom: var(--trace-gray-240); */
     transition: all 0.3s ease;
     flex:2;
     margin: 0 0.5rem; /* 0.5vw; */
     padding: 0.5em 0.5rem;  /* 2.5em; */
-    
     border-radius:0.5em;
-    
     color: var(--app-shade-grey-0);
 }
 
@@ -281,16 +279,12 @@ html.invert .inpEl[type="range"]{
 }
 
 input:focus-visible, textarea:focus-visible{
-    /* outline: 1px solid var(--app-shade-grey-190); */
-    
     outline: var(--trace-input-outline-focus);
     background: var(--app-shade-grey-255);
     box-shadow: unset;
 }
 
-/* textarea:focus-visible{
-    outline: var(--trace-gray-240);
-} */
+
 
 input::placeholder, textarea::placeholder{
     transition: all 0.3s ease;
@@ -340,8 +334,7 @@ min-width: calc(var(--min-app-width) - 4vw);
 fieldset.padded:focus-within{
     background:var(--module-bckg);
     box-shadow: 0px 0px 0px 1px var(--app-shade-grey-235);
-    /* border: 1px solid var(--app-shade-grey-190); */
-    border: var(--trace-input-outline);
+    border: var(--trace-fieldset-outline);
     box-shadow: unset;
 }
 
@@ -507,8 +500,7 @@ legend.appLayoutLegend:before{
 
 .credIconWrp{
     margin-bottom: 2vh;
-    /* border-bottom: var(--trace-gray-240); */
-    /* border-bottom: var(--trace-input-outline); */
+
     padding: 2vw;
     display: flex;
     justify-content: space-around;
@@ -883,6 +875,7 @@ html.invert .localIcon{
 
 .msgModule.popUp .beforeMsgModule{
     opacity: 0;
+    pointer-events: none;
 }
 .beforeMsgModule {
     position: absolute;
@@ -1162,10 +1155,6 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     width: 100%;
     max-width: var(--max-app-width);
     background: var(--module-bckg);
-    /* box-shadow: 0px 0 4px var(--app-shade-grey-220); */
-    
-    /* background:red; */
-/* outline: var(--trace-input-outline); */
 }
 
 .appList > *:first-child{
@@ -1240,10 +1229,8 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 .appTaskbar, .appMoreTaskbar{
     position: relative; 
    background:var(--module-bckg);
-    /* height: 100%; */
     z-index:1; 
     display: flex;
-    /* outline: var(--trace-input-outline); */
     padding: 1mm;
 }
 
@@ -1292,7 +1279,7 @@ top: 0;
     height: 100%;
     margin: 0px auto 0;
     transition: transform 0.1s ease-out;
-    /* outline: var(--trace-input-outline); */
+
     display:flex;
     min-width:100%;
 
@@ -1504,10 +1491,8 @@ html.invert .langWrp .svgIcon:active{
 }
 
 .divider{
-    /* border-right: 1px solid var(--app-shade-grey-220); */
     border-right: var(--trace-input-outline);
     height: min(6mm, 8vw);
-    /* margin: auto; */
 }
 
 /* body.mobileLayout .divider{
@@ -1570,17 +1555,13 @@ margin: unset;
 
 .vEntry{
     overflow:auto;
-
     border-radius: 0.5em;
-
     background: white;
-    padding: min(1.5vmin, 0.5rem);
-    /* margin: 0.5rem; */
-    
+    /* padding: min(1.5vmin, 0.5rem); */
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
-    
     margin: 1vh min(0.5rem, 2vw);
     margin-top: unset;
+    border: min(1.5vmin, 0.5rem) solid #00000000;
 }
 
 html.invert .vEntry{
@@ -1599,20 +1580,22 @@ html.invert .vEntry{
 }
 .vLog, .vNote, .vTrash, .vName, .vTags, .vNotes, .vDates, .vCr8, .vMod{
     font-size: 0.9em;
-    padding: 0.5em 2.5em;
+    padding: 0.5em 0.5em 0.5em 2.5em;
+    padding:0.5em;
+    margin: 0 min(calc(0.02 * var(--max-app-width)), 2em);
 }
 
 .vEmpty, .vLog, .vNote, .vTrash{
     position:relative;
-/*     padding: 0.5em 0em 0.5em 2em; */ /*Width of icon to the left, o to the right*/
-    min-width: var(--min-app-width);
-    margin: 0 var(--min-vList-item-margin); /* 10vw; */
+    /* margin: 0 var(--min-vList-item-margin);  */
     font-size: 0.9rem;
     display: flex;
     flex-direction: column;
-    min-width: calc(var(--min-app-width) - (min(1vmin, 0.3em) * 4) - var(--min-vList-item-margin)); /* - (min(1vmin, 0.3em) * 4) is the margins and paddings of the vEntry */
+
     padding: 0.2em 0em 0.2em 2em;
-    min-width: calc(var(--min-app-width) - 3rem)
+    min-width: calc(var(--min-app-width) - 3rem);
+    margin:0;
+    width: fit-content;
 }
 
 .vEmpty{
@@ -1622,14 +1605,15 @@ html.invert .vEntry{
 .vName{
     padding-left: 0.5em; /*this will aligh with Notes icon below*/
     font-size: 0.9rem;
-    
     word-break: keep-all;
     white-space: nowrap;
+        /* width: max-content; */
 }
 
 .vCr8, .vMod{
     border: none;
     margin-left: unset;
+    margin: 0 min(calc(0.2 * var(--max-app-width)), 2em);
 }
 
 .vTags, .vNotes{
@@ -1644,20 +1628,19 @@ html.invert .vEntry{
 }
 
 .vEntry > div > .inpEl:not(.inpEl:last-child){
-    border-bottom: var(--trace-gray-240);
+    border-bottom: var(--trace-input-outline);
     border-radius: 0;
 }
 
-html.invert .vEntry > div > .inpEl:not(.inpEl:last-child){
+/* html.invert .vEntry > div > .inpEl:not(.inpEl:last-child){
     border-bottom: 1px solid var(--app-shade-grey-230);
     border-radius: 0;
-}
+} */
 
 
 .vLog::before, .vNote::before, .vTrash::before{
-/*     padding: 1em;
-    margin: 0.25em -3.5em; */
-    padding: 0.75rem;
+
+    padding: var(--svgIcon-padding-smaller); /* 0.75rem; */
     margin: 0.25rem -2em; /*left by width of the icon (2em) */
 }
 
@@ -2149,6 +2132,10 @@ html.invert .settingsWrp{
     margin: 0 -14mm;
     border-top: var(--trace-gray-190);
 }
+.appWidthWrp fieldset, .maxRevisionsWrp fieldset, .logOffAppWrp fieldset, .appLayoutWrp fieldset{
+    width: auto;
+}
+
 
 .settingsWrp .langWrp{
     position: absolute;

@@ -565,18 +565,26 @@ function App(urlSearchParams){
         this.def = def;
         this.step = step;
 
-        this.get = _ => parseInt(thisApp.localStorage.get(name)) || this.current || this.def;
+        this.get = _ => {
+            const present = parseInt(thisApp.localStorage.get(name)) || this.current || this.def;
+            
+            if(present < this.min) return this.min;
+            if(present > this.max) return this.max;
+            return present;
+        }
         this.set = string => {
             thisApp.localStorage.set(name, string);
             this.current = parseInt(string);
         };
         this.current = this.get();
+
     }
     
     function AppSettings(thisApp){
         this.logOffTime = new Setting(thisApp, "logOffTime", 0, 600, 60); //Infinity
         this.maxRevisions = new Setting(thisApp, "maxRevisions", 0, 20, 10);
         this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, 900, 5);
+
         this.darkTheme = thisApp.localStorage.get("darkTheme") === "true";
         this.appLayout = new Setting(thisApp, "appLayout", 0, 2, this.appWidth.current < 800 ? 2 : 1, 1); // 0: auto, 1: normal, 2: mobile //&& window.TOUCH_DEVICE
         this.isMobileLayout = _ => {
