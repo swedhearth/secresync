@@ -494,12 +494,12 @@ function App(urlSearchParams){
 
     this.visibilityChange = e => {
         if(!this.dbObj) return;
-        //mobileDebug("visibilityChange and this.dbObj. document.visibilityState = ", document.visibilityState);
         const reloadBy = "reloadAppBy";
         
         this.hidden = document.visibilityState === "hidden";
 
         if(this.hidden){
+            this.ui.blur(true);
             this.sessionStorage.set(reloadBy, Date.now() + this.settings.logOffTime.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
@@ -587,6 +587,7 @@ function App(urlSearchParams){
             }
             return this.appWidth.current < 800;
         };
+        this.appBlur = thisApp.localStorage.get("appBlur") === "false" ? false : true;
     }
 
     /* Initiate App*/

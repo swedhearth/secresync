@@ -5,11 +5,11 @@
     --body-top-translateY: 0px;
     
     --max-app-width: 900px;
-    --min-app-width: 320px;
+    --min-app-width: 340px;
     
     --min-vList-item-margin: 0.5em;
 
-    --db-mod-bar-height: 2.5rem;
+    --db-mod-bar-height: 1.5rem;
 
     --svgIcon-padding-smaller: 0.75rem;
     --svgIcon-padding-small: 5mm; /* max(0.75rem, min(4vmin, 5mm)); */
@@ -33,7 +33,7 @@
     
     --app-theme: var(--app-shade-grey-250); /* rgb(250 250 250) */
     /* --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-shade-grey-255), var(--app-shade-grey-250), var(--app-shade-grey-245)); */
-    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-230));
+    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
 
     /* --module-bckg: var(--app-shade-grey-245); */
 
@@ -49,6 +49,7 @@
 :scope{
     
     --module-bckg: var(--app-shade-grey-245);
+    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-245));
     --trace-input-outline: 1px solid var(--app-shade-grey-235); /*outline / #ebebeb border rgb(235 235 235)*/
     --trace-input-outline-focus: 1px solid var(--app-shade-grey-220);
 }
@@ -82,13 +83,12 @@ html.invert{
 }
 @scope (html.invert){
     :scope{
-        --module-bckg: var(--app-shade-grey-230);
+        --module-bckg: var(--app-shade-grey-220);
         --trace-input-outline: 1px solid var(--app-shade-grey-190); /*outline / #ebebeb border rgb(235 235 235)*/
         --trace-input-outline-focus: 1px solid var(--app-shade-grey-100);
 /*         --app-bckg: linear-gradient(0deg, var(--app-shade-grey-220), var(--app-shade-grey-230), var(--app-shade-grey-235), var(--app-shade-grey-220)); */
         
-
-        /* --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-230)); */
+        --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
     }
 }
 
@@ -305,20 +305,20 @@ input:focus-visible::placeholder, textarea:focus-visible::placeholder{
 
 
 fieldset {
-    width: calc(100% - min(1em, 2vw)* 2);
+    /* width: calc(100% - min(1em, 2vw)* 2); */
     box-sizing: border-box;
     display: flex;
     border: 1px solid transparent;
     flex-wrap: wrap;
     padding: 0;
-    margin: 0vh min(1em, 2vw);
+    margin: 0vh min(1rem, 2vw);
     position: relative;
     
 
     border-radius: 0.5rem;
 
     position: relative;
-
+    width: 100%;
 }
 
 /* fieldset.padded{
@@ -326,12 +326,13 @@ fieldset {
 } */
 fieldset.padded {
     padding: 1vh 1vw 2vh;
-    margin-top: 1vh;
-
+    /* margin-top: 1vh; */
+min-width: calc(var(--min-app-width) - 4vw);
     background: white;
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
 
     transition: all 0.3s ease;
+    width: auto;
 }
 
 
@@ -427,7 +428,7 @@ legend.maxRevisionsLegend:before{
   background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
 }
 legend.logOffTimeLegend:before{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#logOffApp);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
 }
 
 legend.appLayoutLegend:before{
@@ -439,7 +440,15 @@ legend.appLayoutLegend:before{
 
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
+    
+}
+
+.containIcon{
     background-size: contain;
+}
+
+.blurIcon{
+    filter: blur(2px);
 }
 
 .boxNote{
@@ -448,13 +457,13 @@ legend.appLayoutLegend:before{
 
 .boxNote.max{
     margin: 0%;
-    padding:0.5em;
+    padding:0.5em 1em;
 }
 
 /* --------------------------------------------------------------- Credentials ---------------------------------------------------------------------*/
 .credFormWrp{
     /* position: relative; */
-    padding: 1vmin;
+    /* padding: 1vmin; */
     /* width: 100%; */
     box-sizing: border-box;
 /*     box-shadow: 0 0 10vh 20vh var(--app-shade-grey-255);
@@ -471,11 +480,13 @@ legend.appLayoutLegend:before{
 .credForm .padded:last-child{
     position: sticky;
     top: 100%;
-  margin-bottom: max(5vh, calc(var(--db-mod-bar-height) + 1rem));
+  /* margin-bottom: max(5vh, calc(var(--db-mod-bar-height) + 1rem)); */
+  margin-bottom: 1rem;
 }
 .credTaskbar{
     display: flex;
     justify-content: flex-end;
+    min-width: calc(var(--min-app-width));
 }
 
 .crosx{ /*Shared with Alerts*/
@@ -484,21 +495,24 @@ legend.appLayoutLegend:before{
     top: 0;
     right: 0;
     background-size: var(--svg-background-size);
-        margin: 2mm;
+    margin: 2mm;
 }
 
 .credFormTitle{
     text-align: center;
-    padding: 1vh;
+    padding: 1vh 2vw;
+    min-width: calc(var(--min-app-width) - 4vw);
 }
 
+
 .credIconWrp{
-    margin: 0vh 2vw 2vh;
+    margin-bottom: 2vh;
     /* border-bottom: var(--trace-gray-240); */
     /* border-bottom: var(--trace-input-outline); */
-    padding: 1vh;
+    padding: 2vw;
     display: flex;
     justify-content: space-around;
+        min-width: calc(var(--min-app-width) - 4vw);
 }
 
 .credIcon{
@@ -581,9 +595,7 @@ legend.appLayoutLegend:before{
     
     font-size: 0.75rem;
     margin: 5vh 0;
-/*     position: absolute;
-    top:0;
-    margin:0; */
+    min-width: var(--min-app-width);
 }
 
 
@@ -856,25 +868,17 @@ html.invert .localIcon{
 
 /* ------------------------------------------------------ Message Module ----------------------------------------------------------*/
 .msgModule{
-
     position: fixed;
-
     bottom: 0;
-
     width: 100%;
-
     text-indent: 1em;
-
     z-index: 2;
     transform:translateY(100%);
     transition: all 0.5s ease-out;
-
     font-size: 0.7rem;
     line-height: 2;
     min-width: var(--min-app-width);
     max-width: var(--max-app-width);
-    
-
 }
 
 .msgModule.popUp .beforeMsgModule{
@@ -882,15 +886,15 @@ html.invert .localIcon{
 }
 .beforeMsgModule {
     position: absolute;
-    top: calc(0mm - var(--db-mod-bar-height)/1.2);
-    padding: calc(var(--db-mod-bar-height) / 3);
+    top: calc(0mm - var(--db-mod-bar-height));
+    padding: calc(var(--db-mod-bar-height) / 2);
+    margin: 0 calc(var(--db-mod-bar-height) / 4);
     background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
     background-size: var(--svg-background-size); 
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.2s ease-out;
     right: 0%;
-    margin: 0 calc(var(--db-mod-bar-height) / 3);/*  0.5rem; */
 }
 
 .fullArchive .beforeMsgModule{
@@ -911,12 +915,11 @@ html.invert .localIcon{
     transition: all 0.2s ease-out;
     backdrop-filter: blur(10px);
     overflow:auto;
-    /* left:0; */
 }
+
 .msgHistoryContentWrp{
     overflow:auto;
     height: calc(100% - 3em);
-        /* min-width: calc(var(--min-app-width)* 1.5); */
 }
 
 .msgModule.slideDown{
@@ -935,7 +938,6 @@ html.invert .localIcon{
 .msgModule.popUp .msgHistoryRow{
     border-radius: 0.5rem;
     margin: 1mm;
-    /* box-shadow: 0px 0px 2px 1px #2f76bc; */
     outline: 1px solid #2f76bc;
 }
 
@@ -961,12 +963,13 @@ html.invert .msgModule.popUp .msgHistoryRow.flash{
     outline: 1px solid #ff4bff;
 }
 
-
-
 .msgHistoryRow:before{
     content: "";
-    padding: 0.75em;
-    margin: 0.75em;
+    padding: var(--svgIcon-padding-smaller);
+    margin: 0 0.65rem;
+    background-size: var(--svg-background-size);
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .msgHistoryRow.title:before{
@@ -1015,6 +1018,9 @@ html.invert .msgHistoryRow.flash:before{
    /* background: var(--app-shade-grey-235); */
        background: var(--module-bckg);
 }
+/* .msgBody{
+    padding: 0.5rem;
+} */
 
 .closeFullArchive{
 
@@ -1025,34 +1031,6 @@ html.invert .msgHistoryRow.flash:before{
 }
 /* ------------------------------------------------------ appStatusBar Bar ----------------------------------------------------------*/
 .appStatusBar{
-
-/*     position: absolute;
-    bottom: 0;
-    height: var(--db-mod-bar-height);
-    font-size: xx-small;
-    z-index: 1;
-    width: 100%;
-    max-width: var(--max-app-width);
-    display: flex;
-    align-items: center;
-    opacity: 0.5;
- */
-
-
-
-/*     position: absolute;
-    bottom: 0;
-    height: var(--db-mod-bar-height);
-    font-size: xx-small;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    opacity: 0.5;
-    white-space: nowrap;
-    max-width: calc(100% -  var(--db-mod-bar-height) * 2);
-    overflow: scroll;
-    left: 0; */
-
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -1071,15 +1049,13 @@ max-width: var(--max-app-width);
     box-sizing: border-box;
     display: flex;
     justify-content: flex-start;
-    padding-right: 3rem;
+    padding-right: calc(var(--db-mod-bar-height)* 1.5);
     align-items: center;
     height: 100%;
     /* background */
 }
 
 .appStatusBar span{
-/*     overflow: scroll;
-    flex: 1; */
     white-space: nowrap;
     margin-right: 1rem;
 }
@@ -1087,8 +1063,8 @@ max-width: var(--max-app-width);
 .statusContainer::before{
 content: "";
     position: relative;
-    padding: calc(var(--db-mod-bar-height) / 3);
-    margin: 0 calc(var(--db-mod-bar-height) / 3);
+    padding: calc(var(--db-mod-bar-height) / 2);
+    margin: 0 calc(var(--db-mod-bar-height) / 2);
     background-image: url(../../../assets/static/appSvg/sprite.svg#vMod);
     background-size: var(--svg-background-size);
     background-position: center;
@@ -1201,13 +1177,13 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 /* ********************** Vendor List Bars ********************** */
 .vlistBarWrp{
     position: sticky;
-    height: 11mm;
+    height: calc(var(--svgIcon-padding-small) * 2 + 2mm); /* height of the svg plus 1mm padding of .vListTaskBarWrp, .vListAuxBarWrp = 12mm; */
     z-index: 1;
     transition: top 0.1s ease-out;
 }
 
 .vListMainBarWrp {
-    top: -11mm;
+    top: calc(- var(--svgIcon-padding-small) * 2 - 2mm); /* -12mm; */
     z-index: 2;
 }
 
@@ -1221,6 +1197,7 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     background:var(--module-bckg);
     outline:1px solid var(--module-bckg);
     padding: 1mm;
+        box-sizing: border-box;
 }
 
 .vListTaskBarWrp{
@@ -1247,7 +1224,7 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 
 .taskBarWrpDoubleTop{
     /* top: 22mm; */
-    top: 11mm;
+    top: 12mm;
 }
 
 /* body.mobileLayout .taskBarWrpDoubleTop{
@@ -1263,7 +1240,7 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 .appTaskbar, .appMoreTaskbar{
     position: relative; 
    background:var(--module-bckg);
-    height: 100%;
+    /* height: 100%; */
     z-index:1; 
     display: flex;
     /* outline: var(--trace-input-outline); */
@@ -1309,7 +1286,8 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 /* __ Search Form __ */
 .searchForm {
     position: absolute;
-    /* background */: var(--app-shade-grey-255);
+top: 0;
+    left: 0;
     box-sizing: border-box;
     height: 100%;
     margin: 0px auto 0;
@@ -1319,6 +1297,8 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     min-width:100%;
 
     background:var(--module-bckg);
+    
+
 }
 
 .searchFormHide{
@@ -1384,8 +1364,8 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
 }
 
-.logOffApp{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#logOffApp);
+.appLogOff{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
 }
 
 .expDbIcon{
@@ -1465,7 +1445,7 @@ html.invert .langWrp .svgIcon:active{
 
 /* ++++++++ List Taskbar ++++++++ */
 .vListBarLabel{
-    padding: 0 1em;
+    /* padding: 0 1em; */
     text-align: justify;
     text-wrap: nowrap;
     overflow: auto;
@@ -1577,7 +1557,7 @@ margin: unset;
 /* ************** Vendor List Wrap *************** */
 .vListWrp{
     position:relative;
-    margin-top: -11mm;
+    margin-top: -12mm;
 }
 
 /* body.mobileLayout .vListWrp{
@@ -1595,9 +1575,12 @@ margin: unset;
 
     background: white;
     padding: min(1.5vmin, 0.5rem);
-    margin: 0.5rem;
-    margin-top: unset;
+    /* margin: 0.5rem; */
+    
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
+    
+    margin: 1vh min(0.5rem, 2vw);
+    margin-top: unset;
 }
 
 html.invert .vEntry{
@@ -1721,10 +1704,6 @@ html.invert .vEntry > div > .inpEl:not(.inpEl:last-child){
     margin-bottom: calc(var(--svgIcon-padding-medium) + 11mm); /* min(10vmin, 7mm); */
 }
 
-/* body.mobileLayout .addVendorBtn{
-    margin-bottom: calc(var(--svgIcon-padding-medium) + 11mm); /* min(10vmin, 7mm); */
-} */
-
 .hit{
     background: rgb(150 255 150);
 }
@@ -1746,18 +1725,9 @@ html.invert .hit{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1vmin;
+    padding: 1mm;
     background: var(--module-bckg);
-    /* border-bottom: var(--trace-gray-240); */
-
-        /* backdrop-filter: blur(5px); */
-/*         background: rgb(255 255 255 / 75%);
-        background: rgb(250 250 250 / 75%); */
-        
-        
-/*     width: 100%;
-    max-width: var(--max-app-width);
-    box-sizing: border-box; */
+    outline: 1px solid var(--module-bckg);
     z-index: 1;
 }
 
@@ -1777,13 +1747,14 @@ body.mobileLayout .formHead{
     max-height: 2.5em; /* calc(var(--svgIcon-padding-small) * 2); *//* 10mm; */
     padding: 0 1em;
     overflow: auto;
+    font-size: 0.75rem;
 }
 
 .recordModWrp, .revisionWrp{
     position: relative;
     display: flex;
     justify-content: space-between;
-    margin: 0vh 2vw 2vh;
+    margin: 0vh 2vw 0vh;
 }
 
 
@@ -1814,7 +1785,7 @@ body.mobileLayout .formHead{
 .revisionWrp{
     justify-content: flex-end;
     flex-wrap: wrap;
-    margin: -2vh 2vw 1vh;
+    margin: 0vh 2vw 0vh;
 }
 
 .revisionScroll{
@@ -1827,7 +1798,7 @@ body.mobileLayout .formHead{
     /* padding: 0.75rem; */
     padding: var(--svgIcon-padding-smaller);
     filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
-    margin: 0.5em 0.5rem 0;
+    /* margin: 0.5em 0.5rem 0; */
 }
 .revisionCaption{
 line-height: 1.5rem;
@@ -1836,7 +1807,7 @@ line-height: 1.5rem;
     background: white;
     border-radius: 0.5em;
     padding: 0 1em;
-    margin: 0.5em 1em 0;
+    /* margin: 0.5em 1em 0; */
     opacity: 0.6;
     box-shadow: 1px 1px 2px 0px var(--app-shade-grey-190);
     
@@ -1968,39 +1939,22 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
 }
 
 .appForm .padded:nth-last-child(2){ /*Last Padded Fieldsed in the Form*/
-    /* margin-bottom: calc(2vmin + var(--svgIcon-padding-small) * 2); */
-    /* margin-bottom:calc(2vmin + var(--svgIcon-padding-small) * 2 + 1vh); */
-        margin-bottom: 2vh;
+    margin-bottom: 1vh;
 }
 
-/* .appForm .padded:nth-child(4){
-    margin-top: 0;
-} */
 
 .formFoot{
-    /* position: fixed; */
     position: sticky;
     bottom:0;
-    /* top: min(100%, calc(100vh - 11mm - 2vmin - 1.5rem)); */
-    
-    top: min(100%, calc(var(--body-height) - (var(--svgIcon-padding-small) * 2) - 2vmin - var(--db-mod-bar-height) - 1px));
-    top: min(100%, calc(var(--body-height) - (var(--svgIcon-padding-small) * 2) - 2vmin - var(--db-mod-bar-height)));
-    
+
+    top: min(100%, calc(var(--body-height) - (var(--svgIcon-padding-small) * 2) - 2mm - 1px - var(--db-mod-bar-height)));
     display: flex;
     justify-content: space-between;
-    width: min(100%, var(--max-app-width));
-    /* bottom: var(--db-mod-bar-height); */
-    /* border-top: var(--trace-gray-240); */
-
-/*         backdrop-filter: blur(5px);
-        background: rgb(255 255 255 / 75%);
-        background: rgb(250 250 250 / 75%); */
-        background: var(--module-bckg);
-        outline: 1px solid var(--module-bckg);
-        
-        
-    padding: 1vmin;
+    background: var(--app-theme);
+    /* outline: 1px solid var(--app-theme); */
+    padding: 1mm;
     box-sizing: border-box;
+border-top: 1px solid var(--module-bckg);
 }
 
 /* .formFoot span{
@@ -2085,7 +2039,7 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     transform: translateX(-50vw);
 }
 
-.uiBlur, .killablePopUp{
+.uiBlur, .disposableModal{
     position: fixed;
     top:0;
     left:0;
@@ -2095,29 +2049,30 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     z-index:2;
 }
 
-.killablePopUp .crosx{
-    padding: 3rem;
-}
+/*shareContainer*/
+
 
 /* Barcode Share*/
 
 .barcodeContainer{
-    position: absolute;
-    top:50%;
+    position: relative;
+    /* top:50%; */
     left:50%;
-    transform:translate(-50%, -50%);
-    width: 85vmin;
-    height: 85vmin;
+    transform:translateX(-50%);
+/*     width: 85vmin;
+    height: 85vmin; */
     background: white;
     padding: 5vmin;
     display: flex;
     box-shadow: 1vmin 1vmin 2vmin var(--app-shade-grey-100);
     border-radius: 5vmin;
+    margin: 5mm 0;
+        display: inline-block;
 }
 
 .secreSyncBarcode{
-    position: absolute;
-    padding: 3rem;
+/*     position: absolute;
+    padding: 3rem; */
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSyncBarcode);
 }
 /*Export Filter*/
@@ -2157,7 +2112,7 @@ padding: 2vh;
     height: 100%;
     max-width: var(--max-app-width);
     z-index: 2;
-    background: rgb(128 128 128 / 50%);
+    /* background: rgb(128 128 128 / 50%); */
     position: relative;
     backdrop-filter: blur(5px);
 }
@@ -2171,7 +2126,7 @@ padding: 2vh;
     background-size: var(--svg-background-size);
     background-position: center;
     background-repeat: no-repeat;
-    margin: 2mm;
+    margin: 1mm 2mm;
     border-radius: 15%;
 }
 
@@ -2179,7 +2134,7 @@ padding: 2vh;
     background: var(--module-bckg);
     display: flex;
     flex-wrap: wrap;
-    padding: 0 14mm;
+    padding: 1mm 14mm;
     justify-content: space-evenly;
 }
 
@@ -2198,13 +2153,12 @@ html.invert .settingsWrp{
 .settingsWrp .langWrp{
     position: absolute;
     left:0;
-/*     border-radius: 0 0 0.5em 0.5em;
-     background: var(--module-bckg); */
+    margin: 0mm 2mm;
 }
 
-.settingsWrp .svgIcon{
-        margin: 2mm;
-}
+/* .settingsWrp .svgIcon{
+    margin: 2mm;
+} */
 .settingsWrp .svgIcon:not(.active){
     opacity:0.3;
 }

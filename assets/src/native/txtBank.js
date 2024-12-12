@@ -413,7 +413,8 @@ const txtBankObj = {
         "swapTheme": "Switch application theme",
         "appWidth" : "Application width",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffApp": "Logoff delay",
+        "appLogOff": "Logoff delay",
+        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -929,7 +930,8 @@ const txtBankObj = {
         "swapTheme": "Cambiar el tema de la aplicación",
         "appWidth" : "Ancho de la aplicación",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffApp": "Retraso de cierre de sesión",
+        "appLogOff": "Retraso de cierre de sesión",
+        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -1444,7 +1446,8 @@ const txtBankObj = {
         "swapTheme": "Changer le thème de l'application",
         "appWidth" : "Largeur de l'application",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffApp": "Délai de déconnexion",
+        "appLogOff": "Délai de déconnexion",
+        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1959,7 +1962,8 @@ const txtBankObj = {
         "swapTheme": "Zmień motyw aplikacji",
         "appWidth" : "Szerokość aplikacji",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffApp": "Opóźnienie wylogowania",
+        "appLogOff": "Opóźnienie wylogowania",
+        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",

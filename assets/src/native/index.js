@@ -41,12 +41,17 @@ Settings:
  - app colour mode
  
 
-Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="killablePopUp". Remove Trash from the list to export!!!!!!!
+Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="disposableModal". Remove Trash from the list to export!!!!!!!
 
-killablePopUp - sort history back!!!!!!!!!!!!!
+disposableModal - sort history back!!!!!!!!!!!!!
 
 
-beforeMsgModule - hide when popping up!!!!!!!!!!!!!
+DONE !!!!!!! beforeMsgModule - hide when popping up!!!!!!!!!!!!!
+
+hide sharing option if the account type is note
+
+For notification history icon to be a bell or klepsydra (bell would be better)
+revision history move to the bottom bar and hide the account modification bar when historical account is showing
 */
 
 // get url search parameters
@@ -129,10 +134,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.addEventListener('offline', thisApp.connectivitychange);
         
         document.addEventListener('visibilitychange', thisApp.visibilityChange);
+        window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
-        if( thisApp.URL !== "http://localhost:8080/" && location.host )window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
-
-        
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
         console.log('origViewPortHeightInt',origViewPortHeightInt);
         //mobileDebug('origViewPortHeightInt', origViewPortHeightInt);

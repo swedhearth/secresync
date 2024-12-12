@@ -64,16 +64,16 @@ function Interface(thisApp){
             entries.forEach(entry => {
                 const inpEl = entry.target;
                 if(entry.isIntersecting) {
-/*                     if(inpEl.isBlured){
+                    if(inpEl.isBlured){
                         inpEl.isBlured = false;
-                    } */
+                    }
                 }else{
-/*                     inpEl.isBlured = true;
+                    inpEl.isBlured = true;
                     setTimeout(_ => {
-                        //if(inpEl.isBlured) entry.target.blur();
-                    },500); */
+                        if(inpEl.isBlured) entry.target.blur();
+                    },200);
                     
-                    entry.target.blur();
+                    //entry.target.blur();
                 }
             });
         }, {}));
@@ -210,7 +210,7 @@ function Interface(thisApp){
                 dom.addDiv("loaderWrp").attachAry([
                     langModule(thisApp, _ =>  modalSectionPromise.fulfill(thisApp.start)),
                     dom.addDiv("appTitle").attachAry([
-                        getSvgIcon("secreSyncIcon", "secreSync"),
+                        getSvgIcon("secreSyncIcon containIcon", "secreSync"),
                         dom.addDiv("appTitleLongWrp").attachAry(titleSpanArray()),
                         dom.addDiv("appTitleShortWrp").attachAry(titleSpanArray())
                     ]),
@@ -876,11 +876,93 @@ passHint = credFormPassHint // only new
             const shareVendor = async _ => { //shareCredentials
                 console.log("----------------SHARE MODULE-------------------TO DO-----------------------------SHARE MODULE-------------------TO DO-----------------------------");
                 
+                //addModalToHistory(true); //force adding to history
+                
+                
+                const drawBarcode = async e => {
+                    let barcodeContainer = document.body.kidsByClass("barcodeContainer")[0];
+                    if(barcodeContainer) return barcodeContainer.kill();
+                    
+                    const optionsBar = e.currentTarget.forebear(1);
+                    const disposableModal = optionsBar.forebear(1);
+                    const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
+                    //const {height, width} = window.visualViewport;
+                    
+                    
+                    
+                    const size = Math.min(disposableModal.clientHeight - optionsBar.clientHeight, thisApp.settings.appWidth.current) * 0.82;
+                    
+
+                    
+
+                    try{
+                        const barcodeContainer = dom.addDiv("barcodeContainer")
+                        QrCreator.render({
+                            text: vPass, //max 2900 char
+                            radius: 0.5, // 0.0 to 0.5
+                            ecLevel: 'L', // L, M, Q, H
+                            fill: '#000', // foreground color
+                            background: "#fff", // color or null for transparent
+                            size: size // in pixels
+                        }, barcodeContainer);
+                      
+                      optionsBar.forebear(1).attach(barcodeContainer);
+                    }catch(err){
+                        console.log(err);
+                    }
+                    
+                };
+                
+                
+
+                const contextIcons = [
+                    getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode),
+                    []
+/*                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
+                        ? _ => {
+                            window.addEventListener('popstate',  getChangePassword, {once: true});
+                            history.back();
+                        }
+                        : null),
+                    getSvgIcon("donate", true, getDonate),
+                    getSvgIcon("revisionHistory", true, changeMaxRevisions),
+                    getSvgIcon("appLayout", true, changeAppLayout),
+                    getSvgIcon("appWidth", true, changeAppWidth),
+                    getSvgIcon("swapTheme", true, changeAppTheme),
+                    getSvgIcon("appLogOff", true, changeAppLogOff),
+                    getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur) */
+                    
+                    
+                ];
+                
+                dom.addDiv("disposableModal settingsSection").attach(
+                    dom.addDiv("settingsWrp").attachAry(
+                        contextIcons
+                    )
+                ).onClick(function(e){
+                    if(e.target === e.currentTarget) history.back();
+                }).attachTo(document.body);
+                
+
                 addModalToHistory(true); //force adding to history
-                const killablePopUp = dom.addDiv("killablePopUp").attach(dom.addDiv("crosx").onClick(_ => history.back())).attachTo(document.body);
+
                 
                 
-                const drawBarcode = async _ => {
+                
+                
+                
+                
+                
+                
+                
+
+/*                 const disposableModal = dom.addDiv("disposableModal settingsSection").attach(
+                    dom.addDiv("settingsWrp").attach(
+                        getSvgIcon("crosx", "btnCloseForm", _ => history.back())
+                    )
+                ).attachTo(document.body); */
+                
+/*                 const drawBarcode = async _ => {
                     const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
                     const {height, width} = window.visualViewport;
                     const size = Math.min(height, width) * 0.82;
@@ -898,18 +980,18 @@ passHint = credFormPassHint // only new
                             size: size // in pixels
                         }, barcodeContainer);
                       
-                      killablePopUp.ridKids(1).attach(barcodeContainer);
+                      disposableModal.ridKids(1).attach(barcodeContainer);
                     }catch(err){
                         console.log(err);
                     }
                     
                 };
                 
-                killablePopUp.attach(
-                    dom.addDiv("shareContainer").attach(
+                disposableModal.attach(
+                    dom.addDiv("settingsWrp").attach(
                         getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode)
                     )
-                );
+                ); */
                 
 
                 
@@ -1279,7 +1361,7 @@ const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNot
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
 
 const oridinaryLayoutFootEls = displayMode ? [shareEl, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash ? [] : shareEl, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
+const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash || vendObj.isNote ? [] : shareEl, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
 
 const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             
@@ -1457,7 +1539,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     // TO DO!!!!!!!!!!!!!!! - make add to history. Make History popstate to remove all class="whatever"
                     const getFilteredVendors = _ => new Promise((res, rej) => {
 
-                        dom.addDiv("killablePopUp exportFilteredWrp")
+                        dom.addDiv("disposableModal exportFilteredWrp")
                         .attach(
                             dom.addDiv("exportFilteredBar").attach(
                                 dom.addDiv("exportFilteredDbObj", "exportFilteredDbObj").onClick(e => {
@@ -1504,7 +1586,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                  console.log("TO DO getDonate");
             }
             
-            const swapTheme = _ => {
+            const changeAppTheme = _ => {
                 document.documentElement.classList.toggle("invert");
                 thisApp.settings.darkTheme = !thisApp.settings.darkTheme;
 
@@ -1513,7 +1595,11 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
                 document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
             };
-            
+            const changeAppBlur = e => {
+                thisApp.settings.appBlur = !thisApp.settings.appBlur;
+                thisApp.localStorage.set("appBlur", thisApp.settings.appBlur);
+                e.target.toggleClass("blurIcon");
+            };
             const rangeInpFieldset = (fieldsetLegendHtml, fieldsetLegendClass, rangeInputName, min, max, value, step, onInput) => {
                 const rangeInputEl = getInpEl({
                     type: "range",
@@ -1622,7 +1708,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 ).attachTo(settingsSection);
             };
             
-            const changeLogOffApp = e => {
+            const changeAppLogOff = e => {
                 let logOffAppWrp = document.body.kidsByClass("logOffAppWrp")[0];
                 if(logOffAppWrp) return logOffAppWrp.kill();
                 
@@ -1630,7 +1716,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
                 const currentLogOffTime = thisApp.settings.logOffTime.get();
                 
-                const settLogOffApp = async e => {
+                const settAppLogOff = async e => {
                     thisApp.settings.logOffTime.set(e.target.value);
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("logOffTime", {value: e.target.value}));
                 };
@@ -1644,10 +1730,10 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         thisApp.settings.logOffTime.max, // max
                         currentLogOffTime, // value
                         thisApp.settings.logOffTime.step, // step
-                        settLogOffApp // onInput
+                        settAppLogOff // onInput
                     )
                 ).attachTo(settingsSection);
-            }
+            };
 
 
             
@@ -1668,18 +1754,20 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     getSvgIcon("revisionHistory", true, changeMaxRevisions),
                     getSvgIcon("appLayout", true, changeAppLayout),
                     getSvgIcon("appWidth", true, changeAppWidth),
-                    getSvgIcon("swapTheme", true, swapTheme),
-                    getSvgIcon("logOffApp", true, changeLogOffApp)
+                    getSvgIcon("swapTheme", true, changeAppTheme),
+                    getSvgIcon("appLogOff", true, changeAppLogOff),
+                    getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur)
+                    
                     
                 ];
                 
-                dom.addDiv("killablePopUp settingsSection").attach(
+                dom.addDiv("disposableModal settingsSection").attach(
                     dom.addDiv("settingsWrp").attachAry(
                         contextIcons
                     )
                 ).onClick(function(e){
                     if(e.target === e.currentTarget) history.back();
-                }).attachTo(document.body)
+                }).attachTo(document.body);
                 
 
                 addModalToHistory(true); //force adding to history
@@ -1717,38 +1805,41 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     id: "inputBoxSearch",
                     placeholder: getTxtBankHtmlTxt("inputBoxSearch")
                 });
-                const searchEvent = e => {
+                const searchEvent = (e, blurInput) => {
                     e.preventDefault();
                     if(lastSearchString !== searchInputEl.value){
                         lastSearchString = searchInputEl.value;
                         paintList();
                     }
                     //searchInputEl.blur()
-                    searchInputEl.focus();
+                    blurInput ? searchInputEl.blur() : searchInputEl.focus();
+                    
+                    console.log(document.activeElement === searchInputEl);
                 };
-                const clearSearch = e => {
+                const clearSearch = (e, blurInput) => {
                     searchInputEl.value = "";
-                    searchEvent(e);
+                    searchEvent(e, blurInput);
                 };
                 const hideForm = e => {
                     searchFormEl.addClass("searchFormHide");
-                    clearSearch(e);
-                    requestAnimationFrame(_ => requestAnimationFrame(_ => searchInputEl.blur()));
+                    clearSearch(e, true);
+                    //requestAnimationFrame(_ => requestAnimationFrame(_ => searchInputEl.blur()));
                     //searchInputEl.blur();
                 };
                 const hideFormEl = getSvgIcon("arrowUp", "hide", hideForm);
                 const searchResetBtn = getClearInputIcon(e => {
-                    clearSearch(e);
+                    clearSearch(e, false);
                     //searchInputEl.focus();
                 });
                 const delayInput = e => {
                     clearTimeout(inputTimeout);
-                    inputTimeout = setTimeout(_ => searchEvent(e), inputDelay);
+                    inputTimeout = setTimeout(_ => searchEvent(e, false), inputDelay);
                 };
                 
-                searchFormEl.showForm = _ => {
+                searchFormEl.showForm = e => {
                     searchFormEl.killClass("searchFormHide");
-                    searchInputEl.focus();
+                    clearSearch(e, false);
+                    //searchInputEl.focus();
                 };
                 searchFormEl.getValue = _ => searchInputEl.value;
                 
@@ -1848,7 +1939,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
-                    document.activeElement.blur(); // lose focus on search input element
+                    //document.activeElement
+                    searchFormEl.blur(); // lose focus on search input element
                     const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = listScrollWrpPrevTopPosition - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
@@ -1998,8 +2090,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         };
         
         const blurUI = doBlur => {
-            doBlur ? thisApp.dbObj && uiBlur.show() : uiBlur.hide();
-        }
+            doBlur ? thisApp.dbObj && thisApp.settings.appBlur && uiBlur.show() : uiBlur.hide();
+        };
         
         const clearUI = _ => {
             appSectionForm.ridKids();
@@ -2173,9 +2265,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         //if(this.settings.hasClosed()) return;
         if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
         
-        const killablePopUps = document.body.kidsByClass("killablePopUp");
-        if(killablePopUps.length){
-            killablePopUps.forEach(killablePopUp => killablePopUp.remove());
+        const disposableModals = document.body.kidsByClass("disposableModal");
+        if(disposableModals.length){
+            disposableModals.forEach(disposableModal => disposableModal.remove());
             return;
         }
 
