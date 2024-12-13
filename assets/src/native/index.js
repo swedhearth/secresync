@@ -48,10 +48,20 @@ disposableModal - sort history back!!!!!!!!!!!!!
 
 DONE !!!!!!! beforeMsgModule - hide when popping up!!!!!!!!!!!!!
 
-hide sharing option if the account type is note
+DONE!!!hide sharing option if the account type is note
 
-For notification history icon to be a bell or klepsydra (bell would be better)
-revision history move to the bottom bar and hide the account modification bar when historical account is showing
+DONE!!! For notification history icon to be a bell or klepsydra (bell would be better)
+DONE!!! revision history move to the bottom bar and hide the account modification bar when historical account is showing
+
+horizontal scroll bar  to make thin as vertical
+
+make all database icons as thick as the current expDb
+
+DONE!!! revision wrap to caption in the middle
+DONE!!!!!!!!!! select the history button when revision displayed
+DONE!!!!!!!!!!!!! bell fr historyclose button to arrowleft in Formexport account to finish
+swap main bar with taskbar
+
 */
 
 // get url search parameters

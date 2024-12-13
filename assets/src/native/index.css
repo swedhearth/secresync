@@ -22,6 +22,12 @@
     --app-shade-grey-100: #646464; /* rgb(100 100 100); #646464*/
     --app-shade-grey-190: #bebebe; /* rgb(190 190 190); #bebebe; */
     --app-shade-grey-150: #969696; /* rgb(150 150 150); #bebebe; */
+    
+    --app-shade-grey-200: rgb(200 200 200);
+    --app-shade-grey-205: rgb(205 205 205);
+    --app-shade-grey-210: rgb(210 210 210);
+    --app-shade-grey-215: rgb(215 215 215);
+    
     --app-shade-grey-220: #dcdcdc; /* rgb(220 220 220); #dcdcdc; */
     --app-shade-grey-230: #e6e6e6; /* rgb(230 230 230); #e6e6e6; */
     --app-shade-grey-235: #ebebeb; /* rgb(235 235 235); #ebebeb; */
@@ -29,30 +35,38 @@
     --app-shade-grey-245: #f5f5f5; /* rgb(245 245 245); #f5f5f5; */
     --app-shade-grey-250: #fafafa; /* rgb(250 250 250); #fafafa; */
     --app-shade-grey-255: #ffffff; /* rgb(255 255 255); #ffffff; */
-    
-    /* --app-bckg: linear-gradient(0deg, var(--app-shade-grey-250), var(--app-shade-grey-245), var(--app-shade-grey-240), var(--app-shade-grey-250)); */
-    
-    --app-theme: var(--app-shade-grey-250); /* rgb(250 250 250) */
-    /* --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-shade-grey-255), var(--app-shade-grey-250), var(--app-shade-grey-245)); */
-    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
 
-    /* --module-bckg: var(--app-shade-grey-245); */
+    
+
+
+    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
 
     --trace-gray-240: 1px solid var(--app-shade-grey-240); /*outline / #f0f0f0 border rgb(240 240 240)*/
     --trace-gray-235: 1px solid var(--app-shade-grey-235); /*outline / #ebebeb border rgb(235 235 235)*/
     --trace-gray-190: 1px solid var(--app-shade-grey-190); /*outline / #bebebe border rgb(190 190 190)*/
-    
-    /* --trace-input-outline: 1px solid var(--app-shade-grey-235); */ /*outline / #ebebeb border rgb(235 235 235)*/
+
     
     --svg-background-size: 60%;
+    
+    --main-font-color: #000000;
+    --input-background: #ffffff;
+    --fieldset-background: #ffffff;
 }
 
 :scope{
-    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-245));
-    --module-bckg: var(--app-shade-grey-245);
-    --trace-input-outline: 1px solid var(--module-bckg);
-    --trace-input-outline-focus: 1px solid var(--app-shade-grey-220);
-    --trace-fieldset-outline: 1px solid var(--app-shade-grey-190);
+    --app-theme: var(--app-shade-grey-245);
+    /* --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-245)); */
+    
+    --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-theme));
+    --module-bckg: var(--app-shade-grey-245); /*replace with the --app-theme*/
+    
+    --trace-input-outline: 1px solid var(--module-bckg); /*--module-bckg replace with the --app-theme*/
+    --trace-input-outline-focus: 1px solid var(--app-shade-grey-210);
+    
+    --fieldset-focus-background: rgb(250 250 250);
+    --trace-fieldset-outline: 1px solid var(--app-shade-grey-220);
+        
+
 }
 
 @font-face {
@@ -84,11 +98,20 @@ html.invert{
 }
 @scope (html.invert){
     :scope{
-        --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
-        --module-bckg: var(--app-shade-grey-220);
-        --trace-input-outline: 1px solid var(--module-bckg);
+        --app-theme: var(--app-shade-grey-220);
+
+        --app-bckg: linear-gradient(4deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-200), var(--app-shade-grey-230), var(--app-theme));
+        /* --module-bckg: === --app-theme */
+        
+        --module-bckg: var(--app-shade-grey-220); /* replace with --app-theme*/
+        
+        --trace-input-outline: 1px solid var(--module-bckg);/* --module-bckg replace with --app-theme*/
         --trace-input-outline-focus: 1px solid var(--app-shade-grey-150);
+
+        --fieldset-focus-background: var(--app-shade-grey-230);
         --trace-fieldset-outline: 1px solid var(--app-shade-grey-190);
+
+        
         
     }
 }
@@ -267,7 +290,7 @@ html.invert .svgIcon.active:active{
     margin: 0 0.5rem; /* 0.5vw; */
     padding: 0.5em 0.5rem;  /* 2.5em; */
     border-radius:0.5em;
-    color: var(--app-shade-grey-0);
+    color: var(--main-font-color);
 }
 
 .inpEl[type="range"]{
@@ -280,21 +303,22 @@ html.invert .inpEl[type="range"]{
 
 input:focus-visible, textarea:focus-visible{
     outline: var(--trace-input-outline-focus);
-    background: var(--app-shade-grey-255);
+    background: var(--input-background);
     box-shadow: unset;
+    
+    
 }
 
 
 
 input::placeholder, textarea::placeholder{
     transition: all 0.3s ease;
-    /* color: var(--app-shade-grey-220); */
     opacity: 0.6;
 }
 
 input:focus-visible::placeholder, textarea:focus-visible::placeholder{
     /* color: var(--app-shade-grey-100); */
-    opacity: 0.2;
+    opacity: 0.3;
 }
 
 
@@ -320,11 +344,9 @@ fieldset {
 } */
 fieldset.padded {
     padding: 1vh 1vw 2vh;
-    /* margin-top: 1vh; */
-min-width: calc(var(--min-app-width) - 4vw);
-    background: white;
+    min-width: calc(var(--min-app-width) - 4vw);
+    background: var(--fieldset-background);
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
-
     transition: all 0.3s ease;
     width: auto;
 }
@@ -332,9 +354,10 @@ min-width: calc(var(--min-app-width) - 4vw);
 
 
 fieldset.padded:focus-within{
-    background:var(--module-bckg);
+    /* background: var(--module-bckg); */
     box-shadow: 0px 0px 0px 1px var(--app-shade-grey-235);
     border: var(--trace-fieldset-outline);
+    background: var(--fieldset-focus-background);
     box-shadow: unset;
 }
 
@@ -369,23 +392,14 @@ fieldset.padded:focus-within > legend:before{
 }
 
 legend:before{
-    
     content: "";
     position: absolute;
     padding: calc((1rem + 1vh) / 2);
-    /* opacity: 0.5; */
-    /* filter: drop-shadow(2px 3px 0px var(--app-shade-grey-220)); */
     transition: all 0.3s linear;
     top: calc(-1vh + 0.22em);
-    /* left: -0.325rem; */
     background-size: var(--svg-background-size);
     background-repeat: no-repeat;
     background-position: center;
-    
-    
-    /* left: calc(-3em - 0.325rem); */
-    /* outline: 1px solid */
-    
     left: -1vw;
 }
 
@@ -418,7 +432,7 @@ legend.appWidthLegend:before{
 }
 
 legend.maxRevisionsLegend:before{
-  background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+  background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory); /*revisionHistory*/
 }
 legend.logOffTimeLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
@@ -427,9 +441,7 @@ legend.logOffTimeLegend:before{
 legend.appLayoutLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
 }
-/* legend.pinInp:before{
-  background-image: url(../../../assets/static/appSvg/sprite.svg#pin);
-} */
+
 
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
@@ -566,18 +578,20 @@ legend.appLayoutLegend:before{
 .pinInput{
     width: 3em;
     margin: 0.2em;
-    background: var(--app-shade-grey-255);
     text-align:center;
     padding:0.5em;
     flex: none;
-    outline: var(--trace-input-outline);
+
+    outline: var(--trace-fieldset-outline);
 }
 
 .pinCharValue{
     /* border: var(--trace-gray-235); */
     /* background: #f6fff6; */
     
-    box-shadow: 1px 1px 1px var(--app-shade-grey-235);
+    /* box-shadow: 1px 1px 1px var(--app-shade-grey-235); */
+    outline: var(--trace-input-outline-focus);
+    background: var(--input-background);
 }
 
 .submitCredentialsLabel{
@@ -882,7 +896,7 @@ html.invert .localIcon{
     top: calc(0mm - var(--db-mod-bar-height));
     padding: calc(var(--db-mod-bar-height) / 2);
     margin: 0 calc(var(--db-mod-bar-height) / 4);
-    background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#bell);
     background-size: var(--svg-background-size); 
     background-position: center;
     background-repeat: no-repeat;
@@ -910,11 +924,6 @@ html.invert .localIcon{
     overflow:auto;
 }
 
-.msgHistoryContentWrp{
-    overflow:auto;
-    height: calc(100% - 3em);
-}
-
 .msgModule.slideDown{
     transform:translateY(100%);
 }
@@ -924,9 +933,35 @@ html.invert .localIcon{
     align-items: center;
     text-indent: 0;
     word-break: break-word;
-    border-bottom: 1px solid var(--app-shade-grey-230);
+    border-bottom: var(--trace-input-outline);
     background: white;
 }
+
+.msgHistoryContentWrp{
+    overflow:auto;
+    /* height: calc(100% - 3em); */
+}
+
+.msgHistoryRow .msgDate, .title{
+    font-weight: 900;
+    padding-right: 1em;
+}
+.msgHistoryRow.title{
+    position: sticky;
+    top:0;
+    padding: 0;
+    justify-content: space-between;
+    background: var(--module-bckg);
+    padding: 1mm;
+}
+
+.msgHistoryContentWrp .msgHistoryRow{
+    border-width: 5px;
+}
+
+
+
+
 
 .msgModule.popUp .msgHistoryRow{
     border-radius: 0.5rem;
@@ -935,38 +970,37 @@ html.invert .localIcon{
 }
 
 html.invert .msgModule.popUp .msgHistoryRow{
-    /* box-shadow: 0px 0px 2px 1px #d08943 inset; */
     outline: 1px solid #d08943;
 }
 
 .msgModule.popUp .msgHistoryRow.error{
-    /* box-shadow: 0px 0px 2px 1px #b40000 inset; */
     outline: 1px solid #b40000;
 }
 .msgModule.popUp .msgHistoryRow.flash{
-    /* box-shadow: 0px 0px 2px 1px #00b400 inset; */
     outline: 1px solid #00b400;
 }
 html.invert .msgModule.popUp .msgHistoryRow.error{
-    /* box-shadow: 0px 0px 2px 1px #4bffff inset; */
     outline: 1px solid #4bffff;
 }
 html.invert .msgModule.popUp .msgHistoryRow.flash{
-    /* box-shadow: 0px 0px 2px 1px #ff4bff inset; */
     outline: 1px solid #ff4bff;
 }
 
 .msgHistoryRow:before{
     content: "";
-    padding: var(--svgIcon-padding-smaller);
+    padding: var(--svgIcon-padding-small);
     margin: 0 0.65rem;
     background-size: var(--svg-background-size);
     background-position: center;
     background-repeat: no-repeat;
 }
 
+.msgModule.popUp .msgHistoryRow:before{
+    padding: var(--svgIcon-padding-smaller);
+}
+
 .msgHistoryRow.title:before{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#bell);
 }
 
 .msgHistoryRow.info:before{
@@ -998,22 +1032,7 @@ html.invert .msgHistoryRow.flash:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
 }
 
-.msgHistoryRow .msgDate, .title{
-    font-weight: 900;
-    padding-right: 1em;
-}
-.msgHistoryRow.title{
-    position: sticky;
-    top:0;
-    padding: 0;
-    justify-content: space-between;
-   /* min-width: calc(var(--min-app-width)* 1.5); */
-   /* background: var(--app-shade-grey-235); */
-       background: var(--module-bckg);
-}
-/* .msgBody{
-    padding: 0.5rem;
-} */
+
 
 .closeFullArchive{
 
@@ -1111,7 +1130,7 @@ content: "";
 }
 
 .scrollWrpPastRevision:before{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory);
 }
 
 html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
@@ -1168,11 +1187,11 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     position: sticky;
     height: calc(var(--svgIcon-padding-small) * 2 + 2mm); /* height of the svg plus 1mm padding of .vListTaskBarWrp, .vListAuxBarWrp = 12mm; */
     z-index: 1;
-    transition: top 0.1s ease-out;
+    transition: all 0.3s ease-out; /* , opacity 0.3s linear; */
 }
 
 .vListMainBarWrp {
-    top: calc(- var(--svgIcon-padding-small) * 2 - 2mm); /* -12mm; */
+    top: -12mm;
     z-index: 2;
 }
 
@@ -1191,7 +1210,7 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
 
 .vListTaskBarWrp{
     background: var(--app-theme);
-    transition: opacity 0.3s linear;
+    
     top: calc(100% - (var(--svgIcon-padding-small) * 2) - 2mm);
 }
 .vListAuxBarWrp{
@@ -1202,27 +1221,34 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     opacity: 1;
 }
 
-/* body.mobileLayout .vListAuxBarWrp{
-    top: 0mm;
-} */
-
-/* body.mobileLayout .vListTaskBarWrp{
-    top: calc(100% - (var(--svgIcon-padding-small) * 2) - 2mm);
-}
- */
-
 .taskBarWrpDoubleTop{
-    /* top: 22mm; */
     top: 12mm;
 }
 
-/* body.mobileLayout .taskBarWrpDoubleTop{
-    top: 11mm;
-} */
 
-.taskBarWrpZeroTop{
+.mainBarToggle{
     top: 0px;
-    /* transition: unset; */ /* WHY WAS IT LIKE THAT??????????????????*/
+    opacity: 1;
+}
+.taskBarToggle{
+    opacity: 0.2;
+}
+
+body.mobileLayout .vListMainBarWrp{
+    top: calc(100% - var(--svgIcon-padding-small) * 2 - 2mm);
+    opacity:0.2;
+}
+body.mobileLayout .mainBarToggle{
+    opacity: 1;
+}
+body.mobileLayout .vListTaskBarWrp{
+    top: 12mm;
+    transform: translateY(-12mm);
+}
+
+body.mobileLayout .taskBarToggle{
+    transform: translateY(-24mm);
+    opacity: 1;
 }
 
 /* ********************** App Bars ********************** */
@@ -1291,7 +1317,9 @@ top: 0;
 .searchFormHide{
     transform: translateY(-100%);
 }
-
+body.mobileLayout .searchFormHide{
+    transform: translateY(100%);
+}
 .arrowUp{
     background-image: url(../../../assets/static/appSvg/sprite.svg#arrowUp);
     margin-left: 0.5em;
@@ -1321,7 +1349,15 @@ top: 0;
     transform: translateY(-200%);
 }
 
+body.mobileLayout .appMoreTaskbar{
+    transform: translateY(0%);
+}
+
 .appMoreTaskbarShow{
+    transform: translateY(-100%);
+}
+
+body.mobileLayout .appMoreTaskbarShow{
     transform: translateY(-100%);
 }
 
@@ -1733,7 +1769,7 @@ body.mobileLayout .formHead{
     font-size: 0.75rem;
 }
 
-.recordModWrp, .revisionWrp{
+.recordModWrp{
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -1766,21 +1802,20 @@ body.mobileLayout .formHead{
 }
 
 .revisionWrp{
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    margin: 0vh 2vw 0vh;
+/*     justify-content: flex-end;
+    flex-wrap: wrap; */
+    margin: 0vh 2vw;
 }
 
 .revisionScroll{
     display: flex;
-    justify-content: space-between;
-    /* padding: 0 1em; */
-    /* background: pink; */
+    align-items: center;
+    /* justify-content: space-between; */
 }
 .revisionScroll > .svgIcon{
     /* padding: 0.75rem; */
-    padding: var(--svgIcon-padding-smaller);
-    filter: drop-shadow(0px 0px 0px var(app-shade-grey-0));
+    padding: var(--svgIcon-padding-small);
+    /* filter: drop-shadow(0px 0px 0px var(app-shade-grey-0)); */
     /* margin: 0.5em 0.5rem 0; */
 }
 .revisionCaption{
@@ -1877,6 +1912,10 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     background-image: url(../../../assets/static/appSvg/sprite.svg#closeForm);
 }
 
+.btnCloseFormMobile{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#arrowLeft);
+}
+
 .editFormBtn{
     background-image: url(../../../assets/static/appSvg/sprite.svg#vMod);
 }
@@ -1890,8 +1929,17 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
 }
 
 .revisionHistory{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#msgHistory);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory);
 }
+
+.revisionHistory.selected{
+    box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-190) inset;
+}
+
+html.invert .revisionHistory.selected{
+    box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-0);
+}
+
 
 .previousVersion{
     background-image: url(../../../assets/static/appSvg/sprite.svg#previousVersion);

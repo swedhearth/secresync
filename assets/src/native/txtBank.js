@@ -170,7 +170,7 @@ const txtBankObj = {
         "n": "I do not want to download the Emergency Copy.",
         "i": "emergDb"
       },
-      "downloadDbCopy": {
+      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "q": "A copy of the SecreSync database will be downloaded.<br><br>This file can be used as a ${ localFileName } or imported into another database.",
         "y": "Okay, download the whole SecreSync database copy.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "I want to choose the accounts for export.<br><br>To skip the export, close the form.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -386,7 +386,7 @@ const txtBankObj = {
         "changeDbPass": "Change application database password",
         "emergDb": "Download an Emergency Copy of the Database",
         "impDb": "Import Data from Another Database",
-        "expDb": "Download a Copy of the Database",
+        "expDb": "Download a Copy of the Database", //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "addVendorBtn": "Add an Account",
         "submitFormBtn": "Save Changes",
         "editFormBtn": "Edit an Account",
@@ -686,7 +686,7 @@ const txtBankObj = {
         "n": "No quiero descargar la copia de emergencia.",
         "i": "emergDb"
       },
-      "downloadDbCopy": {
+      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "q": "Se descargará una copia de la base de datos SecreSync.<br><br>Este archivo puede ser utilizado como ${ localFileName } o puede ser importado a otra base de datos.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -903,7 +903,7 @@ const txtBankObj = {
         "changeDbPass": "Cambiar la contraseña de la base de datos de la aplicación",
         "emergDb": "Descargar una Copia de Emergencia de la Base de Datos",
         "impDb": "Importar Datos de Otra Base de Datos",
-        "expDb": "Descargar una Copia de la Base de Datos",
+        "expDb": "Descargar una Copia de la Base de Datos", //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "addVendorBtn": "Añadir una Cuenta",
         "submitFormBtn": "Guardar Cambios",
         "editFormBtn": "Editar una Cuenta",
@@ -1203,11 +1203,11 @@ const txtBankObj = {
         "n": "Je ne veux pas télécharger la copie d'urgence.",
         "i": "emergDb"
       },
-      "downloadDbCopy": {
+      "downloadDbCopy": {//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "q": "Une copie de la base de données SecreSync sera téléchargée.<br><br>Ce fichier peut être utilisé comme ${ localFileName } ou être importé dans une autre base de données.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "expDb"
+        "i": "expDb" 
       },
       "catchLoad": {
         "q": "Il y a un problème avec la connexion ${sName}.",
@@ -1419,7 +1419,7 @@ const txtBankObj = {
         "changeDbPass": "Changer le mot de passe de la base de données de l'application",
         "emergDb": "Télécharger une Copie d'Urgence de la Base de Données",
         "impDb": "Importer des Données d'une Autre Base de Données",
-        "expDb": "Télécharger une Copie de la Base de Données",
+        "expDb": "Télécharger une Copie de la Base de Données", //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "addVendorBtn": "Ajouter un Compte",
         "submitFormBtn": "Enregistrer les Modifications",
         "editFormBtn": "Éditer un Compte",
@@ -1719,7 +1719,7 @@ const txtBankObj = {
         "n": "Nie chcę pobierać kopii awaryjnej.",
         "i": "emergDb"
       },
-      "downloadDbCopy": {
+      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "q": "Kopia bazy danych SecreSync zostanie pobrana.<br><br>Ten plik może być używany jako ${ localFileName } lub może być zaimportowany do innej bazy danych.",
         "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1935,7 +1935,7 @@ const txtBankObj = {
         "changeDbPass": "Zmień hasło bazy danych aplikacji",
         "emergDb": "Pobierz Awaryjną Kopię Bazy Danych",
         "impDb": "Importuj Dane z Innej Bazy Danych",
-        "expDb": "Pobierz Kopię Bazy Danych",
+        "expDb": "Pobierz Kopię Bazy Danych", //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "addVendorBtn": "Dodaj Konto",
         "submitFormBtn": "Zapisz Zmiany",
         "editFormBtn": "Edytuj Konto",

@@ -698,26 +698,17 @@ function Interface(thisApp){
         const adoDetails = ado.details;
         const adoSorts = ado.sorts;
 
-        let listScrollWrpPrevTopPosition = 0;
+
+        let vListScrollTop = 0;
 
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
-
+       
+       let vFormScrollTop = 0;
+       
+       const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
             const nameLogMinLen = 3;
             const boxNoteElMaxLen = 10000;
-            //const maxRevisions = parseInt(thisApp.localStorage.get("maxRevisions")) || 10;// UserSettings?
-            let vFormScrollTop = 0;
 
-            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
-                vFormScrollTop = e.target.scrollTop;
-                
-                 //document.activeElement.blur(); // lose focus on search input element
-                
-                if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
-            });
-        
-        vForm.id = "vForm";
-        
             if(addHistory) addModalToHistory();
             
             let isNew = !vendObj || vendObj.isNew || false;
@@ -1293,7 +1284,7 @@ function Interface(thisApp){
                     ]),
                 ]);
 
-            const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
+/*             const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
                 ? null
                 : dom.addDiv("revisionWrp").attachAry([ 
                     revisionIdx ? dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()) : [],
@@ -1309,7 +1300,22 @@ function Interface(thisApp){
                             ? getSvgIcon("nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx - 1], false, false, false, revAry, revisionIdx - 1)) 
                             : getSvgIcon()
                     ])
+                ]); */
+                
+            const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
+                ? null
+                : dom.addDiv("revisionWrp").attachAry([ 
+                    dom.addDiv("revisionScroll").attachAry([
+                        revisionIdx && revAry[revisionIdx + 1]
+                            ? getSvgIcon("previousVersion", true, _ => paintFormSection(false, revAry[revisionIdx + 1], false, false, false, revAry, revisionIdx + 1)) 
+                            : getSvgIcon(),
+                        dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()),
+                        revAry[revisionIdx - 1] && revisionIdx - 1
+                            ? getSvgIcon("nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx - 1], false, false, false, revAry, revisionIdx - 1)) 
+                            : getSvgIcon()
+                    ])
                 ]);
+                
                 
                 const modWrp = revisionWrp && revisionIdx ? revisionWrp : recordModWrp;
 
@@ -1321,6 +1327,7 @@ const middleTopEl = displayMode
                     ? dom.addDiv("formTitle", vendObj.name || "")
                     : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
 const closeFormBtn = getSvgIcon("btnCloseForm", true, closeForm);
+const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnCloseForm", closeForm);
 
 const oridinaryLayoutHeadEls = [actionBtn, middleTopEl, closeFormBtn]
 const mobileLayoutHeadEls = [middleTopEl];
@@ -1339,25 +1346,36 @@ const deleteOldBtn = revisionIdx
 const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
 const revisionsBtn = revisionWrp 
-    ? getSvgIcon("revisionHistory", true, revisionIdx 
+    ? getSvgIcon("revisionHistory" + (revisionIdx ? " selected" : ""), true, revisionIdx 
             ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
             :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
         )
     : [];
 
 const oridinaryLayoutFootEls = displayMode ? [shareEl, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [closeFormBtn, deleteOldBtn, vendObj.isTrash || vendObj.isNote ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
+const mobileLayoutFootEls = displayMode ? [closeFormBtnMobile, deleteOldBtn, vendObj.isTrash || vendObj.isNote || revisionIdx ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtnMobile, deleteCurrentBtn, toggleVendorBtn, actionBtn];
 
 const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             
             const formHead = dom.addDiv("formHead").attachAry(fomHeadEls);
             const formFoot = dom.addDiv("formFoot").attachAry(fomFootEls);
             
+            
+            vFormScrollTop = displayMode ? 0 : vFormScrollTop;
+
+            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
+                vFormScrollTop = e.target.scrollTop;
+                if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
+            });
+            
             vForm.attach(formHead).attach(modWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());//.attach(revisionWrp)
             appSectionForm.isDisplay = displayMode;
 
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
             toggleScrollWrpOverflow(vForm);
+            
+            if(vFormScrollTop) vForm.scrollTo(0, vFormScrollTop);
+            //if(displayMode) vForm.on("dblclick", _=> paintFormSection(false, vendObj, displayMode, !displayMode));
 
         };
         /////////////////////////////////////////////////END MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1797,9 +1815,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         paintList();
                     }
                     //searchInputEl.blur()
-                    blurInput ? searchInputEl.blur() : searchInputEl.focus();
+                    blurInput ? searchInputEl.blur() : searchInputEl.focus({ preventScroll: true });
                     
-                    console.log(document.activeElement === searchInputEl);
+                    //console.log(document.activeElement === searchInputEl);
                 };
                 const clearSearch = (e, blurInput) => {
                     searchInputEl.value = "";
@@ -1844,7 +1862,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 searchFormEl
             ]);
             
-            const vListMainBarWrp = getListBarWrp("vListMainBarWrp").attachAry([
+            const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
+
                 getAppTaskbar(),
                 getAppMoreTaskbar()
             ]);
@@ -1927,12 +1946,12 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     //document.activeElement
                     searchFormEl.blur(); // lose focus on search input element
                     const cssMethods = ["killClass", "addClass"];
-                    const scrollDifference = listScrollWrpPrevTopPosition - e.target.scrollTop;
+                    const scrollDifference = vListScrollTop - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
-                    vListMainBarWrp[appTaskCssMethod]("taskBarWrpZeroTop"); 
-                    vListTaskBarWrp[listTaskCssMethod]("elDimmed"); //[listTaskCssMethod]("taskBarWrpZeroTop")
+                    vListMainBarWrp[appTaskCssMethod]("mainBarToggle"); 
+                    vListTaskBarWrp[listTaskCssMethod]("taskBarToggle"); //[listTaskCssMethod]("taskBarWrpZeroTop")
                     vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp[appTaskCssMethod]("taskBarWrpDoubleTop")); // For Bars when Note or Tags are found
-                    listScrollWrpPrevTopPosition = e.target.scrollTop;
+                    vListScrollTop = e.target.scrollTop;
                 }).attachAry([
                         vListMainBarWrp,
                         vListTaskBarWrp,
@@ -2060,7 +2079,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             
             paintList();
             appStatusBar.show();
-            vListScrollWrp.scrollTop = listScrollWrpPrevTopPosition;
+            vListScrollWrp.scrollTop = vListScrollTop;
         }
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
