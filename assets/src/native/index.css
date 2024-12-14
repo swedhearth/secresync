@@ -28,6 +28,7 @@
     --app-shade-grey-210: rgb(210 210 210);
     --app-shade-grey-215: rgb(215 215 215);
     --app-shade-grey-225: #e1e1e1; /* rgb(225 225 225); #dcdcdc; */
+    --app-shade-grey-222: #dedede; /* rgb(222 222 222); #dcdcdc; */
     --app-shade-grey-220: #dcdcdc; /* rgb(220 220 220); #dcdcdc; */
     --app-shade-grey-230: #e6e6e6; /* rgb(230 230 230); #e6e6e6; */
     --app-shade-grey-235: #ebebeb; /* rgb(235 235 235); #ebebeb; */
@@ -98,12 +99,12 @@ html.invert{
 }
 @scope (html.invert){
     :scope{
-        --app-theme: var(--app-shade-grey-225);
+        --app-theme: var(--app-shade-grey-222);
 
         --app-bckg: linear-gradient(4deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-200), var(--app-shade-grey-230), var(--app-theme));
         /* --module-bckg: === --app-theme */
         
-        --module-bckg: var(--app-shade-grey-225); /* replace with --app-theme*/
+        --module-bckg: var(--app-shade-grey-222); /* replace with --app-theme*/
         
         --trace-input-outline: 1px solid var(--module-bckg);/* --module-bckg replace with --app-theme*/
         --trace-input-outline-focus: 1px solid var(--app-shade-grey-150);
