@@ -78,6 +78,7 @@ function Interface(thisApp){
             });
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
+        inpEl.autocomplete = "off";
 
         return inpEl;
     };
@@ -1943,8 +1944,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
-                    //document.activeElement
-                    searchFormEl.blur(); // lose focus on search input element
+                    document.activeElement.blur(); // lose focus on search input element
+                    /* searchFormEl */
                     const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = vListScrollTop - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
@@ -2164,7 +2165,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
                 isVerticalSwipe = true;
                 this.messages.paintFullArchive();
-            } else if (this.messages.isFullArchive() && !msgModule.lastChild.scrollTop) {
+            } else if (this.messages.isFullArchive() && !msgModule.scrollTop) {
                 isVerticalSwipe = true;
             } else if (!appSectionForm.hasClass("elSlideOut") && appSectionForm.isDisplay) {
                 isHorizontalSwipe = true;

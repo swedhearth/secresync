@@ -22,12 +22,12 @@
     --app-shade-grey-100: #646464; /* rgb(100 100 100); #646464*/
     --app-shade-grey-190: #bebebe; /* rgb(190 190 190); #bebebe; */
     --app-shade-grey-150: #969696; /* rgb(150 150 150); #bebebe; */
-    
+   
     --app-shade-grey-200: rgb(200 200 200);
     --app-shade-grey-205: rgb(205 205 205);
     --app-shade-grey-210: rgb(210 210 210);
     --app-shade-grey-215: rgb(215 215 215);
-    
+    --app-shade-grey-225: #e1e1e1; /* rgb(225 225 225); #dcdcdc; */
     --app-shade-grey-220: #dcdcdc; /* rgb(220 220 220); #dcdcdc; */
     --app-shade-grey-230: #e6e6e6; /* rgb(230 230 230); #e6e6e6; */
     --app-shade-grey-235: #ebebeb; /* rgb(235 235 235); #ebebeb; */
@@ -38,7 +38,7 @@
 
     
 
-
+    --app-theme: var(--app-shade-grey-245);
     --app-bckg: linear-gradient(0deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-220), var(--app-shade-grey-235), var(--app-shade-grey-220));
 
     --trace-gray-240: 1px solid var(--app-shade-grey-240); /*outline / #f0f0f0 border rgb(240 240 240)*/
@@ -98,12 +98,12 @@ html.invert{
 }
 @scope (html.invert){
     :scope{
-        --app-theme: var(--app-shade-grey-220);
+        --app-theme: var(--app-shade-grey-225);
 
         --app-bckg: linear-gradient(4deg, var(--app-theme), var(--app-theme), var(--app-shade-grey-200), var(--app-shade-grey-230), var(--app-theme));
         /* --module-bckg: === --app-theme */
         
-        --module-bckg: var(--app-shade-grey-220); /* replace with --app-theme*/
+        --module-bckg: var(--app-shade-grey-225); /* replace with --app-theme*/
         
         --trace-input-outline: 1px solid var(--module-bckg);/* --module-bckg replace with --app-theme*/
         --trace-input-outline-focus: 1px solid var(--app-shade-grey-150);
@@ -467,25 +467,16 @@ legend.appLayoutLegend:before{
 
 /* --------------------------------------------------------------- Credentials ---------------------------------------------------------------------*/
 .credFormWrp{
-    /* position: relative; */
-    /* padding: 1vmin; */
-    /* width: 100%; */
     box-sizing: border-box;
-/*     box-shadow: 0 0 10vh 20vh var(--app-shade-grey-255);
-    background: var(--app-shade-grey-255);
-    max-width: var(--min-app-width);
-    
-    background:red; */
 }
 .credForm{
-    /* min-width: var(--min-app-width); */
+
     height: 100%;
     overflow:auto;
 }
 .credForm .padded:last-child{
     position: sticky;
     top: 100%;
-  /* margin-bottom: max(5vh, calc(var(--db-mod-bar-height) + 1rem)); */
   margin-bottom: 1rem;
 }
 .credTaskbar{
@@ -586,10 +577,6 @@ legend.appLayoutLegend:before{
 }
 
 .pinCharValue{
-    /* border: var(--trace-gray-235); */
-    /* background: #f6fff6; */
-    
-    /* box-shadow: 1px 1px 1px var(--app-shade-grey-235); */
     outline: var(--trace-input-outline-focus);
     background: var(--input-background);
 }
@@ -628,9 +615,6 @@ legend.appLayoutLegend:before{
 
 .unlockDbIcon, .protectDb{
     background-image: url(../../../assets/static/appSvg/sprite.svg#unlockDb);
-/*     padding: 3vh;
-    margin: 1vh; */
-    /* padding: var(--svgIcon-padding-big); */
     padding: var(--svgIcon-padding-medium);
 }
 
@@ -827,15 +811,10 @@ html.invert .localIcon{
 
 .consent, .noConsent{
     position: sticky;
-    /* margin: 50vh 1em 3rem; */
     margin: 50vh 1rem 3vh;
     padding: 1rem;
-    /* width: calc(100% - 2em); */
-    /* left: 0; */
-    /* box-sizing: border-box; */
-    /* box-shadow: 2px 2px 5px var(--app-shade-grey-0); */
     text-align: center;
-    /* line-height: 1.5rem; */
+
     line-height: 2;
     font-weight: 900;
 
@@ -959,13 +938,9 @@ html.invert .localIcon{
     border-width: 5px;
 }
 
-
-
-
-
 .msgModule.popUp .msgHistoryRow{
     border-radius: 0.5rem;
-    margin: 1mm;
+    margin: 2px;
     outline: 1px solid #2f76bc;
 }
 
@@ -1217,9 +1192,7 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     top: 0mm;
 }
 
-.vListTaskBarWrp:hover{
-    opacity: 1;
-}
+
 
 .taskBarWrpDoubleTop{
     top: 12mm;
@@ -1251,6 +1224,9 @@ body.mobileLayout .taskBarToggle{
     opacity: 1;
 }
 
+.vlistBarWrp:hover, body.mobileLayout .vlistBarWrp:hover{
+    opacity: 1;
+}
 /* ********************** App Bars ********************** */
 .appTaskbar, .appMoreTaskbar{
     position: relative; 
@@ -1325,7 +1301,12 @@ body.mobileLayout .searchFormHide{
     margin-left: 0.5em;
 }
 
+body.mobileLayout .arrowUp{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#arrowDown);
+}
+
 .appMoreTaskbar .arrowUp{
+    margin-left: 0.2vw;
     margin-right: 0.5em;
 }
 
@@ -1597,7 +1578,11 @@ margin: unset;
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
     margin: 1vh min(0.5rem, 2vw);
     margin-top: unset;
-    border: min(1.5vmin, 0.5rem) solid #00000000;
+/*     border: min(1.5vmin, 0.5rem) solid #00000000; */
+    
+    border: 1mm solid transparent;
+    border-left: min(2vmin, 1rem) solid transparent;
+    border-right: min(2vmin, 1rem) solid transparent;
 }
 
 html.invert .vEntry{
