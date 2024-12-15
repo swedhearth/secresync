@@ -55,12 +55,13 @@ DONE!!! revision history move to the bottom bar and hide the account modificatio
 
 horizontal scroll bar  to make thin as vertical
 
-make all database icons as thick as the current expDb
+TODO make all database icons as thick as the current expDb
 
 DONE!!! revision wrap to caption in the middle
 DONE!!!!!!!!!! select the history button when revision displayed
 DONE!!!!!!!!!!!!! bell fr historyclose button to arrowleft in Formexport account to finish
-swap main bar with taskbar
+|Done!!swap main bar with taskbar
+make some of the settings in the database (DbObj) settings directly
 
 */
 
@@ -100,12 +101,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         }
         locationSearch = "";
     }
-    mobileDebug("In Index. after if(locationSearch). window.history.state = ", JSON.stringify(window.history.state));
+    //mobileDebug("In Index. after if(locationSearch). window.history.state = ", JSON.stringify(window.history.state));
     window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
     
     let loop = 0;
     while (!window.history.state.lastBackExists) {
-         mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
+        // mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
 /*        console.log("In Index. Promise number: " + loop + ". window.history.state = " + JSON.stringify(window.history.state))
         await new Promise(res => setTimeout(res, 300)); // Allow  History to reload. 300ms should be enough */
         await new Promise(res => {
@@ -113,7 +114,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             window.history.back();
         });
     }
-    mobileDebug("In Index. after while loop - the final current history.state", JSON.stringify(window.history.state));
+    //mobileDebug("In Index. after while loop - the final current history.state", JSON.stringify(window.history.state));
     locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
     window.sessionStorage?.removeItem("locationSearch");
     

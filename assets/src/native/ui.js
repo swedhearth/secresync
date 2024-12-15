@@ -78,7 +78,7 @@ function Interface(thisApp){
             });
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
-        inpEl.autocomplete = "off";
+        //inpEl.autocomplete = "off";
 
         return inpEl;
     };
@@ -840,7 +840,7 @@ function Interface(thisApp){
             };
 
             const getCopyIcon = (inpEl, iconTitle, msgName) => getSvgIcon("copyClipboard", iconTitle, _ => {
-                window.navigator.vibrate(50);
+                window.navigator.vibrate(200);
                 navigator.clipboard.writeText(inpEl.value).then(_ => thisApp.message[msgName]());
             });
 
