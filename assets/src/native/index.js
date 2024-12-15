@@ -169,12 +169,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 resizeDelay = setTimeout(_ => { //wait as it may be squeezing back from 500 to 400
                     squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
                     document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                }, 100);
+                }, 50);
                 return;
             }else{ // if body was not squeezed, now it will be squeezed
                 resizeDelay = setTimeout(_ => {
                     squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
-                }, 500);
+                }, 500); //500
             }
 
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
@@ -201,8 +201,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         };
 
-       // window.visualViewport.addEventListener('scroll', viewportScrollHandler);
-       // window.visualViewport.addEventListener('resize', viewportResizeHandler);
+        window.visualViewport.addEventListener('scroll', viewportScrollHandler);
+        window.visualViewport.addEventListener('resize', viewportResizeHandler);
         
 
 
