@@ -64,16 +64,16 @@ function Interface(thisApp){
             entries.forEach(entry => {
                 const inpEl = entry.target;
                 if(entry.isIntersecting) {
-                    if(inpEl.isBlured){
+/*                     if(inpEl.isBlured){
                         inpEl.isBlured = false;
-                    }
+                    } */
                 }else{
-                    inpEl.isBlured = true;
+/*                     inpEl.isBlured = true;
                     setTimeout(_ => {
                         if(inpEl.isBlured) entry.target.blur();
-                    },200);
+                    },200); */
                     
-                    //entry.target.blur();
+                    entry.target.blur();
                 }
             });
         }, {}));
