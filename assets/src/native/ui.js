@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_84";
+    let tempVer = "MobileOptimisation_85";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -1072,7 +1072,9 @@ function Interface(thisApp){
                     //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
                     const newPassFieldset = await passSection(labelHtml, passInpEl.type);
                     passFieldset.replaceWith(newPassFieldset);
-                    newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
+                    
+                    //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
+                    
                     thisApp.message.newPassGenerated(vendObj.name);
                 };
 
@@ -1083,7 +1085,7 @@ function Interface(thisApp){
                         const newPassFieldset = await passSection(labelHtml, passInpEl.type);
                         passFieldset.replaceWith(newPassFieldset);
                         //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
-                        newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
+                        //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
                     };
                     const rangeInputEl = getInpEl({
                         type: "range",
@@ -1261,6 +1263,23 @@ function Interface(thisApp){
                 ]);
             };
             
+            
+const tagsEl  = dom.addTextarea("inpEl boxNote")
+                .setAttrs({
+                    name: "tags",
+                    maxlength: boxNoteElMaxLen,
+                    placeholder: getTxtBankHtmlTxt("formLabelTags")
+                })
+                .setAttr(displayMode ? "disabled" : "enabled", true)
+                .on("input", e => {
+
+                        changeVprop(e); // only user input and not the dispatched event
+                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit"); // TODO TO DO!!!!!!!!!!!!!!!!!!!!!!!
+                })
+            
+ tagsEl.value = vendObj.tags || "";
+            const tagsSection = labelHtml => displayMode && !vendObj.tags ? [] : getFieldsetEl("padded", labelHtml, "tags").attach(tagsEl);
+            
             const formSectionsAry = [ //htmls
                 standardSection("name", getTxtBankHtmlTxt("formLabelName")),
                 vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
@@ -1268,7 +1287,8 @@ function Interface(thisApp){
                 vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
                 notesSection(getTxtBankHtmlTxt("formLabelNote")),
                 urlSection(getTxtBankHtmlTxt("formLabelUrl")),
-                standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
+                //standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
+                tagsSection(getTxtBankHtmlTxt("formLabelTags"))
             ];
             
             const recordModWrp = !displayMode // Show only if Display
@@ -1652,7 +1672,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     settAppWidth // onInput
                 );
 
-                dom.addDiv("appLayoutWrp").attach(appLayoutFieldset).attachTo(settingsSection);
+                dom.addDiv("adjustWrp appLayoutWrp").attach(appLayoutFieldset).attachTo(settingsSection);
             };
             
             const changeAppWidth = e => {
@@ -1681,7 +1701,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     settAppWidth // onInput
                 );
 
-                dom.addDiv("appWidthWrp").attach(appWidthFieldset).attachTo(settingsSection);
+                dom.addDiv("adjustWrp appWidthWrp").attach(appWidthFieldset).attachTo(settingsSection);
             };
             
             const changeMaxRevisions = e => {
@@ -1698,7 +1718,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("maxRevisions", {value: e.target.value}));
                 };
                 
-                dom.addDiv("maxRevisionsWrp").attach( 
+                dom.addDiv("adjustWrp maxRevisionsWrp").attach( 
                     rangeInpFieldset(
                         getTxtBankHtmlTxt("maxRevisions", {value: currentMaxRevisions}),
                         "maxRevisionsLegend",
@@ -1725,7 +1745,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("logOffTime", {value: e.target.value}));
                 };
                 
-                dom.addDiv("logOffAppWrp").attach( 
+                dom.addDiv("adjustWrp logOffAppWrp").attach( 
                     rangeInpFieldset(
                         getTxtBankHtmlTxt("logOffTime", {value: currentLogOffTime}),
                         "logOffTimeLegend",
@@ -1739,6 +1759,39 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 ).attachTo(settingsSection);
             };
 
+            const changeAppIconSize = e => {
+                let iconSizeWrp = document.body.kidsByClass("iconSizeWrp")[0];
+                if(iconSizeWrp) return iconSizeWrp.kill();
+                
+                const settingsSection = e.currentTarget.forebear(1);
+
+                const currentAppIconSize = thisApp.settings.appIconSize.get();
+                
+                console.log(currentAppIconSize);
+                
+                const settAppIconSize = async e => {
+                    thisApp.settings.appIconSize.set(e.target.value);
+                    
+                    document.documentElement.style.setProperty("--svg-background-size", `${parseInt(e.target.value)}%`);
+
+                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appIconSize", {value: e.target.value}));
+                    
+
+                };
+                
+                dom.addDiv("iconSizeWrp").attach( 
+                    rangeInpFieldset(
+                        getTxtBankHtmlTxt("appIconSize", {value: currentAppIconSize}),
+                        "appIconSizeLegend",
+                        "appIconSizeInpEl",
+                        thisApp.settings.appIconSize.min, //min
+                        thisApp.settings.appIconSize.max, // max
+                        currentAppIconSize, // value
+                        thisApp.settings.appIconSize.step, // step
+                        settAppIconSize // onInput
+                    )
+                ).attachTo(settingsSection);
+            };
 
             
             const openSettings = e => {
@@ -1760,6 +1813,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     getSvgIcon("appWidth", true, changeAppWidth),
                     getSvgIcon("swapTheme", true, changeAppTheme),
                     getSvgIcon("appLogOff", true, changeAppLogOff),
+                    getSvgIcon("appIconSize", true, changeAppIconSize),
                     getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur)
                     
                     
@@ -2306,7 +2360,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         document.documentElement.classList.add("invert");
     }
     
-    document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`); 
+    document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`);
+    document.documentElement.style.setProperty("--svg-background-size", `${thisApp.settings.appIconSize.current}%`); 
+
     
     if(thisApp.settings.isMobileLayout()) document.body.addClass("mobileLayout");
 

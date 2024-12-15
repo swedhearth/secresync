@@ -414,6 +414,7 @@ const txtBankObj = {
         "appWidth" : "Application width",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appLogOff": "Logoff delay",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
@@ -506,7 +507,8 @@ const txtBankObj = {
         "maxRevisions": "Adjust the maximum accounts revisions stored by the application. Current revisions stored: ${ value }.",
         "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels.",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Adjust the application delay time. Current delay: ${value} seconds."
+        "logOffTime": "Adjust the application delay time. Current delay: ${value} seconds.",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -931,6 +933,7 @@ const txtBankObj = {
         "appWidth" : "Ancho de la aplicación",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appLogOff": "Retraso de cierre de sesión",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
@@ -1023,7 +1026,8 @@ const txtBankObj = {
         "maxRevisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación. Revisiones actuales almacenadas: ${ value }.",
         "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles.",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Ajuste el tiempo de retraso de la aplicación. Retraso actual: ${value} segundos."
+        "logOffTime": "Ajuste el tiempo de retraso de la aplicación. Retraso actual: ${value} segundos.",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1447,6 +1451,7 @@ const txtBankObj = {
         "appWidth" : "Largeur de l'application",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appLogOff": "Délai de déconnexion",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
@@ -1539,7 +1544,8 @@ const txtBankObj = {
         "maxRevisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application. Révisions actuelles stockées : ${ value }.",
         "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels.",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Ajustez le temps de délai de l'application. Délai actuel : ${value} secondes."
+        "logOffTime": "Ajustez le temps de délai de l'application. Délai actuel : ${value} secondes.",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1963,6 +1969,7 @@ const txtBankObj = {
         "appWidth" : "Szerokość aplikacji",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appLogOff": "Opóźnienie wylogowania",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
@@ -2055,7 +2062,8 @@ const txtBankObj = {
         "maxRevisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację. Obecnie przechowywane wersje: ${ value }.",
         "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli.",
         "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Dostosuj czas opóźnienia aplikacji. Aktualne opóźnienie: ${value} sekund."
+        "logOffTime": "Dostosuj czas opóźnienia aplikacji. Aktualne opóźnienie: ${value} sekund.",
+        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       },
       "values": {
         "badPass": "Nieprawidłowe hasło... Usuwanie wszystkich połączen z bazą danych...",

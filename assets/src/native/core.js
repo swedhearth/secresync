@@ -179,7 +179,7 @@ function isURL(string){
                     
                     toolTipShowTimer = setTimeout(() => {
                         this.clickCancel = true;
-                        window.navigator.vibrate([200, 50, 200]);
+                        window.navigator.vibrate([100, 100, 100]);
                         toolTip.show();
                     }, toolTipDelay);
                 } else {

@@ -91,10 +91,10 @@
 html {
 scrollbar-width: none;
 height:100%;
-
+background: var(--app-bckg);
 }
 html.invert{
-    filter:invert(1);
+  filter:invert(1);
     
 }
 @scope (html.invert){
@@ -135,6 +135,7 @@ body{
     display: flex;
     justify-content: center;
     transform: translateY(var(--body-top-translateY));
+    background: var(--app-bckg);
 
 }
 
@@ -438,7 +439,9 @@ legend.maxRevisionsLegend:before{
 legend.logOffTimeLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
 }
-
+legend.appIconSizeLegend:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appIconSize);
+}
 legend.appLayoutLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
 }
@@ -1074,15 +1077,16 @@ content: "";
 .scrollBarVisible *::-webkit-scrollbar {
     display: block;
     width: 6px;
-    background: var(--app-bckg);
+    height: 6px;
+    /* background: var(--app-bckg); */
+    background: var(--app-shade-grey-230);
 }
 
 .scrollBarVisible *::-webkit-scrollbar-thumb {
     background: #d7d7d7;
+    background: var(--app-shade-grey-210);
 }
-.scrollBarVisible .scrollWrpOverflow::after{
-    background: var(--app-shade-grey-250);
-}
+
 
 .scrollWrpPrivate:before, .scrollWrpPastRevision:before{
     content: "";
@@ -1119,9 +1123,9 @@ html.invert .scrollWrpPrivate:before, html.invert .scrollWrpPastRevision:before{
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 0.5em;
+    width: 6px;
     height: 2em;
-    background: #e6e6e6;
+    background: var(--app-shade-grey-190);
     left: calc(min(100vw, ((100vw - var(--max-app-width))/2) + var(--max-app-width)) - 6px);
     cursor: pointer;
 }
@@ -1372,7 +1376,9 @@ body.mobileLayout .appMoreTaskbarShow{
 .appLogOff{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
 }
-
+.appIconSize{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appIconSize);
+}
 .expDbIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#expDb);
 }
@@ -2160,16 +2166,21 @@ html.invert .settingsWrp{
 }
 
 
-.appWidthWrp, .maxRevisionsWrp, .logOffAppWrp, .appLayoutWrp{
+.appWidthWrp, .maxRevisionsWrp, .logOffAppWrp, .appLayoutWrp, .iconSizeWrp{
     position: relative;
     width: calc(100% + 28mm);
     margin: 0 -14mm;
     border-top: var(--trace-gray-190);
-}
-.appWidthWrp fieldset, .maxRevisionsWrp fieldset, .logOffAppWrp fieldset, .appLayoutWrp fieldset{
-    width: auto;
+    width:100%;
 }
 
+.adjustWrp legend{
+    line-height: 1.5;
+}
+/* .appWidthWrp fieldset, .maxRevisionsWrp fieldset, .logOffAppWrp fieldset, .appLayoutWrp fieldset{
+    width: auto;
+}
+ */
 
 .settingsWrp .langWrp{
     position: absolute;
@@ -2233,7 +2244,7 @@ html.invert .settingsWrp{
     padding: 0.75rem;
     background: red;
     z-index: 2;
-    /* display: none; */
+    display: none;
 
 }
 .svgIcon.noDrop{

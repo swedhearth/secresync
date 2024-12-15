@@ -53,7 +53,7 @@ DONE!!!hide sharing option if the account type is note
 DONE!!! For notification history icon to be a bell or klepsydra (bell would be better)
 DONE!!! revision history move to the bottom bar and hide the account modification bar when historical account is showing
 
-horizontal scroll bar  to make thin as vertical
+DONE!!!!!!!! horizontal scroll bar  to make thin as vertical
 
 TODO make all database icons as thick as the current expDb
 

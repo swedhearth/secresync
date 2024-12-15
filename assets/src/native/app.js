@@ -596,6 +596,8 @@ function App(urlSearchParams){
             return this.appWidth.current < 800;
         };
         this.appBlur = thisApp.localStorage.get("appBlur") === "false" ? false : true;
+        
+        this.appIconSize = new Setting(thisApp, "appIconSize", 30, 90, 60, 5);
     }
 
     /* Initiate App*/
