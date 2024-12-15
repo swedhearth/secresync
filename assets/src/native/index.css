@@ -2231,7 +2231,7 @@ html.invert .settingsWrp{
     bottom: 0vh;
     left: 0;
     padding: 0.75rem;
-    background: green;
+    background: cyan;
     z-index: 2;
     /* display: none; */
 
