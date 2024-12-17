@@ -170,10 +170,10 @@ const txtBankObj = {
         "n": "I do not want to download the Emergency Copy.",
         "i": "emergDb"
       },
-      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "A copy of the SecreSync database will be downloaded.<br><br>This file can be used as a ${ localFileName } or imported into another database.",
-        "y": "Okay, download the whole SecreSync database copy.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "n": "I want to choose the accounts for export.<br><br>To skip the export, close the form.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "downloadDbCopy": {
+        "q": "A copy of the SecreSync database will be downloaded.<br><br>This file can be used as ${ localFileName } or can be imported into another database.<br><br>If you don't want to download the database now, close the window.",
+        "y": "OK, download the entire copy of the SecreSync database.",
+        "n": "Download only selected accounts.",
         "i": "expDb"
       },
       "catchLoad": {
@@ -688,10 +688,10 @@ const txtBankObj = {
         "n": "No quiero descargar la copia de emergencia.",
         "i": "emergDb"
       },
-      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "Se descargará una copia de la base de datos SecreSync.<br><br>Este archivo puede ser utilizado como ${ localFileName } o puede ser importado a otra base de datos.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "downloadDbCopy": {
+        "q": "Se descargará una copia de la base de datos SecreSync.<br><br>Este archivo puede ser utilizado como ${ localFileName } o puede ser importado a otra base de datos.<br><br>Si no desea descargar la base de datos ahora, cierre la ventana.",
+        "y": "OK, descarga la copia completa de la base de datos SecreSync.",
+        "n": "Descarga solo las cuentas seleccionadas.",
         "i": "expDb"
       },
       "catchLoad": {
@@ -1207,11 +1207,11 @@ const txtBankObj = {
         "n": "Je ne veux pas télécharger la copie d'urgence.",
         "i": "emergDb"
       },
-      "downloadDbCopy": {//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "Une copie de la base de données SecreSync sera téléchargée.<br><br>Ce fichier peut être utilisé comme ${ localFileName } ou être importé dans une autre base de données.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "i": "expDb" 
+      "downloadDbCopy": {
+        "q": "Une copie de la base de données SecreSync sera téléchargée.<br><br>Ce fichier peut être utilisé comme ${ localFileName } ou peut être importé dans une autre base de données.<br><br>Si vous ne souhaitez pas télécharger la base de données maintenant, fermez la fenêtre.",
+        "y": "OK, téléchargez l'intégralité de la copie de la base de données SecreSync.",
+        "n": "Téléchargez uniquement les comptes sélectionnés.",
+        "i": "expDb"
       },
       "catchLoad": {
         "q": "Il y a un problème avec la connexion ${sName}.",
@@ -1725,10 +1725,10 @@ const txtBankObj = {
         "n": "Nie chcę pobierać kopii awaryjnej.",
         "i": "emergDb"
       },
-      "downloadDbCopy": { //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "Kopia bazy danych SecreSync zostanie pobrana.<br><br>Ten plik może być używany jako ${ localFileName } lub może być zaimportowany do innej bazy danych.",
-        "y": "OK, pobierz calą kopię bazy danych SecreSync.", //!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "n": "Pobierz tylko wybrane konta.<br><br>Jesli nie chcesz pobierac bazy danych, zamknij forme.", ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "downloadDbCopy": {
+        "q": "Kopia bazy danych SecreSync zostanie pobrana.<br><br>Ten plik może być używany jako ${ localFileName } lub może być zaimportowany do innej bazy danych.<br><br>Jeśli nie chcesz teraz pobierać bazy danych, zamknij okno.",
+        "y": "OK, pobierz całą kopię bazy danych SecreSync.",
+        "n": "Pobierz tylko wybrane konta.",
         "i": "expDb"
       },
       "catchLoad": {

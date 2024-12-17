@@ -91,7 +91,7 @@
 html {
 scrollbar-width: none;
 height:100%;
-background: var(--app-bckg);
+background: var(--app-theme);
 }
 html.invert{
   filter:invert(1);
@@ -135,7 +135,7 @@ body{
     display: flex;
     justify-content: center;
     transform: translateY(var(--body-top-translateY));
-    background: var(--app-bckg);
+    background: var(--app-theme);
 
 }
 
@@ -154,11 +154,11 @@ body *{
     width: 100%;
     height: 100%;
     z-index: 2;
-    transition: opacity 0.2s linear;
+    transition: opacity 0.3s linear;
     display: none;
 
     /* backdrop-filter: blur(5px); */
-            background: rgb(130 130 130 / 80%);
+            background: rgb(130 130 130 / 20%);
 }
 
 .spinnerSection.fade{
@@ -268,6 +268,14 @@ html.invert .svgIcon.active:active{
     box-shadow: 1px 1px 0px var(--app-shade-grey-190);
     filter: drop-shadow(0px 0px 0px var(--app-shade-grey-190));
 }
+
+html.invert .svgIcon.selected {
+    box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-0);
+}
+.svgIcon.selected {
+    box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-190) inset;
+}
+
 
 @media(hover: hover) and (pointer: fine) {
     .svgIcon.active:hover:not(.svgIcon.active:active){
@@ -444,7 +452,7 @@ legend.appIconSizeLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appIconSize);
 }
 legend.appLayoutLegend:before{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appLayout);
 }
 
 
@@ -1020,6 +1028,7 @@ html.invert .msgHistoryRow.flash:before{
 
     background-position: center;
     background-repeat: no-repeat;
+        margin: 0 0.65rem;
 }
 /* ------------------------------------------------------ appStatusBar Bar ----------------------------------------------------------*/
 .appStatusBar{
@@ -1371,7 +1380,7 @@ body.mobileLayout .appMoreTaskbarShow{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appWidth);
 }
 .appLayout{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appLayout);
 }
 
 .appLogOff{
@@ -1925,13 +1934,13 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory);
 }
 
-.revisionHistory.selected{
+/* .revisionHistory.selected{
     box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-190) inset;
 }
 
 html.invert .revisionHistory.selected{
     box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-0);
-}
+} */
 
 
 .previousVersion{
@@ -2065,12 +2074,12 @@ border-top: 1px solid var(--module-bckg);
 
 .uiBlur, .disposableModal{
     position: fixed;
-    top:0;
-    left:0;
-    width: 100vw;
-    height: 100vh;
-    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
     z-index:2;
+        font-size: 0.7rem;
+    overflow: auto;
 }
 
 /*shareContainer*/
@@ -2101,78 +2110,112 @@ border-top: 1px solid var(--module-bckg);
 }
 /*Export Filter*/
 .exportFilteredWrp{
-    overflow:auto;
+   max-width: var(--max-app-width);
+}
+
+.exportFilteredBar{
+    display: flex;
+    text-indent: 0;
+/*     word-break: break-word;
+    border-bottom: var(--trace-input-outline);
+    background: white; */
+    position: sticky;
+    top: 0;
+    /* padding */: 0;
+    justify-content: space-between;
+    background: var(--module-bckg);
+    padding: 1mm;
+    font-weight: 900;
+    /* max-height: calc(var(--svgIcon-padding-small)* 2); */
+    align-items: center;
+    z-index:1;
+    min-width: var(--min-app-width);
+        width: 100%;
+}
+.exportFilteredWrp{
+    background: var(--module-bckg);
+    display: flex;
+    min-width: var(--min-app-width);
+    padding: 0 2mm;
+    flex-wrap: wrap;
 }
 .exportVend{
-padding: 2vh;
+padding: 1.5vh;
     text-indent: max(5vw, 2rem);
     background: white;
     display: block;
-    margin: 1vh 3vw;
+    margin-bottom:1vh;
+    width:100%;
 }
 
 .exportVend:before{
-
     margin: -0.25em min(-5vw, -2rem);
 }
 
 .willExport{
     background: rgb(0, 255, 30);
 }
-.exportFilteredBar{
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    padding: 2vh;
-    background: #e7e7e7;
-}
+
 
 /* CONTEXT MENU*/
 
 
 /* SETTINGS*/
 .settingsSection{
-    width: 100%;
-    height: 100%;
     max-width: var(--max-app-width);
-    z-index: 2;
-    /* background: rgb(128 128 128 / 50%); */
-    position: relative;
-    backdrop-filter: blur(5px);
 }
 
-.settingsSection:before{
+.setingTitleBar{
+    display: flex;
+    text-indent: 0;
+    word-break: break-word;
+    border-bottom: var(--trace-input-outline);
+    background: white;
+    position: sticky;
+    top: 0;
+    padding: 0;
+    justify-content: space-between;
+    background: var(--module-bckg);
+    padding: 1mm;
+    font-weight: 900;
+    max-height: calc(var(--svgIcon-padding-small)* 2);
+    align-items: center;
+    z-index:1;
+    min-width: var(--min-app-width);
+}
+
+
+/* .setingTitleBar:before{
     content: "";
-    position: absolute;
-    right: 0;
     padding: var(--svgIcon-padding-small);
-    background-image: url(../../../assets/static/appSvg/sprite.svg#cross);
+    margin: 0 0.65rem;
     background-size: var(--svg-background-size);
     background-position: center;
     background-repeat: no-repeat;
-    margin: 1mm 2mm;
-    border-radius: 15%;
-}
+        background-image: url(../../../assets/static/appSvg/sprite.svg#cog);
+} */
 
 .settingsWrp{
     background: var(--module-bckg);
     display: flex;
     flex-wrap: wrap;
-    padding: 1mm 14mm;
+    /* padding: 1mm 14mm; */
     justify-content: space-evenly;
+        min-width: var(--min-app-width);
+            padding: 0 2mm;
 }
 
-html.invert .settingsWrp{
+/* html.invert .settingsWrp{
     box-shadow: -1px -1px 4px 1px var(--app-shade-grey-100);
-}
+} */
 
 
 .appWidthWrp, .maxRevisionsWrp, .logOffAppWrp, .appLayoutWrp, .iconSizeWrp{
     /* position: relative; */
-    width: calc(100% + 28mm);
-    margin: 0 -14mm;
+/*     width: calc(100% + 28mm);
+    margin: 0 -14mm; */
     border-top: var(--trace-gray-190);
-    /* width:100%; */
+    width:100%;
 }
 .adjustWrp fieldset{
     width: auto;
@@ -2185,10 +2228,11 @@ html.invert .settingsWrp{
 }
  */
 
-.settingsWrp .langWrp{
-    position: absolute;
-    left:0;
+.setingTitleBar .langWrp{
+/*     position: absolute;
+    left:0; */
     margin: 0mm 2mm;
+        align-self: flex-start;
 }
 
 /* .settingsWrp .svgIcon{
@@ -2253,3 +2297,4 @@ html.invert .settingsWrp{
 .svgIcon.noDrop{
     filter: unset;
 }
+

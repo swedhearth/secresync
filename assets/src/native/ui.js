@@ -18,9 +18,8 @@ function Interface(thisApp){
             return this;
         }
     });
-    
-    
-    //if(developerMode) console.log(dom.getHandles());
+
+
     
     //  --------------------------------------------------------------- submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
     // -------------- Helper to get from the TextBank ----------------------------------//
@@ -55,6 +54,7 @@ function Interface(thisApp){
             if(isPinFieldset) this.addClass("pinFieldset");
     }, {capture: true});
 
+    let lastActiveInputEl = null;
     const getInpEl = inpObj => {
         const inpEl = dom.addInput("inpEl");
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
@@ -79,6 +79,7 @@ function Interface(thisApp){
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         //inpEl.autocomplete = "off";
+        inpEl.on("focus", _ => lastActiveInputEl = inpEl);
 
         return inpEl;
     };
@@ -89,7 +90,10 @@ function Interface(thisApp){
         let inpType = passInpEls[0].type;
         if(toggleType){
             inpType = inpType === "text" ? "password" : "text";
-            passInpEls.forEach(passInpEl => passInpEl.type = inpType);
+            passInpEls.forEach(passInpEl => {
+                passInpEl.type = inpType;
+                if(passInpEl === lastActiveInputEl) passInpEl.focus();
+            });
         }
         return getSvgIcon(
             "passEye",
@@ -109,11 +113,22 @@ function Interface(thisApp){
     
     //add history.state when modal section or mudule is open
     const addModalToHistory = forceAdd => { //forceAdd: boolean - if true adds another modalOpen state to history
-        if(!forceAdd && window.history.state.modalOpen) console.log("window.history.state.modalOpen already there => will not add!!!");
-        if(forceAdd || !window.history.state.modalOpen){
-            window.history.pushState({modalOpen: true}, "", "");
-        }
+        if(forceAdd || !window.history.state.modalOpen) window.history.pushState({modalOpen: true}, "", "");
     };
+
+    const historyStack = (_ => {
+        let popstateUserActivated = 0;
+        let userActive = false;
+
+        return {
+            goBack: _ => {
+                popstateUserActivated = Date.now();
+                history.back();
+            },
+            setUserActive: e => userActive = !!e || Date.now() - popstateUserActivated < 1000,
+            isUserActive: _ => userActive
+        };
+    })();
     
     // Add Icons to thisApp.dbStore. Returnable (Part of this (Interface))
     const localiseDbStores = _ =>{
@@ -168,7 +183,7 @@ function Interface(thisApp){
                     resolve = choice = promise = null;
                 }else{
                     choice = e;
-                    window.history.back();
+                    historyStack.goBack();
                 }
             },
             clear: _ => {
@@ -532,7 +547,7 @@ function Interface(thisApp){
         let msgHistory = {};
         let msgIsFullArchive = false;
         
-        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankTitleTxt("msgHistory")).onClick(_ => this.openFullArchive()).attachTo(msgModule);
+        const msgTitleIcon = dom.addDiv("beforeMsgModule").setAttr("title", getTxtBankTitleTxt("msgHistory")).onClick(e => this.openFullArchive(e)).attachTo(msgModule);
         
         const msgModulePopUp = (css, txt) => msgModule.addClass("popUp").attach(dom.addDiv(`msgHistoryRow ${css}`, txt)); //popUp 
         const msgModuleSlideDown = _ => msgModule.addClass("slideDown");
@@ -561,14 +576,18 @@ function Interface(thisApp){
             msgClearPromise();
             msgModuleSlideDown();
             setTimeout(_ => this.resetFullArchive(), msgTransitionTime);
+
             return true; //msg Full Archive has been cleared
         };
         
         this.paintFullArchive = _ => this.resetFullArchive()
             .attach(
                 dom.addDiv("msgHistoryRow title", getTxtBankTitleTxt("msgHistory") + ":")
-                /* .attach(dom.addDiv("closeFullArchive").onClick(_ => window.history.back())) */
-                .attach(getSvgIcon("closeFullArchive", "btnCloseForm", _ => window.history.back()))
+                .attach(
+                    getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
+                        historyStack.goBack();
+                    })
+                )
             )
             .attach(
                 dom.addDiv("msgHistoryContentWrp")
@@ -589,12 +608,17 @@ function Interface(thisApp){
                     )
                 ))
             );
-
-        this.openFullArchive = _ => {
+ 
+    
+        this.openFullArchive = e => {
             msgClearPromise();
+
             addModalToHistory(true); //force adding to history
+
             this.paintFullArchive().addClass("fullArchive");
             msgIsFullArchive = true;
+
+
         };
         
         this.isFullArchive = _ => msgIsFullArchive;
@@ -832,7 +856,7 @@ function Interface(thisApp){
 
             const closeForm = _ => {
                 if(displayMode || isNew){
-                    window.history.back();
+                    historyStack.goBack();
                 }else{
                     const [vo] = thisApp.dbObj.vendors.filter(vObj => vObj.id === vendObj.id);
                     paintFormSection(false, vo, false, false);
@@ -852,8 +876,8 @@ function Interface(thisApp){
 
             const clearFormInput = inpEl => {
                 inpEl.value = ""; 
-                inpEl.dispatchEvent(new Event('input')); 
-                inpEl.focus();
+                inpEl.dispatchEvent(new Event('input'));
+                if(lastActiveInputEl === inpEl) inpEl.focus();
             };
 
             const shareVendor = async _ => { //shareCredentials
@@ -901,21 +925,7 @@ function Interface(thisApp){
                 const contextIcons = [
                     getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode),
                     []
-/*                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
-                        ? _ => {
-                            window.addEventListener('popstate',  getChangePassword, {once: true});
-                            history.back();
-                        }
-                        : null),
-                    getSvgIcon("donate", true, getDonate),
-                    getSvgIcon("revisionHistory", true, changeMaxRevisions),
-                    getSvgIcon("appLayout", true, changeAppLayout),
-                    getSvgIcon("appWidth", true, changeAppWidth),
-                    getSvgIcon("swapTheme", true, changeAppTheme),
-                    getSvgIcon("appLogOff", true, changeAppLogOff),
-                    getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur) */
-                    
-                    
+
                 ];
                 
                 dom.addDiv("disposableModal settingsSection").attach(
@@ -923,7 +933,9 @@ function Interface(thisApp){
                         contextIcons
                     )
                 ).onClick(function(e){
-                    if(e.target === e.currentTarget) history.back();
+                    if(e.target === e.currentTarget) {
+                        historyStack.goBack();
+                    }
                 }).attachTo(document.body);
                 
 
@@ -1563,7 +1575,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     // TO DO!!!!!!!!!!!!!!! - make add to history. Make History popstate to remove all class="whatever"
                     const getFilteredVendors = _ => new Promise((res, rej) => {
 
-                        dom.addDiv("disposableModal exportFilteredWrp")
+/*                         dom.addDiv("disposableModal exportFilteredWrp")
                         .attach(
                             dom.addDiv("exportFilteredBar").attach(
                                 dom.addDiv("exportFilteredDbObj", "exportFilteredDbObj").onClick(e => {
@@ -1581,7 +1593,48 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                                 })
                             )
                         )
-                        .attachTo(document.body);
+                        .attachTo(document.body); */
+                        
+                        
+                        dom.addDiv("disposableModal exportFilteredWrp")
+                        .attach(
+                            dom.addDiv("exportFilteredBar")
+                            .attach(
+
+                                    getSvgIcon("expDbIcon", "expDb", e => {
+                                        e.currentTarget.forebear(2).kill();
+                                        res(thisApp.dbObj.vendors.filter(exportVendObj => exportVendObj.exp));
+
+                                })
+                            )
+                            .attach(dom.addSpan("", "TODO SETTINGS TITLE"))
+                            .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
+                                getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
+                                    historyStack.goBack();
+                                })
+                            )
+                        )
+                        .attach(
+                            dom.addDiv("exportFilteredWrp").attachAry(
+                                thisApp.dbObj.vendors.map(
+                                    exportVendObj => dom.addDiv("exportVend vEntry " + (exportVendObj.isNote ? "vNote" : "vLog"), exportVendObj.name).onClick(e => {
+                                        e.currentTarget.toggleClass("willExport");
+                                        exportVendObj.exp = !exportVendObj.exp;
+                                    })
+                                )
+                            )
+                        )
+                        .onClick(function(e){
+                            if(e.target === e.currentTarget) {
+                                historyStack.goBack();
+                            }
+                        }).attachTo(document.body);
+                        
+
+                        addModalToHistory(true); //force adding to history
+                        
+                        
+                        
                     });
 
                 
@@ -1647,6 +1700,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
             
             const changeAppLayout = e =>{
+                e.target.toggleClass("selected");
                 let appLayoutWrp = document.body.kidsByClass("appLayoutWrp")[0];
                 if(appLayoutWrp) return appLayoutWrp.kill();
                 const settingsSection = e.currentTarget.forebear(1);
@@ -1676,6 +1730,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
             
             const changeAppWidth = e => {
+                e.target.toggleClass("selected");
                 let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
                 if(appWidthWrp) return appWidthWrp.kill();
                 const settingsSection = e.currentTarget.forebear(1);
@@ -1705,6 +1760,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
             
             const changeMaxRevisions = e => {
+                e.target.toggleClass("selected");
                 let maxRevisionsWrp = document.body.kidsByClass("maxRevisionsWrp")[0];
                 if(maxRevisionsWrp) return maxRevisionsWrp.kill();
                 
@@ -1733,6 +1789,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
             
             const changeAppLogOff = e => {
+                e.target.toggleClass("selected");
                 let logOffAppWrp = document.body.kidsByClass("logOffAppWrp")[0];
                 if(logOffAppWrp) return logOffAppWrp.kill();
                 
@@ -1760,6 +1817,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
 
             const changeAppIconSize = e => {
+                e.target.toggleClass("selected");
                 let iconSizeWrp = document.body.kidsByClass("iconSizeWrp")[0];
                 if(iconSizeWrp) return iconSizeWrp.kill();
                 
@@ -1779,7 +1837,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
                 };
                 
-                dom.addDiv("iconSizeWrp").attach( 
+                dom.addDiv("adjustWrp iconSizeWrp").attach( 
                     rangeInpFieldset(
                         getTxtBankHtmlTxt("appIconSize", {value: currentAppIconSize}),
                         "appIconSizeLegend",
@@ -1796,15 +1854,10 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             
             const openSettings = e => {
                 const contextIcons = [
-                    langModule(thisApp, _ => {
-                        window.addEventListener('popstate',  openSettings, {once: true});
-                        history.back();
-                        repaintUI();
-                    }),
                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
                         ? _ => {
                             window.addEventListener('popstate',  getChangePassword, {once: true});
-                            history.back();
+                            historyStack.goBack();
                         }
                         : null),
                     getSvgIcon("donate", true, getDonate),
@@ -1819,12 +1872,32 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     
                 ];
                 
-                dom.addDiv("disposableModal settingsSection").attach(
+                dom.addDiv("disposableModal settingsSection")
+                .attach(
+                    dom.addDiv("setingTitleBar")
+                    .attach(
+                        langModule(thisApp, _ => {
+                            window.addEventListener('popstate',  openSettings, {once: true});
+                            historyStack.goBack();
+                            repaintUI();
+                        })
+                    )
+                    .attach(dom.addSpan("", "TODO SETTINGS TITLE"))
+                    .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
+                        getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
+                            historyStack.goBack();
+                        })
+                    )
+                )
+                .attach(
                     dom.addDiv("settingsWrp").attachAry(
                         contextIcons
                     )
-                ).onClick(function(e){
-                    if(e.target === e.currentTarget) history.back();
+                )
+                .onClick(function(e){
+                    if(e.target === e.currentTarget) {
+                        historyStack.goBack();
+                    }
                 }).attachTo(document.body);
                 
 
@@ -1854,58 +1927,88 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
             const getSearchForm = _ => {
                 let lastSearchString = "";
+                let preventScrollBlur = false;
                 let inputTimeout;
+                let inputIsBlured = true;
                 const inputDelay = 500; //500ms
                 const searchFormEl = dom.addForm("searchForm searchFormHide");
+                
                 const searchInputEl = getInpEl({
                     type: "text",
                     name: "inputBoxSearch",
                     id: "inputBoxSearch",
                     placeholder: getTxtBankHtmlTxt("inputBoxSearch")
                 });
-                const searchEvent = (e, blurInput) => {
+                
+                const searchEvent = (e, attentionMethod) => {
+                    console.log('searchEvent attentionMethod = ', attentionMethod);
                     e.preventDefault();
                     if(lastSearchString !== searchInputEl.value){
+                        preventScrollBlur = true;
                         lastSearchString = searchInputEl.value;
-                        paintList();
+                        paintList(); //vListWrp
+                        //console.log("List Painted -> preventScrollBlur should be true", preventScrollBlur);
+                        setTimeout(_ => {
+                            preventScrollBlur = false; // give time for the list repaint after the search
+                        },1000);
                     }
-                    //searchInputEl.blur()
-                    blurInput ? searchInputEl.blur() : searchInputEl.focus({ preventScroll: true });
                     
-                    //console.log(document.activeElement === searchInputEl);
+
+                    if(attentionMethod === "blur") searchInputEl.blur();
+                    if(attentionMethod === "focus") searchInputEl.focus({ preventScroll: true });
                 };
-                const clearSearch = (e, blurInput) => {
+                
+                const clearSearch = (e, attentionMethod) => {
                     searchInputEl.value = "";
-                    searchEvent(e, blurInput);
+                    searchEvent(e, attentionMethod);
                 };
+                
                 const hideForm = e => {
                     searchFormEl.addClass("searchFormHide");
-                    clearSearch(e, true);
-                    //requestAnimationFrame(_ => requestAnimationFrame(_ => searchInputEl.blur()));
-                    //searchInputEl.blur();
+                    clearSearch(e, "blur");
                 };
+                
                 const hideFormEl = getSvgIcon("arrowUp", "hide", hideForm);
+                
+                
+                searchInputEl.on("blur", e => {
+                    console.log("searchInputEl blur");
+                    setTimeout(_ => {
+                        inputIsBlured = true;
+                    },100);
+                });
+                searchInputEl.on("focus", e => {
+                    console.log("searchInputEl focus");
+                    inputIsBlured = false;
+
+                });
+                
                 const searchResetBtn = getClearInputIcon(e => {
-                    clearSearch(e, false);
-                    //searchInputEl.focus();
+                    clearSearch(e, inputIsBlured ? "auto" : "focus");
                 });
                 const delayInput = e => {
                     clearTimeout(inputTimeout);
-                    inputTimeout = setTimeout(_ => searchEvent(e, false), inputDelay);
+                    inputTimeout = setTimeout(_ => searchEvent(e, "focus"), inputDelay);
                 };
                 
                 searchFormEl.showForm = e => {
                     searchFormEl.killClass("searchFormHide");
-                    clearSearch(e, false);
-                    //searchInputEl.focus();
+                    clearSearch(e, "focus");
                 };
                 searchFormEl.getValue = _ => searchInputEl.value;
+                
+                searchFormEl.scrollBlur = _ => {
+                    //console.log("searchFormEl.scrollBlur - preventScrollBlur", preventScrollBlur);
+                    if(!preventScrollBlur){
+                        searchInputEl.blur();
+                    }
+                }
                 
                 return searchFormEl.attachAry([
                     hideFormEl,
                     searchInputEl,
                     searchResetBtn
-                ]).on("input", delayInput).on("reset", clearSearch).on("submit", searchEvent);
+                ]).on("input", delayInput);//.on("submit", searchEvent);//.on("reset", clearSearch)
             };
 
             const searchFormEl = getSearchForm();
@@ -1998,7 +2101,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
-                    document.activeElement.blur(); // lose focus on search input element
+                    //document.activeElement.blur(); // lose focus on search input element
+                    searchFormEl.scrollBlur();
                     /* searchFormEl */
                     const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = vListScrollTop - e.target.scrollTop;
@@ -2213,10 +2317,13 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         };
 
         const startSwipe = (e) => {
-            const { clientX, clientY } = e.touches[0];
+           const { clientX, clientY } = e.touches[0];
             touchStart = { x: clientX, y: clientY, time: Date.now() };
-// && !window.visualViewport.offsetTop if virtual keyboard keyboard is open, the 
-            if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) {
+            if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) { 
+                if(!historyStack.isUserActive()){//userActive must be true to register history and not close application on the device or browser back button
+                    console.log("historyStack.isUserActive is FALSE");
+                    return;
+                }
                 isVerticalSwipe = true;
                 this.messages.paintFullArchive();
             } else if (this.messages.isFullArchive() && !msgModule.scrollTop) {
@@ -2226,7 +2333,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             }
         };
 
-        const swiping = (e) => {
+        const swiping = e => {
+           // e.preventDefault();
             const { clientX, clientY } = e.touches[0];
 
             if (isVerticalSwipe) {
@@ -2237,16 +2345,18 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     // Swipe up to open full archive
                     if (translateBy < 50) {
                         resetSwipe();
-                        this.messages.openFullArchive();
+                        //console.log("openfull archive");
+                        this.messages.openFullArchive(e);
                     } else {
                         msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
+                        //console.log("translateBy");
                     }
                 } else if (this.messages.isFullArchive() && deltaY < 0) {
                     // Swipe down to close full archive
                     const translateBy = (Math.abs(deltaY) * 100) / document.body.clientHeight;
                     if (translateBy > 50) {
                         resetSwipe();
-                        history.back();
+                        historyStack.goBack();
                     } else {
                         msgModule.setAttr("style", `transition: unset; height: 100%; transform: translateY(${translateBy}%);`);
                     }
@@ -2262,7 +2372,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 const translateBy = ((touchStart.x - clientX) * 100) / document.body.clientWidth;
                 if (translateBy > 50) {
                     resetSwipe();
-                    history.back();
+                    historyStack.goBack();
                 } else {
                     appSectionForm.setAttr("style", `transition: unset; transform: translateX(${-translateBy}%);`);
                 }
@@ -2270,6 +2380,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         };
 
         const endSwipe = (e) => {
+
             // Extract touch coordinates or fallback to undefined
             const { clientX, clientY } = e.changedTouches?.[0] || {};
 
@@ -2292,14 +2403,17 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             // Handle vertical or horizontal swipe based on the state
             if (isVerticalSwipe) { 
                 if (this.messages.isFullArchive()) {
-                    if (isValidSwipe(true)) history.back();
+                    if (isValidSwipe(true)){
+                        historyStack.goBack();
+                    }
                 } else if (isValidSwipe(false)) {
-                    this.messages.openFullArchive();
+                    this.messages.openFullArchive(e);
                 } else {
+                    //console.log("resetFullArchive archive");
                     this.messages.resetFullArchive();
                 }
             } else if (isHorizontalSwipe && isValidSwipe(false)) {
-                history.back();
+                historyStack.goBack();
             }
 
             // Reset swipe state
@@ -2321,7 +2435,8 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-        //if(this.settings.hasClosed()) return;
+        historyStack.setUserActive(false);
+        
         if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
         
         const disposableModals = document.body.kidsByClass("disposableModal");
@@ -2344,10 +2459,16 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         spinner,
         uiBlur
     ])
-    .on("touchstart", touchHandler.startSwipe)
-    .on("touchmove", touchHandler.swiping)
-    .on("touchend", touchHandler.endSwipe)
-    .on("touchcancel", touchHandler.endSwipe)
+    .on("touchstart", touchHandler.startSwipe, false)
+    .on("touchmove", touchHandler.swiping, false)
+    .on("touchend", touchHandler.endSwipe, false)
+    .on("touchcancel", touchHandler.endSwipe, false)
+    .onClick(historyStack.setUserActive)
+    
+/*     .on("pointerdown", touchHandler.startSwipe)
+    .on("pointermove", touchHandler.swiping)
+    .on("pointerup", touchHandler.endSwipe)
+    .on("pointercancel", touchHandler.endSwipe) */
 
 
 /* Apply settings */
