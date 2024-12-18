@@ -135,12 +135,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     /* ------------------------------------------------------------ Initiate and start App -------------------------------------------------------------- */
     new App(urlSearchParams).init().then(thisApp => {
         if(developerMode) console.log(thisApp);
-        window.addEventListener('popstate',  e => {
+/*         window.addEventListener('popstate',  e => {
             if(!window.history.state){
                 thisApp.message.exitAppConfirm();
                 window.history.pushState({lastBackExists: true}, '', '');
             }
-        });
+        }); */
         window.addEventListener('online', thisApp.connectivitychange);
         window.addEventListener('offline', thisApp.connectivitychange);
         

@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_86";
+    let tempVer = "MobileOptimisation_88";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -145,6 +145,9 @@ function Interface(thisApp){
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
     const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
+    let searchFormEl, appMoreTaskbar; /// These must be outside of paintList to enable popstate firing
+    
+    
     const spinner = (_ => {// create spinner Section
         const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerWrp"));// make it visible at the start of app
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
@@ -714,6 +717,8 @@ function Interface(thisApp){
         this.tempPleaseDoInstallApp = doInstal => msgShow(new MsgObj("_TEMP_ Application has not yet been installed on this device. Will the install prompt be displayed?: " + doInstal.toString(), "flash"));
         this.tempOnlineChangeWhileAppHidden = appOnline => msgShow(new MsgObj("_TEMP_ Application connectivity has changed while the app was hidden. Is the app online?: " + appOnline.toString(), "flash"));
         this.tempVisibilityChange = appHidden => msgShow(new MsgObj("_TEMP_ Application visibility has changed. Is the app hidden?: " + appHidden.toString(), "flash"));
+        
+        this.tapToRegisterHistory = _ => msgShow(new MsgObj("TO DO - tapToRegisterHistory", "flash"));// TODO TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     };
 
@@ -795,9 +800,9 @@ function Interface(thisApp){
             function updateRevision (vendObjPrevious) {
                 vendObj.rev = vendObj.rev || []; // create revisions array if doesnt't exist
                 vendObj.rev.push(JSON.stringify(vendObjPrevious.prepareForSend(true)));
-                //if(vendObj.rev.length > maxRevisions) vendObj.rev.shift();
-                //if(vendObj.rev.length > thisApp.settings.maxRevisions.current) vendObj.rev.shift(); //!!!!!!!!!!!!!!!! TO DO
-                while (vendObj.rev.length > thisApp.settings.maxRevisions.current){
+                //if(vendObj.rev.length > revisions) vendObj.rev.shift();
+                //if(vendObj.rev.length > thisApp.settings.revisions.current) vendObj.rev.shift(); //!!!!!!!!!!!!!!!! TO DO
+                while (vendObj.rev.length > thisApp.settings.revisions.current){
                     vendObj.rev.shift();
                 }
                 
@@ -1325,7 +1330,7 @@ const tagsEl  = dom.addTextarea("inpEl boxNote")
                         revisionIdx && revAry[revisionIdx + 1]
                             ? getSvgIcon("previousVersion", true, _ => paintFormSection(false, revAry[revisionIdx + 1], false, false, false, revAry, revisionIdx + 1)) 
                             : getSvgIcon(),
-                        getSvgIcon("revisionHistory", true, revisionIdx 
+                        getSvgIcon("revisions", true, revisionIdx 
                             ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
                             :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
                         ),
@@ -1379,7 +1384,7 @@ const deleteOldBtn = revisionIdx
 const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
 const revisionsBtn = revisionWrp 
-    ? getSvgIcon("revisionHistory" + (revisionIdx ? " selected" : ""), true, revisionIdx 
+    ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), true, revisionIdx 
             ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
             :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
         )
@@ -1673,14 +1678,21 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
             };
             const changeAppBlur = e => {
+                const settingsSection = e.currentTarget.forebear(2);
                 thisApp.settings.appBlur = !thisApp.settings.appBlur;
                 thisApp.localStorage.set("appBlur", thisApp.settings.appBlur);
                 e.target.toggleClass("blurIcon");
+                
+                const flashFieldet = dom.addDiv("adjustWrp appBlurWrp").attach(getFieldsetEl("padded", getTxtBankTitleTxt("appBlur"), "appBlurLegend").attach(dom.addDiv("adjustDetais", getTxtBankHtmlTxt("appBlur", {value: getTxtBankHtmlTxt("appBlur" + (thisApp.settings.appBlur ? "Enabled" : "Disabled"))})))).attachTo(settingsSection);
+                
+                setTimeout(_ => {
+                    flashFieldet.kill();
+                }, 50000);
             };
-            const rangeInpFieldset = (fieldsetLegendHtml, fieldsetLegendClass, rangeInputName, min, max, value, step, onInput) => {
+            const rangeInpFieldset = (settingName, adjustDetais, min, max, value, step, onInput) => {
                 const rangeInputEl = getInpEl({
                     type: "range",
-                    name: rangeInputName,
+                    name: settingName + "InpEl",
                     min: min,
                     max: max,
                     value: value,
@@ -1692,37 +1704,51 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     rangeInputEl.dispatchEvent(new Event('input'));
                 };
                 
-                return getFieldsetEl("", fieldsetLegendHtml, fieldsetLegendClass).attachAry([
+                return getFieldsetEl("padded", getTxtBankTitleTxt(settingName), settingName + "Legend").attachAry([ //"appLayoutLegend",
                     getSvgIcon("decrease", true, _ => changeRangeInputValue(-step)),
                     rangeInputEl,
-                    getSvgIcon("increase", true, _ => changeRangeInputValue(step))
+                    getSvgIcon("increase", true, _ => changeRangeInputValue(step)),
+                    dom.addDiv("adjustDetais", adjustDetais)
                 ]);
             };
             
-            const changeAppLayout = e =>{
+            const changeAppLayout = e =>{ // TO DO STEPS ARE NOT WORKING?
                 e.target.toggleClass("selected");
                 let appLayoutWrp = document.body.kidsByClass("appLayoutWrp")[0];
                 if(appLayoutWrp) return appLayoutWrp.kill();
-                const settingsSection = e.currentTarget.forebear(1);
+                const settingsSection = e.currentTarget.forebear(2);
                 
                 const currentAppLayout = thisApp.settings.appLayout.get();
+                
+                //console.log(currentAppLayout);
+                
+                const layoutValueText = {
+                        "0": "appLayoutAuto",
+                        "1": "appLayoutMobile",
+                        "2": "appLayoutDesktop"
+                    };
 
                 const settAppWidth = async e => {
-
                     thisApp.settings.appLayout.set(e.target.value);
-                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appLayout", {value: e.target.value}));
+                    
+/*                     const currentLayout = {
+                        "0": "appLayoutAuto",
+                        "1": "appLayoutMobile",
+                        "2": "appLayoutDesktop"
+                    }[e.target.value]; */
+                    
+                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appLayout", {value: getTxtBankHtmlTxt(layoutValueText[e.target.value])}));
 
                     thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
                 };
 
                 const appLayoutFieldset = rangeInpFieldset(
-                    getTxtBankHtmlTxt("appLayout", {value: currentAppLayout}),
-                    "appLayoutLegend",
-                    "appLayoutInpEl",
+                    "appLayout",
+                    getTxtBankHtmlTxt("appLayout", {value: getTxtBankHtmlTxt(layoutValueText[currentAppLayout])}),
                     thisApp.settings.appLayout.min, //320, //min
                     thisApp.settings.appLayout.max, //max
                     currentAppLayout, //value
-                    5, //step
+                    thisApp.settings.appLayout.step, //step
                     settAppWidth // onInput
                 );
 
@@ -1733,22 +1759,21 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 e.target.toggleClass("selected");
                 let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
                 if(appWidthWrp) return appWidthWrp.kill();
-                const settingsSection = e.currentTarget.forebear(1);
+                const settingsSection = e.currentTarget.forebear(2);
                 
                 const currentAppWidth = thisApp.settings.appWidth.get();
 
                 const settAppWidth = async e => {
                     document.documentElement.style.setProperty("--max-app-width", `${parseInt(e.target.value)}px`);
                     thisApp.settings.appWidth.set(e.target.value);
-                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
+                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
 
                     thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
                 };
 
                 const appWidthFieldset = rangeInpFieldset(
+                    "appWidth",
                     getTxtBankHtmlTxt("appWidth", {value: currentAppWidth}),
-                    "appWidthLegend",
-                    "appWidthInpEl",
                     thisApp.settings.appWidth.min, //320, //min
                     thisApp.settings.appWidth.max, //max
                     currentAppWidth, //value
@@ -1764,25 +1789,24 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 let maxRevisionsWrp = document.body.kidsByClass("maxRevisionsWrp")[0];
                 if(maxRevisionsWrp) return maxRevisionsWrp.kill();
                 
-                const settingsSection = e.currentTarget.forebear(1);
+                const settingsSection = e.currentTarget.forebear(2);
 
-                const currentMaxRevisions = thisApp.settings.maxRevisions.get(); //parseInt(thisApp.localStorage.get("maxRevisions")) || 10;
+                const currentMaxRevisions = thisApp.settings.revisions.get(); //parseInt(thisApp.localStorage.get("revisions")) || 10;
                 
                 const settMaxRevision = async e => {
-                    //thisApp.localStorage.set("maxRevisions", e.target.value);
-                    thisApp.settings.maxRevisions.set(e.target.value);
-                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("maxRevisions", {value: e.target.value}));
+                    //thisApp.localStorage.set("revisions", e.target.value);
+                    thisApp.settings.revisions.set(e.target.value);
+                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("revisions", {value: e.target.value}));
                 };
                 
                 dom.addDiv("adjustWrp maxRevisionsWrp").attach( 
                     rangeInpFieldset(
-                        getTxtBankHtmlTxt("maxRevisions", {value: currentMaxRevisions}),
-                        "maxRevisionsLegend",
-                        "maxRevisionsInpEl",
-                        thisApp.settings.maxRevisions.min, //0, //min
-                        thisApp.settings.maxRevisions.max, //20, // max
+                        "revisions", //revisions
+                        getTxtBankHtmlTxt("revisions", {value: currentMaxRevisions}),
+                        thisApp.settings.revisions.min, //0, //min
+                        thisApp.settings.revisions.max, //20, // max
                         currentMaxRevisions, // value
-                        thisApp.settings.maxRevisions.step, // step
+                        thisApp.settings.revisions.step, // step
                         settMaxRevision // onInput
                     )
                 ).attachTo(settingsSection);
@@ -1793,24 +1817,23 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 let logOffAppWrp = document.body.kidsByClass("logOffAppWrp")[0];
                 if(logOffAppWrp) return logOffAppWrp.kill();
                 
-                const settingsSection = e.currentTarget.forebear(1);
+                const settingsSection = e.currentTarget.forebear(2);
 
-                const currentLogOffTime = thisApp.settings.logOffTime.get();
+                const currentLogOffTime = thisApp.settings.appLogOff.get();
                 
                 const settAppLogOff = async e => {
-                    thisApp.settings.logOffTime.set(e.target.value);
-                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("logOffTime", {value: e.target.value}));
+                    thisApp.settings.appLogOff.set(e.target.value);
+                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appLogOff", {value: e.target.value}));
                 };
                 
                 dom.addDiv("adjustWrp logOffAppWrp").attach( 
                     rangeInpFieldset(
-                        getTxtBankHtmlTxt("logOffTime", {value: currentLogOffTime}),
-                        "logOffTimeLegend",
-                        "logOffTimeInpEl",
-                        thisApp.settings.logOffTime.min, //min
-                        thisApp.settings.logOffTime.max, // max
+                        "appLogOff",
+                        getTxtBankHtmlTxt("appLogOff", {value: currentLogOffTime}),
+                        thisApp.settings.appLogOff.min, //min
+                        thisApp.settings.appLogOff.max, // max
                         currentLogOffTime, // value
-                        thisApp.settings.logOffTime.step, // step
+                        thisApp.settings.appLogOff.step, // step
                         settAppLogOff // onInput
                     )
                 ).attachTo(settingsSection);
@@ -1821,7 +1844,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 let iconSizeWrp = document.body.kidsByClass("iconSizeWrp")[0];
                 if(iconSizeWrp) return iconSizeWrp.kill();
                 
-                const settingsSection = e.currentTarget.forebear(1);
+                const settingsSection = e.currentTarget.forebear(2);
 
                 const currentAppIconSize = thisApp.settings.appIconSize.get();
                 
@@ -1832,16 +1855,15 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     
                     document.documentElement.style.setProperty("--svg-background-size", `${parseInt(e.target.value)}%`);
 
-                    e.currentTarget.forebear(1).kid().txt(getTxtBankHtmlTxt("appIconSize", {value: e.target.value}));
+                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appIconSize", {value: e.target.value}));
                     
 
                 };
                 
                 dom.addDiv("adjustWrp iconSizeWrp").attach( 
                     rangeInpFieldset(
+                        "appIconSize",
                         getTxtBankHtmlTxt("appIconSize", {value: currentAppIconSize}),
-                        "appIconSizeLegend",
-                        "appIconSizeInpEl",
                         thisApp.settings.appIconSize.min, //min
                         thisApp.settings.appIconSize.max, // max
                         currentAppIconSize, // value
@@ -1861,10 +1883,10 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         }
                         : null),
                     getSvgIcon("donate", true, getDonate),
-                    getSvgIcon("revisionHistory", true, changeMaxRevisions),
+                    getSvgIcon("revisions", true, changeMaxRevisions),
                     getSvgIcon("appLayout", true, changeAppLayout),
                     getSvgIcon("appWidth", true, changeAppWidth),
-                    getSvgIcon("swapTheme", true, changeAppTheme),
+                    getSvgIcon("appTheme", true, changeAppTheme),
                     getSvgIcon("appLogOff", true, changeAppLogOff),
                     getSvgIcon("appIconSize", true, changeAppIconSize),
                     getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur)
@@ -1910,7 +1932,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - APP_TASKBAR and APP_MORETASKBAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getAppMoreTaskbar = _ => dom.addDiv("appMoreTaskbar").attachAry([
+/*             const getAppMoreTaskbar = _ => dom.addDiv("appMoreTaskbar").attachAry([
                 getSvgIcon("reloadApp", true, thisApp.reload),
                 dom.addDiv("flexIconWrp").attachAry([
                     //getSvgIcon("changeDbPass", true, getChangePassword),
@@ -1922,7 +1944,29 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     //langModule(thisApp, repaintUI),
                     getSvgIcon("settings", true, openSettings)
                 ]),
-                getSvgIcon("arrowUp", "hide", (e => e.target.forebear(1).toggleClass("appMoreTaskbarShow")))
+                getSvgIcon("arrowUp", "hide", (e => {//history.back();
+                    
+                    e.target.forebear(1).toggleClass("appMoreTaskbarShow");
+                }))
+            ]); */
+            
+            appMoreTaskbar = dom.addDiv("appMoreTaskbar").attachAry([ // must be outside to enable history.back (popstate)
+                getSvgIcon("reloadApp", true, thisApp.reload),
+                dom.addDiv("flexIconWrp").attachAry([
+                    //getSvgIcon("changeDbPass", true, getChangePassword),
+                    //getSvgIcon("donate", "donate", getDonate),
+                    getSvgIcon("expDbIcon", "expDb", downloadCopyDB),
+                    getSvgIcon("impDbIcon", "impDb", importDb),
+                    getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
+                    
+                    //langModule(thisApp, repaintUI),
+                    getSvgIcon("settings", true, openSettings)
+                ]),
+                getSvgIcon("arrowUp", "hide", (e => {//history.back();
+                    historyStack.goBack();
+                    //e.target.forebear(1).toggleClass("appMoreTaskbarShow");
+                    //appMoreTaskbar.toggleClass("appMoreTaskbarShow");
+                }))
             ]);
 
             const getSearchForm = _ => {
@@ -1942,7 +1986,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 
                 const searchEvent = (e, attentionMethod) => {
                     console.log('searchEvent attentionMethod = ', attentionMethod);
-                    e.preventDefault();
+                    e.preventDefault(); ////???????????????????
                     if(lastSearchString !== searchInputEl.value){
                         preventScrollBlur = true;
                         lastSearchString = searchInputEl.value;
@@ -1958,51 +2002,55 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     if(attentionMethod === "focus") searchInputEl.focus({ preventScroll: true });
                 };
                 
-                const clearSearch = (e, attentionMethod) => {
+                searchFormEl.clearSearch = (e, attentionMethod) => {
                     searchInputEl.value = "";
                     searchEvent(e, attentionMethod);
+                    
                 };
-                
-                const hideForm = e => {
-                    searchFormEl.addClass("searchFormHide");
-                    clearSearch(e, "blur");
-                };
-                
-                const hideFormEl = getSvgIcon("arrowUp", "hide", hideForm);
-                
-                
+
+                const hideFormEl = getSvgIcon("arrowUp", "hide",  historyStack.goBack);
+
                 searchInputEl.on("blur", e => {
-                    console.log("searchInputEl blur");
                     setTimeout(_ => {
-                        inputIsBlured = true;
+                        inputIsBlured = searchInputEl !== document.activeElement;
                     },100);
                 });
                 searchInputEl.on("focus", e => {
-                    console.log("searchInputEl focus");
                     inputIsBlured = false;
-
                 });
                 
                 const searchResetBtn = getClearInputIcon(e => {
-                    clearSearch(e, inputIsBlured ? "auto" : "focus");
+                    searchFormEl.clearSearch(e, inputIsBlured ? "auto" : "focus");
                 });
+                
                 const delayInput = e => {
                     clearTimeout(inputTimeout);
                     inputTimeout = setTimeout(_ => searchEvent(e, "focus"), inputDelay);
                 };
                 
-                searchFormEl.showForm = e => {
+                searchFormEl.showForm = e => { //addModalToHistory(true);
+                    history.pushState({barOpen: true}, '', '');
                     searchFormEl.killClass("searchFormHide");
-                    clearSearch(e, "focus");
+                    searchFormEl.clearSearch(e, "focus");
                 };
+                
+/*                 const hideForm = e => {//history.back();
+                    if(history.state.lastBackExists){
+                        console.log("howMany times does hideForm fire?");
+                        searchFormEl.addClass("searchFormHide");
+                        searchFormEl.clearSearch(e, "blur");
+                    }
+                }; */
+                
+                //window.addEventListener('popstate',  hideForm);
+                
                 searchFormEl.getValue = _ => searchInputEl.value;
                 
                 searchFormEl.scrollBlur = _ => {
-                    //console.log("searchFormEl.scrollBlur - preventScrollBlur", preventScrollBlur);
                     if(!preventScrollBlur){
                         searchInputEl.blur();
                     }
-                }
+                };
                 
                 return searchFormEl.attachAry([
                     hideFormEl,
@@ -2011,22 +2059,42 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 ]).on("input", delayInput);//.on("submit", searchEvent);//.on("reset", clearSearch)
             };
 
-            const searchFormEl = getSearchForm();
+            searchFormEl = getSearchForm(); // this must be outside of the paintList
+            
+            console.log("searchFormEl = ", searchFormEl);
 
-            const getAppTaskbar = _ => dom.addDiv("appTaskbar").attachAry([
+/*             const getAppTaskbar = _ => dom.addDiv("appTaskbar").attachAry([
                 getSvgIcon("inputBoxSearchBtn", true, searchFormEl.showForm),
                 dom.addDiv("flexIconWrp").attachAry(Object.values(thisApp.dbStore).map(storeObj => storeObj.syncIcon)),
-                getSvgIcon("moreMenu", true, e => e.target.forebear(1).sibling(1).toggleClass("appMoreTaskbarShow")),
+                getSvgIcon("moreMenu", true, e => {
+                    //addModalToHistory(true);
+                    e.target.forebear(1).sibling(1).toggleClass("appMoreTaskbarShow");
+                }),
+                searchFormEl
+            ]); */
+            
+            const appTaskbar = dom.addDiv("appTaskbar").attachAry([
+                getSvgIcon("inputBoxSearchBtn", true, searchFormEl.showForm),
+                dom.addDiv("flexIconWrp").attachAry(Object.values(thisApp.dbStore).map(storeObj => storeObj.syncIcon)),
+                getSvgIcon("moreMenu", true, e => {
+                    //addModalToHistory(true);
+                    //e.target.forebear(1).sibling(1).toggleClass("appMoreTaskbarShow");
+                    history.pushState({barOpen: true}, '', '');
+                    appMoreTaskbar.addClass("appMoreTaskbarShow");
+                }),
                 searchFormEl
             ]);
             
-            const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
-
+            
+/*             const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
                 getAppTaskbar(),
                 getAppMoreTaskbar()
+            ]); */
+
+            const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
+                appTaskbar,
+                appMoreTaskbar
             ]);
-
-
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListTaskBarWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
             //const getListBarLabel = html => dom.addDiv("vListBarLabel").html(html);
@@ -2320,8 +2388,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
            const { clientX, clientY } = e.touches[0];
             touchStart = { x: clientX, y: clientY, time: Date.now() };
             if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) { 
-                if(!historyStack.isUserActive()){//userActive must be true to register history and not close application on the device or browser back button
+                if(!historyStack.isUserActive()){//userActive must be true to register history to not close the application on the device or browser back button
                     console.log("historyStack.isUserActive is FALSE");
+                    thisApp.message.tapToRegisterHistory();
                     return;
                 }
                 isVerticalSwipe = true;
@@ -2435,18 +2504,31 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
+
         historyStack.setUserActive(false);
-        
-        if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
-        
-        const disposableModals = document.body.kidsByClass("disposableModal");
-        if(disposableModals.length){
-            disposableModals.forEach(disposableModal => disposableModal.remove());
+        if(!window.history.state){
+            thisApp.message.exitAppConfirm();
+            window.history.pushState({lastBackExists: true}, '', '');
             return;
         }
 
-        mainGui.reset(); //resetUI - hide form, show list
-        modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
+            if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
+            
+            const disposableModals = document.body.kidsByClass("disposableModal");
+            if(disposableModals.length){
+                disposableModals.forEach(disposableModal => disposableModal.remove());
+                return;
+            }
+
+            mainGui.reset(); //resetUI - hide form, show list
+            modalSectionPromise.fulfill(e); // hide the currently opened modal section (Alerts || Loader || Credentials)
+
+        if(window.history.state.lastBackExists && searchFormEl && appMoreTaskbar){
+            searchFormEl.addClass("searchFormHide");
+            searchFormEl.clearSearch(e, "blur");
+            
+            appMoreTaskbar.killClass("appMoreTaskbarShow");
+        }
 
     });
     
@@ -2491,7 +2573,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 // /* Temp and tests */
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
-            dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())
+/*             dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())
             .attach(dom.addDiv("msgHistoryContentWrp").attachAry(mobileDebugAry.map(msgAry => 
                     dom.addDiv("msgHistoryRow dev")
                     .attach(
@@ -2500,7 +2582,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         .attach(dom.addSpan("msgText", msgAry[1]))
                     )
                 ))
-            ).attachTo(document.body);
+            ).attachTo(document.body); */
 /*             document.body.kidsByClass("svgIcon").forEach(el => { el.toggleClass("noDrop");});
             document.body.kidsByClass("pinInput").forEach(el => { el.toggleClass("alt"); });
             document.body.kidsByClass("padded").forEach(el => { el.toggleClass("alt"); });

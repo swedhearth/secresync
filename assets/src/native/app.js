@@ -500,7 +500,7 @@ function App(urlSearchParams){
 
         if(this.hidden){
             this.ui.blur(true);
-            this.sessionStorage.set(reloadBy, Date.now() + this.settings.logOffTime.current * 1000); //60000 ms = 1 minute
+            this.sessionStorage.set(reloadBy, Date.now() + this.settings.appLogOff.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
                 this.reload();
@@ -581,8 +581,8 @@ function App(urlSearchParams){
     }
     
     function AppSettings(thisApp){
-        this.logOffTime = new Setting(thisApp, "logOffTime", 0, 600, 60); //Infinity
-        this.maxRevisions = new Setting(thisApp, "maxRevisions", 0, 20, 10);
+        this.appLogOff = new Setting(thisApp, "appLogOff", 0, 600, 60); //Infinity
+        this.revisions = new Setting(thisApp, "revisions", 0, 20, 10);
         this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, 900, 5);
 
         this.darkTheme = thisApp.localStorage.get("darkTheme") === "true";

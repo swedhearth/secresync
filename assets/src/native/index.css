@@ -442,10 +442,10 @@ legend.appWidthLegend:before{
   background-image: url(../../../assets/static/appSvg/sprite.svg#appWidth);
 }
 
-legend.maxRevisionsLegend:before{
+legend.revisionsLegend:before{
   background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory); /*revisionHistory*/
 }
-legend.logOffTimeLegend:before{
+legend.appLogOffLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appLogOff);
 }
 legend.appIconSizeLegend:before{
@@ -455,6 +455,9 @@ legend.appLayoutLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appLayout);
 }
 
+legend.appBlurLegend:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
+}
 
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
@@ -1372,8 +1375,8 @@ body.mobileLayout .appMoreTaskbarShow{
     background-image: url(../../../assets/static/appSvg/sprite.svg#donate);
 }
 
-.swapTheme{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#swapTheme);
+.appTheme{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appTheme);
 }
 
 .appWidth{
@@ -1930,15 +1933,15 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     background-image: url(../../../assets/static/appSvg/sprite.svg#restoreRevision);
 }
 
-.revisionHistory{
+.revisions{
     background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory);
 }
 
-/* .revisionHistory.selected{
+/* .revisions.selected{
     box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-190) inset;
 }
 
-html.invert .revisionHistory.selected{
+html.invert .revisions.selected{
     box-shadow: 0.5px 0.5px 1px 0px var(--app-shade-grey-0);
 } */
 
@@ -2199,10 +2202,9 @@ padding: 1.5vh;
     background: var(--module-bckg);
     display: flex;
     flex-wrap: wrap;
-    /* padding: 1mm 14mm; */
     justify-content: space-evenly;
-        min-width: var(--min-app-width);
-            padding: 0 2mm;
+    min-width: var(--min-app-width);
+    padding: 1mm 2mm 0mm;
 }
 
 /* html.invert .settingsWrp{
@@ -2210,23 +2212,25 @@ padding: 1.5vh;
 } */
 
 
-.appWidthWrp, .maxRevisionsWrp, .logOffAppWrp, .appLayoutWrp, .iconSizeWrp{
-    /* position: relative; */
-/*     width: calc(100% + 28mm);
-    margin: 0 -14mm; */
-    border-top: var(--trace-gray-190);
-    width:100%;
+.adjustWrp{
+    min-width: var(--min-app-width);
+    padding: 0vh 0 1vh;
+    background: var(--module-bckg);
 }
 .adjustWrp fieldset{
     width: auto;
+        padding: 0vh 1vw;
 }
 .adjustWrp legend{
     line-height: 1.5;
+
 }
-/* .appWidthWrp fieldset, .maxRevisionsWrp fieldset, .logOffAppWrp fieldset, .appLayoutWrp fieldset{
-    width: auto;
+.adjustDetais{
+    width:100%;
+    padding: 1mm;
+    line-height: 1.5;
 }
- */
+
 
 .setingTitleBar .langWrp{
 /*     position: absolute;

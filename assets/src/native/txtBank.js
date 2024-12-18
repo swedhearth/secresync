@@ -392,7 +392,7 @@ const txtBankObj = {
         "editFormBtn": "Edit an Account",
         "restoreTrashedBtn": "Restore from the bin",
         "restoreRevisionBtn": "Restore this version",
-        "revisionHistory": "Revision History",
+        "revisions": "Revision History",
         "previousVersion": "Previous Version",
         "nextVersion": "Next Version",
         "btnCloseForm": "Close",
@@ -410,12 +410,12 @@ const txtBankObj = {
         "toggleToNote": "Convert Login Credentials to a Note",
         "changeLang": "Change Language",
         "donate": "Support Our Work!",
-        "swapTheme": "Switch application theme",
-        "appWidth" : "Application width",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appLogOff": "Logoff delay",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "appTheme": "Change Theme",
+        "appWidth" : "Adjust Width",
+        "appLayout": "Change Layout",
+        "appLogOff": "Set Logoff Delay",
+        "appIconSize": "Adjust Icon Size",
+        "appBlur": "Toggle Blur Effect",
         "credChecked": "Disable PIN-Only Login",
         "credUnchecked": "Enable PIN-Only Login",
         "unlockDb": "Unlock the Database",
@@ -504,11 +504,17 @@ const txtBankObj = {
         "downloadCsv": "Download Unprotected Database CVS",
         "downloadSnc": "Download Protected Database SecreSync File",
         "revision": "Version modified: ${ revisionDate }",
-        "maxRevisions": "Adjust the maximum accounts revisions stored by the application. Current revisions stored: ${ value }.",
-        "appWidth": "Adjust the width of the application window. Current width: ${ value } pixels.",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Adjust the application delay time. Current delay: ${value} seconds.",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "revisions": "Adjust the maximum accounts revisions stored by the application.<br>Current revisions stored: ${ value }.",
+        "appWidth": "Adjust the width of the application window.<br>Current width: ${ value } pixels.",
+        "appLayout": "Switch between different layouts for the application.<br>Current layout: ${value}.",
+        "appLogOff": "Set the delay time before the application logs off automa<br>tically.<br>Current delay: ${value} seconds.",
+        "appIconSize": "Change the size of the application icons.<br>Current icon size: ${value} pixels.",
+        "appBlur": "Enable or disable the blur effect when the application is not in focus.<br>Current setting: ${value}.",
+        "appBlurEnabled": "Enabled",
+        "appBlurDisabled": "Disabled",
+        "appLayoutAuto": "Automatic Layout",
+        "appLayoutMobile": "Mobile Layout",
+        "appLayoutDesktop": "Desktop Layout"
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -911,7 +917,7 @@ const txtBankObj = {
         "editFormBtn": "Editar una Cuenta",
         "restoreTrashedBtn": "Restaurar de la papelera",
         "restoreRevisionBtn": "Restaurar esta versión",
-        "revisionHistory": "Historial de revisiones",
+        "revisions": "Historial de revisiones",
         "previousVersion": "Versión anterior",
         "nextVersion": "Versión siguiente",
         "btnCloseForm": "Cerrar",
@@ -929,12 +935,12 @@ const txtBankObj = {
         "toggleToNote": "Convertir Credenciales de Inicio de Sesión en Nota",
         "changeLang": "Cambiar Idioma",
         "donate": "¡Apoya nuestro trabajo!",
-        "swapTheme": "Cambiar el tema de la aplicación",
-        "appWidth" : "Ancho de la aplicación",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appLogOff": "Retraso de cierre de sesión",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "appTheme": "Cambiar tema",
+        "appWidth" : "Ajustar el ancho",
+        "appLayout": "Cambiar diseño",
+        "appLogOff": "Establecer retraso de cierre de sesión",
+        "appIconSize": "Ajustar el tamaño de los iconos",
+        "appBlur": "Activar/Desactivar efecto de desenfoque",
         "credChecked": "Desactivar Inicio de Sesión Solo con PIN",
         "credUnchecked": "Activar Inicio de Sesión Solo con PIN",
         "unlockDb": "Desbloquear la Base de Datos",
@@ -1023,11 +1029,17 @@ const txtBankObj = {
         "downloadCsv": "Descargar CSV de base de datos no protegida",
         "downloadSnc": "Descargar archivo SecreSync de base de datos protegida",
         "revision": "Versión modificada: ${ revisionDate }",
-        "maxRevisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación. Revisiones actuales almacenadas: ${ value }.",
-        "appWidth": "Ajusta el ancho de la ventana de la aplicación. Ancho actual: ${ value } píxeles.",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Ajuste el tiempo de retraso de la aplicación. Retraso actual: ${value} segundos.",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "revisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación.<br>Revisiones actuales almacenadas: ${ value }.",
+        "appWidth": "Ajusta el ancho de la ventana de la aplicación.<br>Ancho actual: ${ value } píxeles.",
+        "appLayout": "Cambia entre diferentes diseños para la aplicación.<br>Diseño actual: ${value}.",
+        "appLogOff": "Establezca el tiempo de retraso antes de que la aplicación cierre sesión automáticamente.<br>Retraso actual: ${value} segundos.",
+        "appIconSize": "Cambia el tamaño de los iconos de la aplicación.<br>Tamaño actual de los iconos: ${value} píxeles.",
+        "appBlur": "Habilitar o deshabilitar el efecto de desenfoque cuando la aplicación no está en foco.<br>Configuración actual: ${value}.",
+        "appBlurEnabled": "Habilitado",
+        "appBlurDisabled": "Désactivé",
+        "appLayoutAuto": "Diseño automático",
+        "appLayoutMobile": "Diseño móvil",
+        "appLayoutDesktop": "Diseño de escritorio"
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1429,7 +1441,7 @@ const txtBankObj = {
         "editFormBtn": "Éditer un Compte",
         "restoreTrashedBtn": "Restaurer de la corbeille",
         "restoreRevisionBtn": "Restaurer cette version",
-        "revisionHistory": "Historique des modifications",
+        "revisions": "Historique des modifications",
         "previousVersion": "Version précédente",
         "nextVersion": "Version suivante",
         "btnCloseForm": "Fermer",
@@ -1447,12 +1459,12 @@ const txtBankObj = {
         "toggleToNote": "Convertir des Identifiants de Connexion en Note",
         "changeLang": "Changer de Langue",
         "donate": "Soutenez Notre Travail !",
-        "swapTheme": "Changer le thème de l'application",
-        "appWidth" : "Largeur de l'application",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appLogOff": "Délai de déconnexion",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "appTheme": "Changer le thème",
+        "appWidth" : "Ajuster la largeur",
+        "appLayout": "Changer la disposition",
+        "appLogOff": "Définir le délai de déconnexion",
+        "appIconSize": "Ajuster la taille des icônes",
+        "appBlur": "Activer/Désactiver l'effet de flou",
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
         "credUnchecked": "Activer la Connexion par PIN Uniquement",
         "unlockDb": "Déverrouiller la Base de Données",
@@ -1541,11 +1553,17 @@ const txtBankObj = {
         "downloadCsv": "Télécharger le CSV de la base de données non protégée",
         "downloadSnc": "Télécharger le fichier SecreSync de la base de données protégée",
         "revision": "Version modifiée: ${ revisionDate }",
-        "maxRevisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application. Révisions actuelles stockées : ${ value }.",
-        "appWidth": "Ajustez la largeur de la fenêtre de l'application. Largeur actuelle : ${ value } pixels.",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Ajustez le temps de délai de l'application. Délai actuel : ${value} secondes.",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "revisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application.<br>Révisions actuelles stockées : ${ value }.",
+        "appWidth": "Ajustez la largeur de la fenêtre de l'application.<br>Largeur actuelle : ${ value } pixels.",
+        "appLayout": "Basculez entre différentes dispositions pour l'application.<br>Disposition actuelle : ${value}.",
+        "appLogOff": "Définissez le temps de délai avant la déconnexion automatique de l'application.<br>Délai actuel : ${value} secondes.",
+        "appIconSize": "Changez la taille des icônes de l'application.<br>Taille actuelle des icônes : ${value} pixels.",
+        "appBlur": "Activez ou désactivez l'effet de flou lorsque l'application n'est pas au premier plan.<br>Paramètre actuel : ${value}.",
+        "appBlurEnabled": "Activé",
+        "appBlurDisabled": "Désactivé",
+        "appLayoutAuto": "Disposition automatique",
+        "appLayoutMobile": "Disposition mobile",
+        "appLayoutDesktop": "Disposition de bureau"
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1947,7 +1965,7 @@ const txtBankObj = {
         "editFormBtn": "Edytuj Konto",
         "restoreTrashedBtn": "Przywróć z kosza",
         "restoreRevisionBtn": "Przywróć tę wersję",
-        "revisionHistory": "Historia zmian",
+        "revisions": "Historia zmian",
         "previousVersion": "Poprzednia wersja",
         "nextVersion": "Następna wersja",
         "btnCloseForm": "Zamknij",
@@ -1965,12 +1983,12 @@ const txtBankObj = {
         "toggleToNote": "Konwertuj Dane Logowania na Notatkę",
         "changeLang": "Zmień Język",
         "donate": "Wesprzyj Naszą Pracę!",
-        "swapTheme": "Zmień motyw aplikacji",
-        "appWidth" : "Szerokość aplikacji",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appLogOff": "Opóźnienie wylogowania",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "appBlur": "appBlur TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "appTheme": "Zmień motyw",
+        "appWidth" : "Dostosuj szerokość",
+        "appLayout": "Zmień układ", 
+        "appLogOff": "Ustaw opóźnienie wylogowania",
+        "appIconSize": "Dostosuj rozmiar ikon",
+        "appBlur": "Przełącz efekt rozmycia",
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
         "credUnchecked": "Włącz Logowanie Tylko za Pomocą PIN",
         "unlockDb": "Odblokuj Bazę Danych",
@@ -2059,11 +2077,17 @@ const txtBankObj = {
         "downloadCsv": "Pobierz niechroniony CSV bazy danych",
         "downloadSnc": "Pobierz chroniony plik SecreSync bazy danych",
         "revision": "Wersja zmodyfikowana: ${ revisionDate }",
-        "maxRevisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację. Obecnie przechowywane wersje: ${ value }.",
-        "appWidth": "Dostosuj szerokość okna aplikacji. Obecna szerokość: ${ value } pikseli.",
-        "appLayout": "appLayout TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "logOffTime": "Dostosuj czas opóźnienia aplikacji. Aktualne opóźnienie: ${value} sekund.",
-        "appIconSize": "appIconSize TO DO", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        "revisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację.<br>Obecnie przechowywane wersje: ${ value }.",
+        "appWidth": "Dostosuj szerokość okna aplikacji.<br>Obecna szerokość: ${ value } pikseli.",
+        "appLayout": "Przełącz się między różnymi układami aplikacji.<br>Aktualny układ: ${value}.",
+        "appLogOff": "Ustaw czas opóźnienia przed automatycznym wylogowaniem aplikacji.<br>Aktualne opóźnienie: ${value} sekund.",
+        "appIconSize": "Zmień rozmiar ikon aplikacji.<br>Aktualny rozmiar ikon: ${value} pikseli.",
+        "appBlur": "Włącz lub wyłącz efekt rozmycia, gdy aplikacja nie jest w fokusie.<br>Aktualne ustawienie: ${value}.",
+        "appBlurEnabled": "Włączone",
+        "appBlurDisabled": "Wyłączone",
+        "appLayoutAuto": "Automatyczny układ",
+        "appLayoutMobile": "Układ mobilny",
+        "appLayoutDesktop": "Układ desktopowy"
       },
       "values": {
         "badPass": "Nieprawidłowe hasło... Usuwanie wszystkich połączen z bazą danych...",
