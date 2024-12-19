@@ -566,7 +566,7 @@ function App(urlSearchParams){
         this.step = step;
 
         this.get = _ => {
-            const present = parseInt(thisApp.localStorage.get(name)) || this.current || this.def;
+            const present = parseInt(thisApp.localStorage.get(name)) || this.current || this.def();
             
             if(present < this.min) return this.min;
             if(present > this.max) return this.max;
@@ -577,27 +577,34 @@ function App(urlSearchParams){
             this.current = parseInt(string);
         };
         this.current = this.get();
-
+        this.restoreDefault = onInput => {
+            this.current = this.def();
+            
+            console.log(this.current)
+            
+            thisApp.localStorage.delete(name);
+            onInput(this.current);
+        }
     }
     
     function AppSettings(thisApp){
-        this.appLogOff = new Setting(thisApp, "appLogOff", 0, 600, 60); //Infinity
-        this.revisions = new Setting(thisApp, "revisions", 0, 20, 10);
-        this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, 900, 5);
+        this.appLogOff = new Setting(thisApp, "appLogOff", 0, 600, _=> 60); //Infinity
+        this.revisions = new Setting(thisApp, "revisions", 0, 20, _=> 10);
+        this.appWidth = new Setting(thisApp, "appWidth", 340, document.body.clientWidth, _=> document.body.clientWidth > 900 ? 900 : document.body.clientWidth, 5);
 
-        this.darkTheme = thisApp.localStorage.get("darkTheme") === "true";
-        this.appLayout = new Setting(thisApp, "appLayout", 0, 2, this.appWidth.current < 800 ? 2 : 1, 1); // 0: auto, 1: normal, 2: mobile //&& window.TOUCH_DEVICE
+        this.appTheme = thisApp.localStorage.get("appTheme") === "true";
+        this.appLayout = new Setting(thisApp, "appLayout", 1, 2, _=> this.appWidth.current < 800 && window.TOUCH_DEVICE ? 1 : 2); // 1: mobile, 2: desktop //
         this.isMobileLayout = _ => {
-            const userLayoutInt = parseInt(thisApp.localStorage.get("appLayout"));
+            const userLayoutInt = thisApp.localStorage.get("appLayout");
             if(userLayoutInt){
-                 if(userLayoutInt === 2) return true;
-                 if(userLayoutInt === 1) return false;
+                 if(userLayoutInt === "1") return true;
+                 if(userLayoutInt === "2") return false;
             }
             return this.appWidth.current < 800;
         };
         this.appBlur = thisApp.localStorage.get("appBlur") === "false" ? false : true;
         
-        this.appIconSize = new Setting(thisApp, "appIconSize", 30, 90, 60, 5);
+        this.appIconSize = new Setting(thisApp, "appIconSize", 30, 90, _=> 60, 5);
     }
 
     /* Initiate App*/

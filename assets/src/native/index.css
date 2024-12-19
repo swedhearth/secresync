@@ -459,6 +459,10 @@ legend.appBlurLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
 }
 
+legend.appThemeLegend:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#appTheme);
+}
+
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
     
@@ -2166,6 +2170,7 @@ padding: 1.5vh;
 /* SETTINGS*/
 .settingsSection{
     max-width: var(--max-app-width);
+        background: var(--module-bckg);
 }
 
 .setingTitleBar{
@@ -2187,16 +2192,11 @@ padding: 1.5vh;
     min-width: var(--min-app-width);
 }
 
+.setingTitleBar .langWrp{
+    margin: 0mm 2mm;
+    align-self: flex-start;
+}
 
-/* .setingTitleBar:before{
-    content: "";
-    padding: var(--svgIcon-padding-small);
-    margin: 0 0.65rem;
-    background-size: var(--svg-background-size);
-    background-position: center;
-    background-repeat: no-repeat;
-        background-image: url(../../../assets/static/appSvg/sprite.svg#cog);
-} */
 
 .settingsWrp{
     background: var(--module-bckg);
@@ -2204,44 +2204,46 @@ padding: 1.5vh;
     flex-wrap: wrap;
     justify-content: space-evenly;
     min-width: var(--min-app-width);
-    padding: 1mm 2mm 0mm;
+    padding: 1mm 2mm 2mm;
 }
 
-/* html.invert .settingsWrp{
-    box-shadow: -1px -1px 4px 1px var(--app-shade-grey-100);
-} */
-
-
-.adjustWrp{
+/* .adjustWrp{
     min-width: var(--min-app-width);
     padding: 0vh 0 1vh;
     background: var(--module-bckg);
-}
-.adjustWrp fieldset{
+} */
+.settingsWrp fieldset{
     width: auto;
-        padding: 0vh 1vw;
+    padding: 0vh 1vw;
 }
-.adjustWrp legend{
+.settingsWrp legend{
     line-height: 1.5;
-
 }
+
 .adjustDetais{
     width:100%;
     padding: 1mm;
     line-height: 1.5;
 }
-
-
-.setingTitleBar .langWrp{
-/*     position: absolute;
-    left:0; */
-    margin: 0mm 2mm;
-        align-self: flex-start;
+.restoreSettings{
+    padding: 0.5em;
+    margin: 1mm;
+    margin-left: auto;
+    background: var(--module-bckg);
+    border-radius: 0.5em;
 }
 
-/* .settingsWrp .svgIcon{
-    margin: 2mm;
-} */
+.restoreSettings:before{
+    content: "";
+    background-image: url(../../../assets/static/appSvg/sprite.svg#restoreSettings);
+    background-size: var(--svg-background-size);
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: var(--svgIcon-padding-smaller);
+    margin-right: 0.5em;
+}
+
+
 .settingsWrp .svgIcon:not(.active){
     opacity:0.3;
 }

@@ -55,13 +55,15 @@ DONE!!! revision history move to the bottom bar and hide the account modificatio
 
 DONE!!!!!!!! horizontal scroll bar  to make thin as vertical
 
-TODO make all database icons as thick as the current expDb
+TODO make all database icons as thick as the current expDb - And some other icons maybe a little fatter.
 
 DONE!!! revision wrap to caption in the middle
 DONE!!!!!!!!!! select the history button when revision displayed
 DONE!!!!!!!!!!!!! bell fr historyclose button to arrowleft in Formexport account to finish
 |Done!!swap main bar with taskbar
 make some of the settings in the database (DbObj) settings directly
+
+c
 
 */
 

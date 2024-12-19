@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_88";
+    let tempVer = "MobileOptimisation_89";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -46,7 +46,7 @@ function Interface(thisApp){
             });
             const focusInpEl = firstEmptyInpEl || inpEls[0];
 
-            if(!focusInpEl.disabled) {
+            if(!focusInpEl?.disabled) {
                 focusInpEl.focus();
                 window.requestAnimationFrame(_ => focusInpEl.focus()); // let the focus scroll to the element, then refocus after scroll will blur the input
             }
@@ -585,7 +585,7 @@ function Interface(thisApp){
         
         this.paintFullArchive = _ => this.resetFullArchive()
             .attach(
-                dom.addDiv("msgHistoryRow title", getTxtBankTitleTxt("msgHistory") + ":")
+                dom.addDiv("msgHistoryRow title", getTxtBankTitleTxt("msgHistory"))
                 .attach(
                     getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
                         historyStack.goBack();
@@ -1661,237 +1661,138 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
-            
 
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getDonate = _ => {
-                 console.log("TO DO getDonate");
-            }
-            
-            const changeAppTheme = _ => {
-                document.documentElement.classList.toggle("invert");
-                thisApp.settings.darkTheme = !thisApp.settings.darkTheme;
-
-                thisApp.localStorage.set("darkTheme", thisApp.settings.darkTheme);
-                const themeColor = thisApp.settings.darkTheme ? '#050505' : '#fafafa';
-                document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
-                document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
-            };
-            const changeAppBlur = e => {
+            const addStaticSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
                 const settingsSection = e.currentTarget.forebear(2);
-                thisApp.settings.appBlur = !thisApp.settings.appBlur;
-                thisApp.localStorage.set("appBlur", thisApp.settings.appBlur);
-                e.target.toggleClass("blurIcon");
+                const existingFieldset = settingsSection.kidsByClass(`${settingName}Field`)[0];
+                if(existingFieldset) existingFieldset.kill();
+                const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
+                const thisSettingValue = thisApp.settings[settingName] = !thisApp.settings[settingName];
+
+                thisApp.localStorage.set(settingName, thisSettingValue);
+                adjustValue(thisSettingValue);
                 
-                const flashFieldet = dom.addDiv("adjustWrp appBlurWrp").attach(getFieldsetEl("padded", getTxtBankTitleTxt("appBlur"), "appBlurLegend").attach(dom.addDiv("adjustDetais", getTxtBankHtmlTxt("appBlur", {value: getTxtBankHtmlTxt("appBlur" + (thisApp.settings.appBlur ? "Enabled" : "Disabled"))})))).attachTo(settingsSection);
-                
-                setTimeout(_ => {
-                    flashFieldet.kill();
-                }, 50000);
+                getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`)
+                .attach(dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(thisSettingValue)})))
+                .attachTo(settingsSection).onClick(e => e.currentTarget.kill());
             };
-            const rangeInpFieldset = (settingName, adjustDetais, min, max, value, step, onInput) => {
+
+            const addRangeSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
+                e.target.toggleClass("selected");
+                const settingsSection = e.currentTarget.forebear(2);
+                const existingFieldset = settingsSection.kidsByClass(`${settingName}Field`)[0];
+                if(existingFieldset) return existingFieldset.kill();
+                
+                const thisSetting = thisApp.settings[settingName];
+                const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
+                const toggleRestoreDiv = value => restoreDiv[thisSetting.def() === value ? "hide" : "show"]();
+                
+                
+                const value = thisSetting.get();
+                const onInput = e => {
+                    let value = e.target?.value || e;
+                    if(e.target){
+                        thisSetting.set(value);
+                    }else{
+                        rangeInputEl.value = value;
+                    }
+                    const valueInt = parseInt(value);
+                    toggleRestoreDiv(valueInt);
+                    adjustDetailsDiv.txt(getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}));
+                    if(adjustValue) adjustValue(valueInt);
+                };
+                
                 const rangeInputEl = getInpEl({
                     type: "range",
                     name: settingName + "InpEl",
-                    min: min,
-                    max: max,
+                    min: thisSetting.min,
+                    max: thisSetting.max,
                     value: value,
                     _onInput: onInput,
                     _noBlur: true
                 });
-                const changeRangeInputValue = val => {
-                    rangeInputEl.value = parseInt(rangeInputEl.value) + val;
+                
+                const changeRangeInputValue = value => {
+                    rangeInputEl.value = parseInt(rangeInputEl.value) + value;
                     rangeInputEl.dispatchEvent(new Event('input'));
                 };
                 
-                return getFieldsetEl("padded", getTxtBankTitleTxt(settingName), settingName + "Legend").attachAry([ //"appLayoutLegend",
-                    getSvgIcon("decrease", true, _ => changeRangeInputValue(-step)),
+                const restoreDiv = dom.addDiv("restoreSettings", getTxtBankTitleTxt("restoreSettings")).onClick(_ => thisSetting.restoreDefault(onInput));
+                toggleRestoreDiv(value);
+
+                const adjustDetailsDiv = dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}))
+
+                getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`).attachAry([ //"appLayoutLegend",
+                    getSvgIcon("decrease", true, _ => changeRangeInputValue(-thisSetting.step)),
                     rangeInputEl,
-                    getSvgIcon("increase", true, _ => changeRangeInputValue(step)),
-                    dom.addDiv("adjustDetais", adjustDetais)
-                ]);
+                    getSvgIcon("increase", true, _ => changeRangeInputValue(thisSetting.step)),
+                    adjustDetailsDiv,
+                    restoreDiv
+                ]).attachTo(settingsSection);
             };
             
-            const changeAppLayout = e =>{ // TO DO STEPS ARE NOT WORKING?
-                e.target.toggleClass("selected");
-                let appLayoutWrp = document.body.kidsByClass("appLayoutWrp")[0];
-                if(appLayoutWrp) return appLayoutWrp.kill();
-                const settingsSection = e.currentTarget.forebear(2);
-                
-                const currentAppLayout = thisApp.settings.appLayout.get();
-                
-                //console.log(currentAppLayout);
-                
-                const layoutValueText = {
-                        "0": "appLayoutAuto",
-                        "1": "appLayoutMobile",
-                        "2": "appLayoutDesktop"
-                    };
-
-                const settAppWidth = async e => {
-                    thisApp.settings.appLayout.set(e.target.value);
-                    
-/*                     const currentLayout = {
-                        "0": "appLayoutAuto",
-                        "1": "appLayoutMobile",
-                        "2": "appLayoutDesktop"
-                    }[e.target.value]; */
-                    
-                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appLayout", {value: getTxtBankHtmlTxt(layoutValueText[e.target.value])}));
-
+            const changeAppBlur = (e, settingName) => {
+                addStaticSettingFieldset(e, settingName, _ => e.target.toggleClass("blurIcon"), {true: "appBlurEnabled", false: "appBlurDisabled"});
+            };
+            
+            const changeAppTheme = (e, settingName) => {
+                const adjustValue = value => {
+                    document.documentElement.classList.toggle("invert");
+                    const themeColor = thisApp.settings.appTheme ? '#050505' : '#fafafa';
+                    document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+                    document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
+                };
+                addStaticSettingFieldset(e, settingName, adjustValue, {true: "darkThemeEnabled", false: "darkThemeDisabled"});
+            };
+            
+            const changeAppLayout = (e, settingName) =>{
+                const layoutValueTextObj = {
+                    "1": "appLayoutMobile",
+                    "2": "appLayoutDesktop",
+                };
+                const adjustValue = value => thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
+                addRangeSettingFieldset(e, settingName, adjustValue, layoutValueTextObj);
+            };
+            
+            const changeAppWidth = (e, settingName) => {
+                const adjustValue = valueInt => {
+                    document.documentElement.style.setProperty("--max-app-width", `${valueInt}px`);
                     thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
-                };
-
-                const appLayoutFieldset = rangeInpFieldset(
-                    "appLayout",
-                    getTxtBankHtmlTxt("appLayout", {value: getTxtBankHtmlTxt(layoutValueText[currentAppLayout])}),
-                    thisApp.settings.appLayout.min, //320, //min
-                    thisApp.settings.appLayout.max, //max
-                    currentAppLayout, //value
-                    thisApp.settings.appLayout.step, //step
-                    settAppWidth // onInput
-                );
-
-                dom.addDiv("adjustWrp appLayoutWrp").attach(appLayoutFieldset).attachTo(settingsSection);
+                }
+                addRangeSettingFieldset(e, settingName, adjustValue);
             };
             
-            const changeAppWidth = e => {
-                e.target.toggleClass("selected");
-                let appWidthWrp = document.body.kidsByClass("appWidthWrp")[0];
-                if(appWidthWrp) return appWidthWrp.kill();
-                const settingsSection = e.currentTarget.forebear(2);
-                
-                const currentAppWidth = thisApp.settings.appWidth.get();
+            const changeMaxRevisions = addRangeSettingFieldset;
+            
+            const changeAppLogOff = addRangeSettingFieldset;
 
-                const settAppWidth = async e => {
-                    document.documentElement.style.setProperty("--max-app-width", `${parseInt(e.target.value)}px`);
-                    thisApp.settings.appWidth.set(e.target.value);
-                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appWidth", {value: e.target.value}));
-
-                    thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
-                };
-
-                const appWidthFieldset = rangeInpFieldset(
-                    "appWidth",
-                    getTxtBankHtmlTxt("appWidth", {value: currentAppWidth}),
-                    thisApp.settings.appWidth.min, //320, //min
-                    thisApp.settings.appWidth.max, //max
-                    currentAppWidth, //value
-                    5, //step
-                    settAppWidth // onInput
-                );
-
-                dom.addDiv("adjustWrp appWidthWrp").attach(appWidthFieldset).attachTo(settingsSection);
+            const changeAppIconSize = (e, settingName) => {
+                const adjustValue = valueInt => {
+                     document.documentElement.style.setProperty("--svg-background-size", `${valueInt}%`);
+                }
+                addRangeSettingFieldset(e, settingName, adjustValue);
             };
             
-            const changeMaxRevisions = e => {
-                e.target.toggleClass("selected");
-                let maxRevisionsWrp = document.body.kidsByClass("maxRevisionsWrp")[0];
-                if(maxRevisionsWrp) return maxRevisionsWrp.kill();
-                
-                const settingsSection = e.currentTarget.forebear(2);
-
-                const currentMaxRevisions = thisApp.settings.revisions.get(); //parseInt(thisApp.localStorage.get("revisions")) || 10;
-                
-                const settMaxRevision = async e => {
-                    //thisApp.localStorage.set("revisions", e.target.value);
-                    thisApp.settings.revisions.set(e.target.value);
-                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("revisions", {value: e.target.value}));
-                };
-                
-                dom.addDiv("adjustWrp maxRevisionsWrp").attach( 
-                    rangeInpFieldset(
-                        "revisions", //revisions
-                        getTxtBankHtmlTxt("revisions", {value: currentMaxRevisions}),
-                        thisApp.settings.revisions.min, //0, //min
-                        thisApp.settings.revisions.max, //20, // max
-                        currentMaxRevisions, // value
-                        thisApp.settings.revisions.step, // step
-                        settMaxRevision // onInput
-                    )
-                ).attachTo(settingsSection);
-            };
-            
-            const changeAppLogOff = e => {
-                e.target.toggleClass("selected");
-                let logOffAppWrp = document.body.kidsByClass("logOffAppWrp")[0];
-                if(logOffAppWrp) return logOffAppWrp.kill();
-                
-                const settingsSection = e.currentTarget.forebear(2);
-
-                const currentLogOffTime = thisApp.settings.appLogOff.get();
-                
-                const settAppLogOff = async e => {
-                    thisApp.settings.appLogOff.set(e.target.value);
-                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appLogOff", {value: e.target.value}));
-                };
-                
-                dom.addDiv("adjustWrp logOffAppWrp").attach( 
-                    rangeInpFieldset(
-                        "appLogOff",
-                        getTxtBankHtmlTxt("appLogOff", {value: currentLogOffTime}),
-                        thisApp.settings.appLogOff.min, //min
-                        thisApp.settings.appLogOff.max, // max
-                        currentLogOffTime, // value
-                        thisApp.settings.appLogOff.step, // step
-                        settAppLogOff // onInput
-                    )
-                ).attachTo(settingsSection);
+            const getDonate = _ => {
+                 console.log("TO DO getDonate");
             };
 
-            const changeAppIconSize = e => {
-                e.target.toggleClass("selected");
-                let iconSizeWrp = document.body.kidsByClass("iconSizeWrp")[0];
-                if(iconSizeWrp) return iconSizeWrp.kill();
-                
-                const settingsSection = e.currentTarget.forebear(2);
-
-                const currentAppIconSize = thisApp.settings.appIconSize.get();
-                
-                console.log(currentAppIconSize);
-                
-                const settAppIconSize = async e => {
-                    thisApp.settings.appIconSize.set(e.target.value);
-                    
-                    document.documentElement.style.setProperty("--svg-background-size", `${parseInt(e.target.value)}%`);
-
-                    e.currentTarget.forebear(1).kid(4).txt(getTxtBankHtmlTxt("appIconSize", {value: e.target.value}));
-                    
-
-                };
-                
-                dom.addDiv("adjustWrp iconSizeWrp").attach( 
-                    rangeInpFieldset(
-                        "appIconSize",
-                        getTxtBankHtmlTxt("appIconSize", {value: currentAppIconSize}),
-                        thisApp.settings.appIconSize.min, //min
-                        thisApp.settings.appIconSize.max, // max
-                        currentAppIconSize, // value
-                        thisApp.settings.appIconSize.step, // step
-                        settAppIconSize // onInput
-                    )
-                ).attachTo(settingsSection);
-            };
-
-            
             const openSettings = e => {
                 const contextIcons = [
+                    getSvgIcon("appLogOff", true, e => changeAppLogOff(e, "appLogOff")),
+                    getSvgIcon("appLayout", true, e => changeAppLayout(e, "appLayout")),
+                    getSvgIcon("appWidth", true, e => changeAppWidth(e, "appWidth")),
+                    getSvgIcon("appIconSize", true, e => changeAppIconSize(e, "appIconSize")),
+                    getSvgIcon("revisions", true, e => changeMaxRevisions(e, "revisions")),
+                    getSvgIcon("appTheme", true, e => changeAppTheme(e, "appTheme")),
+                    getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", e => changeAppBlur(e, "appBlur")),
                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
                         ? _ => {
                             window.addEventListener('popstate',  getChangePassword, {once: true});
                             historyStack.goBack();
                         }
                         : null),
-                    getSvgIcon("donate", true, getDonate),
-                    getSvgIcon("revisions", true, changeMaxRevisions),
-                    getSvgIcon("appLayout", true, changeAppLayout),
-                    getSvgIcon("appWidth", true, changeAppWidth),
-                    getSvgIcon("appTheme", true, changeAppTheme),
-                    getSvgIcon("appLogOff", true, changeAppLogOff),
-                    getSvgIcon("appIconSize", true, changeAppIconSize),
-                    getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", changeAppBlur)
-                    
-                    
+                    getSvgIcon("donate", true, getDonate)
                 ];
                 
                 dom.addDiv("disposableModal settingsSection")
@@ -1904,9 +1805,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                             repaintUI();
                         })
                     )
-                    .attach(dom.addSpan("", "TODO SETTINGS TITLE"))
+                    .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
                     .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
-                        getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
+                        getSvgIcon("closeFullArchive", "btnCloseForm", _ => { 
                             historyStack.goBack();
                         })
                     )
@@ -1969,13 +1870,16 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 }))
             ]);
 
+
             const getSearchForm = _ => {
                 let lastSearchString = "";
-                let preventScrollBlur = false;
+               // let preventScrollBlur = false;
                 let inputTimeout;
                 let inputIsBlured = true;
                 const inputDelay = 500; //500ms
                 const searchFormEl = dom.addForm("searchForm searchFormHide");
+                
+                searchFormEl.preventScrollBlur = false;
                 
                 const searchInputEl = getInpEl({
                     type: "text",
@@ -1988,12 +1892,14 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     console.log('searchEvent attentionMethod = ', attentionMethod);
                     e.preventDefault(); ////???????????????????
                     if(lastSearchString !== searchInputEl.value){
-                        preventScrollBlur = true;
+                        searchFormEl.preventScrollBlur = true;
+                        console.log("Prevent Scroll Blur is TRUE");
                         lastSearchString = searchInputEl.value;
                         paintList(); //vListWrp
                         //console.log("List Painted -> preventScrollBlur should be true", preventScrollBlur);
                         setTimeout(_ => {
-                            preventScrollBlur = false; // give time for the list repaint after the search
+                            searchFormEl.preventScrollBlur = false; // give time for the list repaint after the search
+                            console.log("Prevent Scroll Blur is FALSE");
                         },1000);
                     }
                     
@@ -2046,22 +1952,18 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 
                 searchFormEl.getValue = _ => searchInputEl.value;
                 
-                searchFormEl.scrollBlur = _ => {
-                    if(!preventScrollBlur){
-                        searchInputEl.blur();
-                    }
-                };
+                searchFormEl.scrollBlur = searchInputEl.blur;
                 
                 return searchFormEl.attachAry([
                     hideFormEl,
                     searchInputEl,
                     searchResetBtn
-                ]).on("input", delayInput);//.on("submit", searchEvent);//.on("reset", clearSearch)
+                ]).on("input", delayInput).on("submit", searchEvent);//.on("reset", clearSearch)
             };
 
             searchFormEl = getSearchForm(); // this must be outside of the paintList
             
-            console.log("searchFormEl = ", searchFormEl);
+            //console.log("searchFormEl = ", searchFormEl);
 
 /*             const getAppTaskbar = _ => dom.addDiv("appTaskbar").attachAry([
                 getSvgIcon("inputBoxSearchBtn", true, searchFormEl.showForm),
@@ -2169,9 +2071,11 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
-                    //document.activeElement.blur(); // lose focus on search input element
-                    searchFormEl.scrollBlur();
-                    /* searchFormEl */
+
+                    if(searchFormEl.preventScrollBlur && thisApp.settings.isMobileLayout()) return console.log("Will return from scrolling"); // vListScrollTop = e.target.scrollTop; ?????
+
+                    if(!searchFormEl.preventScrollBlur) searchFormEl.scrollBlur();
+
                     const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = vListScrollTop - e.target.scrollTop;
                     const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
@@ -2554,12 +2458,12 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
 
 /* Apply settings */
-    //if(thisApp.localStorage.get("darkTheme") === "true") document.body.addClass("invert");
+    //if(thisApp.localStorage.get("appTheme") === "true") document.body.addClass("invert");
     //const appWidth = thisApp.localStorage.get("appWidth");
     //if(appWidth) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
     
 
-    if(thisApp.settings.darkTheme){
+    if(thisApp.settings.appTheme){
         document.documentElement.classList.add("invert");
     }
     

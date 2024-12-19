@@ -435,7 +435,8 @@ const txtBankObj = {
         "settings": "Settings",
         "msgHistory": "Notification History",
         "installApp": "Install SecreSync on this device",
-        "updateApp": "A new version of SecreSync is available. Update the application"
+        "updateApp": "A new version of SecreSync is available. Update the application",
+        "restoreSettings": "Restore Defaults"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -507,14 +508,16 @@ const txtBankObj = {
         "revisions": "Adjust the maximum accounts revisions stored by the application.<br>Current revisions stored: ${ value }.",
         "appWidth": "Adjust the width of the application window.<br>Current width: ${ value } pixels.",
         "appLayout": "Switch between different layouts for the application.<br>Current layout: ${value}.",
-        "appLogOff": "Set the delay time before the application logs off automa<br>tically.<br>Current delay: ${value} seconds.",
+        "appLayoutMobile": "Mobile Layout",
+        "appLayoutDesktop": "Desktop Layout",
+        "appLogOff": "Set the delay time before the application logs off automatically.<br>Current delay: ${value} seconds.",
         "appIconSize": "Change the size of the application icons.<br>Current icon size: ${value} pixels.",
         "appBlur": "Enable or disable the blur effect when the application is not in focus.<br>Current setting: ${value}.",
         "appBlurEnabled": "Enabled",
         "appBlurDisabled": "Disabled",
-        "appLayoutAuto": "Automatic Layout",
-        "appLayoutMobile": "Mobile Layout",
-        "appLayoutDesktop": "Desktop Layout"
+        "appTheme": "Switch between Light and Dark themes of the application.<br>Current theme: ${value}.",
+        "darkThemeEnabled": "Dark Theme",
+        "darkThemeDisabled": "Light Theme"
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -960,7 +963,8 @@ const txtBankObj = {
         "settings": "Configuración",
         "msgHistory": "Historial de Notificaciones",
         "installApp": "Instala SecreSync en este dispositivo",
-        "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación"
+        "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación",
+        "restoreSettings": "Restaurar valores predeterminados"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -1032,14 +1036,16 @@ const txtBankObj = {
         "revisions": "Ajusta el número máximo de revisiones de cuentas almacenadas por la aplicación.<br>Revisiones actuales almacenadas: ${ value }.",
         "appWidth": "Ajusta el ancho de la ventana de la aplicación.<br>Ancho actual: ${ value } píxeles.",
         "appLayout": "Cambia entre diferentes diseños para la aplicación.<br>Diseño actual: ${value}.",
+        "appLayoutMobile": "Diseño móvil",
+        "appLayoutDesktop": "Diseño de escritorio",
         "appLogOff": "Establezca el tiempo de retraso antes de que la aplicación cierre sesión automáticamente.<br>Retraso actual: ${value} segundos.",
         "appIconSize": "Cambia el tamaño de los iconos de la aplicación.<br>Tamaño actual de los iconos: ${value} píxeles.",
         "appBlur": "Habilitar o deshabilitar el efecto de desenfoque cuando la aplicación no está en foco.<br>Configuración actual: ${value}.",
         "appBlurEnabled": "Habilitado",
         "appBlurDisabled": "Désactivé",
-        "appLayoutAuto": "Diseño automático",
-        "appLayoutMobile": "Diseño móvil",
-        "appLayoutDesktop": "Diseño de escritorio"
+        "appTheme": "Cambia entre los temas claro y oscuro de la aplicación.<br>Tema actual: ${value}.",
+        "darkThemeEnabled": "Tema oscuro",
+        "darkThemeDisabled": "Tema claro"
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1484,7 +1490,8 @@ const txtBankObj = {
         "settings": "Paramètres",
         "msgHistory": "Historique des Notifications",
         "installApp": "Installez SecreSync sur cet appareil",
-        "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application"
+        "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application",
+        "restoreSettings": "Restaurer les paramètres par défaut"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1556,14 +1563,16 @@ const txtBankObj = {
         "revisions": "Ajustez le nombre maximum de révisions de comptes stockées par l'application.<br>Révisions actuelles stockées : ${ value }.",
         "appWidth": "Ajustez la largeur de la fenêtre de l'application.<br>Largeur actuelle : ${ value } pixels.",
         "appLayout": "Basculez entre différentes dispositions pour l'application.<br>Disposition actuelle : ${value}.",
+        "appLayoutMobile": "Disposition mobile",
+        "appLayoutDesktop": "Disposition de bureau",
         "appLogOff": "Définissez le temps de délai avant la déconnexion automatique de l'application.<br>Délai actuel : ${value} secondes.",
         "appIconSize": "Changez la taille des icônes de l'application.<br>Taille actuelle des icônes : ${value} pixels.",
         "appBlur": "Activez ou désactivez l'effet de flou lorsque l'application n'est pas au premier plan.<br>Paramètre actuel : ${value}.",
         "appBlurEnabled": "Activé",
         "appBlurDisabled": "Désactivé",
-        "appLayoutAuto": "Disposition automatique",
-        "appLayoutMobile": "Disposition mobile",
-        "appLayoutDesktop": "Disposition de bureau"
+        "appTheme": "Basculez entre les thèmes clair et sombre de l'application.<br>Thème actuel : ${value}.",
+        "darkThemeEnabled": "Thème sombre",
+        "darkThemeDisabled": "Thème clair"
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -2008,7 +2017,8 @@ const txtBankObj = {
         "settings": "Ustawienia",
         "msgHistory": "Historia Powiadomień",
         "installApp": "Zainstaluj SecreSync na tym urządzeniu",
-        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację"
+        "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację",
+        "restoreSettings": "Przywróć ustawienia domyślne"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",
@@ -2080,14 +2090,17 @@ const txtBankObj = {
         "revisions": "Dostosuj maksymalną liczbę przechowywanych wersji kont przez aplikację.<br>Obecnie przechowywane wersje: ${ value }.",
         "appWidth": "Dostosuj szerokość okna aplikacji.<br>Obecna szerokość: ${ value } pikseli.",
         "appLayout": "Przełącz się między różnymi układami aplikacji.<br>Aktualny układ: ${value}.",
+        "appLayoutMobile": "Układ mobilny",
+        "appLayoutDesktop": "Układ desktopowy",
         "appLogOff": "Ustaw czas opóźnienia przed automatycznym wylogowaniem aplikacji.<br>Aktualne opóźnienie: ${value} sekund.",
         "appIconSize": "Zmień rozmiar ikon aplikacji.<br>Aktualny rozmiar ikon: ${value} pikseli.",
         "appBlur": "Włącz lub wyłącz efekt rozmycia, gdy aplikacja nie jest w fokusie.<br>Aktualne ustawienie: ${value}.",
         "appBlurEnabled": "Włączone",
         "appBlurDisabled": "Wyłączone",
-        "appLayoutAuto": "Automatyczny układ",
-        "appLayoutMobile": "Układ mobilny",
-        "appLayoutDesktop": "Układ desktopowy"
+        "appTheme": "Przełącz między jasnym i ciemnym motywem aplikacji.<br>Aktualny motyw: ${value}.",
+        "darkThemeEnabled": "Motyw ciemny",
+        "darkThemeDisabled": "Motyw jasny"
+        
       },
       "values": {
         "badPass": "Nieprawidłowe hasło... Usuwanie wszystkich połączen z bazą danych...",
