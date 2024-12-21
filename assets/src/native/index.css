@@ -156,9 +156,7 @@ body *{
     z-index: 2;
     transition: opacity 0.3s linear;
     display: none;
-
-    /* backdrop-filter: blur(5px); */
-            background: rgb(130 130 130 / 20%);
+    background: rgb(0 0 0 / 20%);
 }
 
 .spinnerSection.fade{
@@ -278,11 +276,11 @@ html.invert .svgIcon.selected {
 
 
 @media(hover: hover) and (pointer: fine) {
-    .svgIcon.active:hover:not(.svgIcon.active:active){
+    .svgIcon.active:hover:not(.svgIcon.active:active, .svgIcon.selected){
         box-shadow: 1px 1px 0px var(--app-shade-grey-190);
     }
     
-    html.invert .svgIcon.active:hover:not(.svgIcon.active:active){
+    html.invert .svgIcon.active:hover:not(.svgIcon.active:active, .svgIcon.selected){
         box-shadow: 1px 1px 1px var(--app-shade-grey-190) inset;
     }
 }
@@ -301,7 +299,7 @@ html.invert .svgIcon.selected {
     margin: 0 0.5rem; /* 0.5vw; */
     padding: 0.5em 0.5rem;  /* 2.5em; */
     border-radius:0.5em;
-    color: var(--main-font-color);
+    /* color: var(--main-font-color); */
 }
 
 .inpEl[type="range"]{
@@ -915,11 +913,11 @@ html.invert .localIcon{
 }
 
 .msgModule.fullArchive{
-    background:transparent;
+    background: var(--module-bckg);;
     height: 100%;
     transform:unset;
     transition: all 0.2s ease-out;
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(10px); */
     overflow:auto;
 }
 
@@ -946,16 +944,37 @@ html.invert .localIcon{
     padding-right: 1em;
 }
 .msgHistoryRow.title{
-    position: sticky;
-    top:0;
-    padding: 0;
-    justify-content: space-between;
-    background: var(--module-bckg);
-    padding: 1mm;
+    
+    
+    
+position: sticky;
+/* top: 0;
+padding: 0; */
+justify-content: space-between;
+background: var(--module-bckg);
+padding: 1mm;
+border-bottom: unset;
+    
+    
 }
 
 .msgHistoryContentWrp .msgHistoryRow{
-    border-width: 5px;
+/*     border-width: 5px;
+    overflow: auto;
+    border-radius: 0.5em;
+    box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
+    margin: 1vh min(0.5rem, 2vw);
+    margin-top: unset;
+    border: 1mm solid transparent;
+    border-left: min(2vmin, 1rem) solid transparent;
+    border-right: min(2vmin, 1rem) solid transparent; */
+    
+    overflow: auto;
+    border-radius: 0.5em;
+    background: white;
+    box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
+    margin: 1vh 1mm;
+    padding: 1mm;
 }
 
 .msgModule.popUp .msgHistoryRow{
@@ -1029,14 +1048,6 @@ html.invert .msgHistoryRow.flash:before{
 
 
 
-.closeFullArchive{
-
-    background-image: url(../../../assets/static/appSvg/sprite.svg#cross);
-
-    background-position: center;
-    background-repeat: no-repeat;
-        margin: 0 0.65rem;
-}
 /* ------------------------------------------------------ appStatusBar Bar ----------------------------------------------------------*/
 .appStatusBar{
     position: absolute;
@@ -1598,12 +1609,9 @@ margin: unset;
     overflow:auto;
     border-radius: 0.5em;
     background: white;
-    /* padding: min(1.5vmin, 0.5rem); */
     box-shadow: 1px 1px 1px 0px var(--app-shade-grey-190), 0 0 1px 0px var(--app-shade-grey-190);
     margin: 1vh min(0.5rem, 2vw);
     margin-top: unset;
-/*     border: min(1.5vmin, 0.5rem) solid #00000000; */
-    
     border: 1mm solid transparent;
     border-left: min(2vmin, 1rem) solid transparent;
     border-right: min(2vmin, 1rem) solid transparent;
@@ -2079,145 +2087,121 @@ border-top: 1px solid var(--module-bckg);
     transform: translateX(-50vw);
 }
 
-.uiBlur, .disposableModal{
+.uiBlur, .disposableModalSection{
     position: fixed;
     width: 100%;
     height: 100%;
-    backdrop-filter: blur(5px);
-    z-index:2;
-        font-size: 0.7rem;
+    z-index:1;
+    font-size: 0.7rem;
     overflow: auto;
+}
+
+.uiBlur{
+    backdrop-filter: blur(5px);
 }
 
 /*shareContainer*/
 
-
 /* Barcode Share*/
-
-.barcodeContainer{
+.barcodeWrp{
     position: relative;
-    /* top:50%; */
     left:50%;
     transform:translateX(-50%);
-/*     width: 85vmin;
-    height: 85vmin; */
     background: white;
     padding: 5vmin;
     display: flex;
     box-shadow: 1vmin 1vmin 2vmin var(--app-shade-grey-100);
     border-radius: 5vmin;
     margin: 5mm 0;
-        display: inline-block;
+    display: inline-block;
 }
 
 .secreSyncBarcode{
-/*     position: absolute;
-    padding: 3rem; */
+    background-color: var(--module-bckg);
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSyncBarcode);
 }
-/*Export Filter*/
-.exportFilteredWrp{
-   max-width: var(--max-app-width);
+
+html.invert .barcodeWrp, html.invert .secreSyncBarcode{
+    filter: invert(1);
 }
 
-.exportFilteredBar{
-    display: flex;
-    text-indent: 0;
-/*     word-break: break-word;
-    border-bottom: var(--trace-input-outline);
-    background: white; */
-    position: sticky;
-    top: 0;
-    /* padding */: 0;
-    justify-content: space-between;
-    background: var(--module-bckg);
-    padding: 1mm;
-    font-weight: 900;
-    /* max-height: calc(var(--svgIcon-padding-small)* 2); */
-    align-items: center;
-    z-index:1;
-    min-width: var(--min-app-width);
-        width: 100%;
-}
-.exportFilteredWrp{
-    background: var(--module-bckg);
-    display: flex;
-    min-width: var(--min-app-width);
-    padding: 0 2mm;
-    flex-wrap: wrap;
-}
-.exportVend{
-padding: 1.5vh;
-    text-indent: max(5vw, 2rem);
-    background: white;
-    display: block;
-    margin-bottom:1vh;
-    width:100%;
-}
-
-.exportVend:before{
-    margin: -0.25em min(-5vw, -2rem);
-}
-
-.willExport{
-    background: rgb(0, 255, 30);
-}
-
-
-/* CONTEXT MENU*/
-
-
-/* SETTINGS*/
-.settingsSection{
+.disposableModalSection{ /* Same as .settingsSection .... .disposableModalSection?*/
     max-width: var(--max-app-width);
-        background: var(--module-bckg);
+    background: var(--module-bckg);
 }
 
-.setingTitleBar{
+.disposableModalTitleBar{  /* Same as .setingTitleBar .disposableModalTitleBar*/
     display: flex;
-    text-indent: 0;
-    word-break: break-word;
-    border-bottom: var(--trace-input-outline);
-    background: white;
+    justify-content: space-between;
+    align-items: center;
     position: sticky;
     top: 0;
-    padding: 0;
-    justify-content: space-between;
-    background: var(--module-bckg);
-    padding: 1mm;
-    font-weight: 900;
     max-height: calc(var(--svgIcon-padding-small)* 2);
-    align-items: center;
-    z-index:1;
     min-width: var(--min-app-width);
+    padding: 1mm;
+    text-indent: 0;
+    font-weight: 900;
+    word-break: break-word;
+    background: var(--module-bckg);
+    z-index:1;
+    border-bottom: var(--trace-input-outline);
 }
-
-.setingTitleBar .langWrp{
+.disposableModalTitleBar .svgIcon{
     margin: 0mm 2mm;
-    align-self: flex-start;
 }
-
-
-.settingsWrp{
+.disposableOptionsBar{ /* Same as .settingsOptionsBar .disposableOptionsBar*/
     background: var(--module-bckg);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
     min-width: var(--min-app-width);
-    padding: 1mm 2mm 2mm;
+    padding: 1mm;
 }
 
-/* .adjustWrp{
+.disposableModalClose{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#cross);
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0 2mm;
+}
+
+/*Export Filter*/
+
+.exportFilteredListWrp{
     min-width: var(--min-app-width);
-    padding: 0vh 0 1vh;
-    background: var(--module-bckg);
+    width: 100%;
+}
+
+.willExport{
+    background: rgb(150 255 150);
+}
+
+html.invert .willExport{
+    background: rgb(255 0 255);
+    color: white;
+}
+
+html.invert .willExport div:first-child::before{
+    filter: invert(1);
+}
+
+
+
+/* SETTINGS*/
+/* .setingTitleBar .langWrp{
+    margin: 0mm 2mm;
+    align-self: flex-start;
 } */
-.settingsWrp fieldset{
+
+.settingsOptionsBar fieldset{
     width: auto;
     padding: 0vh 1vw;
 }
-.settingsWrp legend{
+.settingsOptionsBar legend{
     line-height: 1.5;
+}
+.settingsOptionsBar .svgIcon:not(.active){
+    opacity:0.3;
 }
 
 .adjustDetais{
@@ -2225,6 +2209,7 @@ padding: 1.5vh;
     padding: 1mm;
     line-height: 1.5;
 }
+
 .restoreSettings{
     padding: 0.5em;
     margin: 1mm;
@@ -2244,9 +2229,6 @@ padding: 1.5vh;
 }
 
 
-.settingsWrp .svgIcon:not(.active){
-    opacity:0.3;
-}
 
 /*GLOBALS -------------------------------- */
 .toolTip{
@@ -2297,7 +2279,7 @@ padding: 1.5vh;
     padding: 0.75rem;
     background: red;
     z-index: 2;
-    display: none;
+    /* display: none; */
 
 }
 .svgIcon.noDrop{

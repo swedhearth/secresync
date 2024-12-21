@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_89";
+    let tempVer = "MobileOptimisation_90";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -71,7 +71,7 @@ function Interface(thisApp){
                     inpEl.isBlured = true;
                     setTimeout(_ => {
                         if(inpEl.isBlured) entry.target.blur();
-                    }, 200);
+                    }, 500);
                     
                     //entry.target.blur();
                 }
@@ -400,10 +400,10 @@ function Interface(thisApp){
             const sumbitInpEl = getInpEl({
                 id: "submitCredentials",
                 type: "submit",
-                _noBlur: true
+                _noBlur: true 
             }).hide();
             const inputAry = isPinOnly ? [getInputFieldset(pinInputObj)] : [getInputFieldset(passInputObj), getInputFieldset(pinInputObj)];
-            const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnCloseForm", _ => modalSectionPromise.fulfill([]));
+            const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnClose", _ => modalSectionPromise.fulfill([]));
             const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
             const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")];
             
@@ -474,7 +474,7 @@ function Interface(thisApp){
             const alertWrpAry = [
               getSvgIcon("loadIcon " + alertObj.i + "Icon", alertObj.i),
               dom.addDiv("alertGeneraltMsg", alertObj.q),
-              getSvgIcon("crosx", "btnCloseForm", _ => modalSectionPromise.fulfill(null))
+              getSvgIcon("crosx", "btnClose", _ => modalSectionPromise.fulfill(null))
             ];
             const alertChoiceAry = ['y', 'n'].reduce((ary, prop) => alertObj[prop] ? [...ary, dom.addDiv("alertChoice", alertObj[prop]).onClick(_ => modalSectionPromise.fulfill(prop === 'y'))] : ary, []);
             alertChoiceAry.length && alertWrpAry.push(dom.addDiv("alertChoiceWrp").attachAry(alertChoiceAry));
@@ -502,7 +502,7 @@ function Interface(thisApp){
         this.deleteExistingStore = storeKey => appAlert(`deleteExistingStore.${storeKey}`);
         this.localFileLoadOrCreate = _ => appAlert("localFileLoadOrCreate");
         this.localFileDownload = _ => appAlert("localFileDownload");
-        this.downloadDbCopy = _ => appAlert("downloadDbCopy", {localFileName: getTxtBankTitleTxt("localFile")});
+        this.exportDb = _ => appAlert("exportDb", {localFileName: getTxtBankTitleTxt("localFile")});
         this.importDb = _ => appAlert("importDb");
         this.importDbPickFile = _ => appAlert("importDbPickFile");
         this.emergDbDownload = _ => appAlert("emergDbDownload");
@@ -587,7 +587,7 @@ function Interface(thisApp){
             .attach(
                 dom.addDiv("msgHistoryRow title", getTxtBankTitleTxt("msgHistory"))
                 .attach(
-                    getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
+                    getSvgIcon("disposableModalClose", "btnClose", _ => {
                         historyStack.goBack();
                     })
                 )
@@ -694,6 +694,7 @@ function Interface(thisApp){
         this.importDbFail = _ => msgErr("importDbFail");
         this.importDbSuccess = _ => msgFlash("importDbSuccess");
         this.importDbCancel = _ => msgTxt("importDbCancel");
+        this.exportDbFail = _ => msgErr("exportDbFail");
         this.langChanged = _ => msgFlash("langChanged");
         this.storeConnectionTrue = sName => msgTxt("storeConnectionTrue", {sName});
         this.storeConnectionFalse = sName => msgTxt("storeConnectionFalse", {sName});
@@ -891,57 +892,54 @@ function Interface(thisApp){
                 //addModalToHistory(true); //force adding to history
                 
                 
-                const drawBarcode = async e => {
-                    let barcodeContainer = document.body.kidsByClass("barcodeContainer")[0];
-                    if(barcodeContainer) return barcodeContainer.kill();
+                const drawBarcode = async (e, shareName) => { //barcode
                     
-                    const optionsBar = e.currentTarget.forebear(1);
-                    const disposableModal = optionsBar.forebear(1);
+                    e.target.toggleClass("selected");
+                    const shareSection = e.currentTarget.forebear(2);
+                    const existingWrp = shareSection.kidsByClass(`${shareName}Wrp`)[0]; //barcodeWrp
+                    if(existingWrp) return existingWrp.kill();
+
+                    const shareTitleBar = shareSection.kid();
+                    const shareOptionsBar = shareSection.kid(1);
                     const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
-                    //const {height, width} = window.visualViewport;
-                    
-                    
-                    
-                    const size = Math.min(disposableModal.clientHeight - optionsBar.clientHeight, thisApp.settings.appWidth.current) * 0.82;
-                    
 
-                    
-
+                    const size = Math.min(shareSection.clientHeight - shareTitleBar.clientHeight - shareOptionsBar.clientHeight, thisApp.settings.appWidth.current) * 0.82;
+                    const barcodeWrp = dom.addDiv("barcodeWrp")
                     try{
-                        const barcodeContainer = dom.addDiv("barcodeContainer")
                         QrCreator.render({
                             text: vPass, //max 2900 char
                             radius: 0.5, // 0.0 to 0.5
-                            ecLevel: 'L', // L, M, Q, H
+                            ecLevel: 'H', // L, M, Q, H
                             fill: '#000', // foreground color
                             background: "#fff", // color or null for transparent
                             size: size // in pixels
-                        }, barcodeContainer);
-                      
-                      optionsBar.forebear(1).attach(barcodeContainer);
+                        }, barcodeWrp);
+                        shareSection.attach(barcodeWrp);
                     }catch(err){
-                        console.log(err);
+                        console.log(err); // error message TODO To Do !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     }
-                    
                 };
-                
-                
 
                 const contextIcons = [
-                    getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode),
+                    getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", e => drawBarcode(e, "barcode")),
                     []
-
                 ];
-                
-                dom.addDiv("disposableModal settingsSection").attach(
-                    dom.addDiv("settingsWrp").attachAry(
+
+                const shareSection = dom.addDiv("disposableModalSection shareSection")
+                .attach(
+                    dom.addDiv("disposableModalTitleBar shareTitleBar")
+                    .attach(getSvgIcon("share", true, _ => console.log("Sharing is caring")))
+                    .attach(dom.addSpan("", getTxtBankTitleTxt("share"))) // TO DO
+                    .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack))
+                )
+                .attach(
+                    dom.addDiv("disposableOptionsBar shareOptionsBar").attachAry(
                         contextIcons
                     )
-                ).onClick(function(e){
-                    if(e.target === e.currentTarget) {
-                        historyStack.goBack();
-                    }
-                }).attachTo(document.body);
+                )
+                .attachTo(document.body);
+                
+
                 
 
                 addModalToHistory(true); //force adding to history
@@ -957,8 +955,8 @@ function Interface(thisApp){
                 
 
 /*                 const disposableModal = dom.addDiv("disposableModal settingsSection").attach(
-                    dom.addDiv("settingsWrp").attach(
-                        getSvgIcon("crosx", "btnCloseForm", _ => history.back())
+                    dom.addDiv("settingsOptionsBar").attach(
+                        getSvgIcon("crosx", "btnClose", _ => history.back())
                     )
                 ).attachTo(document.body); */
                 
@@ -988,7 +986,7 @@ function Interface(thisApp){
                 };
                 
                 disposableModal.attach(
-                    dom.addDiv("settingsWrp").attach(
+                    dom.addDiv("settingsOptionsBar").attach(
                         getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode)
                     )
                 ); */
@@ -1364,8 +1362,8 @@ const actionBtn = revisionIdx || vendObj.isTrash
 const middleTopEl = displayMode
                     ? dom.addDiv("formTitle", vendObj.name || "")
                     : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
-const closeFormBtn = getSvgIcon("btnCloseForm", true, closeForm);
-const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnCloseForm", closeForm);
+const closeFormBtn = getSvgIcon("btnCloseForm", "btnClose", closeForm);
+const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnClose", closeForm);
 
 const oridinaryLayoutHeadEls = [actionBtn, middleTopEl, closeFormBtn]
 const mobileLayoutHeadEls = [middleTopEl];
@@ -1570,85 +1568,83 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             };
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Download a copy of the snc database file  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            //const downloadCopyDB = async _ => await thisApp.alert.downloadDbCopy() && thisApp.dbStore.localFile.download();
-            
-            
-            
-            const downloadCopyDB = async _ =>{
-                const downloadFullDbObj = await thisApp.alert.downloadDbCopy();
-                if(downloadFullDbObj === null) return;
-                    // TO DO!!!!!!!!!!!!!!! - make add to history. Make History popstate to remove all class="whatever"
-                    const getFilteredVendors = _ => new Promise((res, rej) => {
+            const exportDb = async _ => {
+                const getFilteredVendors = _ => new Promise((res, rej) => {
+                    spinner.start();
+                    const exportFilteredSection = dom.addDiv("disposableModalSection").onClick(toggleScrollBar);
+                    const vListWrp = dom.addDiv("exportFilteredListWrp");
+                    
+                    const vEntry = vendObj => dom.addDiv("vEmpty")
+                        .onClick(e => {
+                            e.currentTarget.toggleClass("willExport");
+                            vendObj.exp = !vendObj.exp;
+                        })
+                        .observedBy(new IntersectionObserver(entries => {
+                            entries.forEach(entry => {
+                                if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
+                                    entry.target.cssName("vEntry").attach(
+                                        dom.addDiv(vendObj.isTrash ? "vTrash" : vendObj.isNote ? "vNote" : "vLog")
+                                        .attach(dom.addDiv("inpEl vName", vendObj.name))
+                                    );
+                                    attachListElement();
+                                }
+                            });
+                        }, {}));
 
-/*                         dom.addDiv("disposableModal exportFilteredWrp")
+                    const exportVendors = thisApp.dbObj.vendors;
+                    const vListElements = exportVendors.map(vendObj => vEntry(vendObj));
+                    const stopSpinnerDelay = 200; //200ms give enough time after vListElement is attached to the vListWrp to trigger the next IntersectionObserver
+                    let stopSpinnerTimout;
+                    let elIdx = 0;
+                    const attachListElement = _ => {
+                        if(!vListElements[elIdx]) return;
+                        vListWrp.attach(vListElements[elIdx]);
+                        requestAnimationFrame(_ => {
+                            clearTimeout(stopSpinnerTimout);
+                            stopSpinnerTimout = setTimeout(_ => {
+                                toggleScrollWrpOverflow(exportFilteredSection);
+                                spinner.stop();
+                            }, stopSpinnerDelay);
+                        });
+                        elIdx++;
+                    };
+                    
+                    window.addEventListener('popstate',  _ => {
+                        exportVendors.forEach(exportVendObj => delete exportVendObj.exp);
+                    }, {once: true});
+
+                    exportFilteredSection.attach(
+                        dom.addDiv("disposableModalTitleBar exportFilteredBar")
                         .attach(
-                            dom.addDiv("exportFilteredBar").attach(
-                                dom.addDiv("exportFilteredDbObj", "exportFilteredDbObj").onClick(e => {
-                                    e.currentTarget.forebear(2).kill();
-                                    res(thisApp.dbObj.vendors.filter(exportVendObj => exportVendObj.exp));
-
-                                })
-                            )
-                        )
-                        .attachAry(
-                            thisApp.dbObj.vendors.map(
-                                exportVendObj => dom.addDiv("exportVend vEntry " + (exportVendObj.isNote ? "vNote" : "vLog"), exportVendObj.name).onClick(e => {
-                                    e.currentTarget.toggleClass("willExport");
-                                    exportVendObj.exp = !exportVendObj.exp;
-                                })
-                            )
-                        )
-                        .attachTo(document.body); */
-                        
-                        
-                        dom.addDiv("disposableModal exportFilteredWrp")
-                        .attach(
-                            dom.addDiv("exportFilteredBar")
-                            .attach(
-
-                                    getSvgIcon("expDbIcon", "expDb", e => {
-                                        e.currentTarget.forebear(2).kill();
-                                        res(thisApp.dbObj.vendors.filter(exportVendObj => exportVendObj.exp));
-
-                                })
-                            )
-                            .attach(dom.addSpan("", "TODO SETTINGS TITLE"))
-                            .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
-                                getSvgIcon("closeFullArchive", "btnCloseForm", _ => {
-                                    historyStack.goBack();
-                                })
-                            )
-                        )
-                        .attach(
-                            dom.addDiv("exportFilteredWrp").attachAry(
-                                thisApp.dbObj.vendors.map(
-                                    exportVendObj => dom.addDiv("exportVend vEntry " + (exportVendObj.isNote ? "vNote" : "vLog"), exportVendObj.name).onClick(e => {
-                                        e.currentTarget.toggleClass("willExport");
-                                        exportVendObj.exp = !exportVendObj.exp;
-                                    })
-                                )
-                            )
-                        )
-                        .onClick(function(e){
-                            if(e.target === e.currentTarget) {
+                            getSvgIcon("expDbIcon", "expDb", _ => {
+                                res(exportVendors.filter(exportVendObj => exportVendObj.exp));
                                 historyStack.goBack();
-                            }
-                        }).attachTo(document.body);
-                        
+                            })
+                        )
+                        .attach(dom.addSpan("", getTxtBankTitleTxt("expDbFiltered")))
+                        .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack))
+                    )
+                    .attach(vListWrp)
+                    .attachTo(document.body);
 
-                        addModalToHistory(true); //force adding to history
-                        
-                        
-                        
-                    });
-
+                    vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");
+                    addModalToHistory(true); //force adding to history
+                });
                 
-                const filteredVendors = downloadFullDbObj ? null : await getFilteredVendors();
+                if(!thisApp.dbObj.vendors.length) return thisApp.message.exportDbFail();
+                const exportFullDb = await thisApp.alert.exportDb();
+                if(exportFullDb === null) return;
                 
-                console.log(filteredVendors);
-                return;
+                let exportDBFile;
+                if(!exportFullDb){
+                    const filteredVendors = await getFilteredVendors();
+                    if(!filteredVendors.length) return thisApp.message.exportDbFail();
+                    exportDBFile = await thisApp.cryptoHandle.getFilteredDbFileBlobForExport(filteredVendors);
+                }else{
+                    exportDBFile = await thisApp.cryptoHandle.getDbFileBlob()
+                }
                 
-                const downloadedFileName = downloadFile(await thisApp.cryptoHandle.getFilteredDbFileBlobForExport(filteredVendors), "secre.snc");
+                const downloadedFileName = downloadFile(exportDBFile, "secre.snc");
                 await new Promise(res => setTimeout(res, 1000));
                 thisApp.message.dbFileDownloaded(downloadedFileName);
             }
@@ -1795,9 +1791,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     getSvgIcon("donate", true, getDonate)
                 ];
                 
-                dom.addDiv("disposableModal settingsSection")
+                dom.addDiv("disposableModalSection settingsSection")
                 .attach(
-                    dom.addDiv("setingTitleBar")
+                    dom.addDiv("disposableModalTitleBar setingTitleBar")
                     .attach(
                         langModule(thisApp, _ => {
                             window.addEventListener('popstate',  openSettings, {once: true});
@@ -1807,13 +1803,13 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     )
                     .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
                     .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
-                        getSvgIcon("closeFullArchive", "btnCloseForm", _ => { 
+                        getSvgIcon("disposableModalClose", "btnClose", _ => { 
                             historyStack.goBack();
                         })
                     )
                 )
                 .attach(
-                    dom.addDiv("settingsWrp").attachAry(
+                    dom.addDiv("disposableOptionsBar settingsOptionsBar").attachAry(
                         contextIcons
                     )
                 )
@@ -1833,34 +1829,15 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - APP_TASKBAR and APP_MORETASKBAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-/*             const getAppMoreTaskbar = _ => dom.addDiv("appMoreTaskbar").attachAry([
-                getSvgIcon("reloadApp", true, thisApp.reload),
-                dom.addDiv("flexIconWrp").attachAry([
-                    //getSvgIcon("changeDbPass", true, getChangePassword),
-                    //getSvgIcon("donate", "donate", getDonate),
-                    getSvgIcon("expDbIcon", "expDb", downloadCopyDB),
-                    getSvgIcon("impDbIcon", "impDb", importDb),
-                    getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
-                    
-                    //langModule(thisApp, repaintUI),
-                    getSvgIcon("settings", true, openSettings)
-                ]),
-                getSvgIcon("arrowUp", "hide", (e => {//history.back();
-                    
-                    e.target.forebear(1).toggleClass("appMoreTaskbarShow");
-                }))
-            ]); */
+
             
             appMoreTaskbar = dom.addDiv("appMoreTaskbar").attachAry([ // must be outside to enable history.back (popstate)
                 getSvgIcon("reloadApp", true, thisApp.reload),
                 dom.addDiv("flexIconWrp").attachAry([
-                    //getSvgIcon("changeDbPass", true, getChangePassword),
-                    //getSvgIcon("donate", "donate", getDonate),
-                    getSvgIcon("expDbIcon", "expDb", downloadCopyDB),
+                    getSvgIcon("expDbIcon", "expDb", exportDb),
                     getSvgIcon("impDbIcon", "impDb", importDb),
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
-                    
-                    //langModule(thisApp, repaintUI),
+
                     getSvgIcon("settings", true, openSettings)
                 ]),
                 getSvgIcon("arrowUp", "hide", (e => {//history.back();
@@ -1885,21 +1862,22 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     type: "text",
                     name: "inputBoxSearch",
                     id: "inputBoxSearch",
-                    placeholder: getTxtBankHtmlTxt("inputBoxSearch")
+                    placeholder: getTxtBankHtmlTxt("inputBoxSearch"),
+                    _noBlur: true
                 });
                 
                 const searchEvent = (e, attentionMethod) => {
-                    console.log('searchEvent attentionMethod = ', attentionMethod);
+
                     e.preventDefault(); ////???????????????????
                     if(lastSearchString !== searchInputEl.value){
                         searchFormEl.preventScrollBlur = true;
-                        console.log("Prevent Scroll Blur is TRUE");
+
                         lastSearchString = searchInputEl.value;
                         paintList(); //vListWrp
-                        //console.log("List Painted -> preventScrollBlur should be true", preventScrollBlur);
+
                         setTimeout(_ => {
                             searchFormEl.preventScrollBlur = false; // give time for the list repaint after the search
-                            console.log("Prevent Scroll Blur is FALSE");
+
                         },1000);
                     }
                     
@@ -1952,7 +1930,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 
                 searchFormEl.getValue = _ => searchInputEl.value;
                 
-                searchFormEl.scrollBlur = searchInputEl.blur;
+                searchFormEl.scrollBlur = _ => searchInputEl.blur();
                 
                 return searchFormEl.attachAry([
                     hideFormEl,
@@ -2130,9 +2108,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     });
                     elIdx++;
                 };
-                
-                
-                
+
                 const vEntry = vendObj => dom.addDiv("vEmpty")
                     .onClick(_ => paintFormSection(true, vendObj))
                     .observedBy(new IntersectionObserver(entries => {
@@ -2200,7 +2176,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 })([], [], []);
 
                 vListWrp.ridKids();
-                vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");;
+                vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");
             }
 
             appSectionList.ridKids().attachAry([
@@ -2418,9 +2394,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
             if(this.messages.fullArchiveHasClosed()) return; // hide the Messages Full Archive if is fullscreen, then return
             
-            const disposableModals = document.body.kidsByClass("disposableModal");
-            if(disposableModals.length){
-                disposableModals.forEach(disposableModal => disposableModal.remove());
+            const disposableModalSections = document.body.kidsByClass("disposableModalSection");
+            if(disposableModalSections.length){
+                disposableModalSections.forEach(disposableModalSection => disposableModalSection.remove());
                 return;
             }
 
@@ -2477,6 +2453,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 // /* Temp and tests */
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
+            thisApp.dbObj.credentials.push({plainPassString: "swedhearth75059515357", plainPinString: "8156", timestamp: Date.now()});
+            
+            console.log(thisApp.dbObj);
 /*             dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())
             .attach(dom.addDiv("msgHistoryContentWrp").attachAry(mobileDebugAry.map(msgAry => 
                     dom.addDiv("msgHistoryRow dev")

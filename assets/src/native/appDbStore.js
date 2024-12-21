@@ -293,8 +293,12 @@ function AppDbStore(thisApp){
                     // (confirmLoad is false && remoteFileDelete is true) = will overwrite cloud file with empty thisApp.dbObj 
                     // || (!dbObjExistingSync && !encryptedCloudFileData) = will create cloud file with empty thisApp.dbObj
                     
-                    await thisApp.cryptoHandle.decryptToJson(null); // get credentials for new database
-                    thisApp.cryptoHandle.setDbObj(null); // Create new empty application database object (thisApp.dbObj)
+/*                     await thisApp.cryptoHandle.decryptToJson(null);
+                    thisApp.cryptoHandle.setDbObj(null);  */
+                    
+                    const credentialsObj = await this.cryptoHandle.decryptToJson(false); // get credentials for new database
+                    this.cryptoHandle.setDbObj(credentialsObj, true);// Create new empty application database object (thisApp.dbObj)
+                    this.dbObj.isNew = true; // disable thisApp.alert.localFileLoadOrCreate
                 }
 
                 await storeObj.handleUpdate(thisApp.cryptoHandle.encryptString(storeObj.handlePlain));
@@ -303,13 +307,16 @@ function AppDbStore(thisApp){
 
             // Handle is set, sync required after alerts
             if (!encryptedCloudFileData) { // Handle exists, but file is missing in cloud
-                if (
-                    (!thisApp.dbObj?.mod && !await thisApp.alert.remoteFileMissing(storeObj.key)) ||
-                    !(await thisApp.alert.remoteFileRestore(storeObj.key))
-                ) {
-                    return storeObj.handleRemove(false, true); // Handle removal if the cloud file is missing and cannot be restored (!thisApp.dbObj) or is declined to be restored by the user
+            
+                if(!thisApp.dbObj?.mod){ // cloud file is missing and cannot be restored (!thisApp.dbObj)
+                    await thisApp.alert.remoteFileMissing(storeObj.key);
+                }else{
+                    const restoreFile = await thisApp.alert.remoteFileRestore(storeObj.key);
+                    if(restoreFile) return storeObj.update();// File restored, create cloud file with with the existing thisApp.dbObj
+                    if(restoreFile === null) return false; // Absence of file is being ignored for now
                 }
-                return storeObj.update(); // File restored, create cloud file with with the existing thisApp.dbObj
+                
+                return storeObj.handleRemove(false, true); // Handle removal if the cloud file is missing and cannot be restored (!thisApp.dbObj) or restoreFile is declined (False) by the user
             }
 
             // Cloud file exists, decrypt and sync with the application database
@@ -493,6 +500,7 @@ function AppDbStore(thisApp){
         
         const getTokenFromCode = async (redirectCode, codeVerifier) => {
             const tokenResponse = await getAccessToken(authTokenRequestObj(redirectCode, codeVerifier));
+            alert("Check if it is now that the virtual keyboard misbeheaves")
             return tokenResponse.refresh_token; // this.handlePlain
         };
         
@@ -647,7 +655,7 @@ function AppDbStore(thisApp){
                     true: readFile,
                     false: updateLocalFile,
                     null: _ => {this.syncStop(); return false;}
-                }[ await thisApp.alert.localFileLoadOrCreate() ]();// This can have three outcomes (null - closed with cross or backbutton (this.syncStop) , false (updateLocalFile) or true (readFile)) then run function
+                }[ thisApp.dbObj.isNew ? false : await thisApp.alert.localFileLoadOrCreate() ]();// This can have three outcomes (null - closed with cross or backbutton (this.syncStop) , false (updateLocalFile) or true (readFile)) then run function
             }
             if(this.handle) await this.handleRemove(false, true);
             if(await thisApp.alert.localFileDownload()) await downloadLocalFile();

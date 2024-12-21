@@ -41,7 +41,7 @@ Settings:
  - app colour mode
  
 
-Export Database filtered - ui.js - downloadCopyDB function -  make add to history. Make History popstate to remove all class="disposableModal". Remove Trash from the list to export!!!!!!!
+Export Database filtered - ui.js - exportDb function -  make add to history. Make History popstate to remove all class="disposableModalSection". Remove Trash from the list to export!!!!!!!
 
 disposableModal - sort history back!!!!!!!!!!!!!
 
@@ -63,7 +63,9 @@ DONE!!!!!!!!!!!!! bell fr historyclose button to arrowleft in Formexport account
 |Done!!swap main bar with taskbar
 make some of the settings in the database (DbObj) settings directly
 
-c
+TODo - settings to display the current and the past credentials
+TOTO- Time zone and timeformat setting
+DONE!!! Blur disable from start
 
 */
 

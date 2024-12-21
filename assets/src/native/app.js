@@ -118,7 +118,7 @@ function App(urlSearchParams){
                     dbCredentials = dbCredentials || await thisApp.credentials.get(newCredentials,); //dbCredentials only when using Local File 
                     if(newCredentials){ // means that wasPersisted === false
                         [cryptoKey, salt] = await thisApp.crypto.getNewCryptoKeyAndSalt(dbCredentials);
-                        decryptedString = "{}";
+                        decryptedString = JSON.stringify({credentials: [{plainPassString: dbCredentials.plainPassString, plainPinString: dbCredentials.plainPinString, timestamp: Date.now()}]});
                     }else{
                         if(dbCredentials.plainPassString && dbCredentials.plainPinString){
                             cryptoKey = await thisApp.crypto.getCryptoKeyFromPlains(cipher, dbCredentials.plainPassString, dbCredentials.plainPinString);
@@ -325,6 +325,7 @@ function App(urlSearchParams){
             thisApp.cryptoHandle.updateCryptoCredentials(cryptoKey, salt); // used to encrypt plain handle in dbx, oneDrive and Google Drive
             
             await Promise.all(storesWithEncryptedHandles.map((storeObj, idx) => storeObj.handleUpdate(thisApp.cryptoHandle.encryptString(decryptedHandles[idx])))); // restore newly encrypted handles
+            thisApp.dbObj.credentials.unshift({plainPassString: dbCredentials.plainPassString, plainPinString: dbCredentials.plainPinString, timestamp: Date.now()});
             thisApp.dbStore.updateAll(thisApp).then(rejectedPromises => {
                 if(rejectedPromises.length) thisApp.message.dbCredentialsChangeModerateFail(rejectedPromises);
                 this.persist(dbCredentials, cryptoKey);
@@ -390,13 +391,24 @@ function App(urlSearchParams){
     
     const uninstallServiceWorker = async thisApp => {
         try {
-            const keys = await caches.keys();
+/*             const keys = await caches.keys();
             const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
             if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
 
             const regs = await navigator.serviceWorker.getRegistrations();
-            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister()));
-             if(developerMode) console.log("Service worker unregister results.", unregisterResults);
+            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister())); */
+             
+             
+             
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            const unregisterPromises = registrations.map(registration => registration.unregister());
+
+            const allCaches = await caches.keys();
+            const cacheDeletionPromises = allCaches.map(cache => caches.delete(cache));
+
+            await Promise.all([...unregisterPromises, ...cacheDeletionPromises]);
+            if(developerMode) console.log("Service worker unregister results.", registrations, allCaches);
+             
         } catch (err) {
              if(developerMode) console.error("Error during service worker unregistration:", err);
              // do nothing? or message that not all have been cleared
@@ -602,7 +614,7 @@ function App(urlSearchParams){
             }
             return this.appWidth.current < 800;
         };
-        this.appBlur = thisApp.localStorage.get("appBlur") === "false" ? false : true;
+        this.appBlur = thisApp.localStorage.get("appBlur") === "true";
         
         this.appIconSize = new Setting(thisApp, "appIconSize", 30, 90, _=> 60, 5);
     }
@@ -652,11 +664,13 @@ function App(urlSearchParams){
 
     this.createNewDb = async _ => {
         this.dbStore.restoreObjectsSync();
-        await this.cryptoHandle.decryptToJson(false);
-        this.cryptoHandle.setDbObj(null);
+        const credentialsObj = await this.cryptoHandle.decryptToJson(false);
+        console.log(credentialsObj);
+        this.cryptoHandle.setDbObj(credentialsObj, true);
+        this.dbObj.isNew = true;
         this.paint();
-       //throw "where does it throw when create a new db?"
-        this.dbStore.checkExtraSync(this);
+       //throw "where does it throw when create a new db?" dbObj
+        this.dbStore.checkExtraSync(this); // new Database - should not ask if you want to sync the existing localFile (ahould do the same in storeObj.remoteRead?)
     };
 
     this.start = async (msg, err, appStartFailCount = 0) =>{

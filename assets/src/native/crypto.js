@@ -440,6 +440,7 @@ function Crypto(){
     function DatabaseObject(dbObj, doUpdateMod){
         this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now();
         this.vendors = dbObj?.vendors?.map(vendObj => new Vendor(vendObj)) || [];
+        this.credentials = dbObj?.credentials || [];
     }
     
     DatabaseObject.prototype.reset = function(){
@@ -455,7 +456,8 @@ function Crypto(){
         const sendVendors = filteredVendors || this.vendors;
         return JSON.stringify({
             mod: this.mod,
-            vendors: sendVendors.map(vendObj => vendObj.prepareForSend())
+            vendors: sendVendors.map(vendObj => vendObj.prepareForSend()),
+            credentials: this.credentials
         });
     };
 
