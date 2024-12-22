@@ -251,7 +251,12 @@ function AppDbStore(thisApp){
             if (!thisApp.online) return storeObj.syncPaused ? null : storeObj.syncPause().then(thisApp.alert.offline);
             storeObj.syncStart();
             
-            const itIsPainInTheButtOneDrivePlainHandle = storeObj.handlePlain && storeObj.key === "oneDriveFile";
+            //window.itIsPainInTheButtOneDrivePlainHandle = storeObj.handlePlain && storeObj.key === "oneDriveFile";
+            
+            if(storeObj.handlePlain && storeObj.key === "oneDriveFile"){
+                alert("window.itIsPainInTheButtOneDrivePlainHandle = true. Blur on input turned off");
+                window.itIsPainInTheButtOneDrivePlainHandle = true;
+            }
 
             // Retrieve encrypted file content using the plain handle from redirecion or the decrypted IDBX handle using a freshly obtained credentials
             const encryptedCloudFileData = await getEncryptedFileData( storeObj.handlePlain || await thisApp.cryptoHandle.decryptToString(storeObj.handle) );

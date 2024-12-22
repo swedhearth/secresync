@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_95";
+    let tempVer = "MobileOptimisation_96";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -70,8 +70,8 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                        if(inpEl.isBlured) entry.target.blur();
-                    }, 500);
+                        if(inpEl.isBlured && !window.itIsPainInTheButtOneDrivePlainHandle) entry.target.blur();
+                    }, 200);
                     
                     //entry.target.blur();
                 }

@@ -1,6 +1,6 @@
 /* 'frequent_0.84_GitHub' */
 "use strict";
-console.log("index core MobileOptimisation_95");
+console.log("index core MobileOptimisation_96");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -119,7 +119,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     /* ------------------------------------------------------------ Initiate and start App -------------------------------------------------------------- */
     new App(urlSearchParams).init().then(thisApp => {
         if(developerMode) console.log(thisApp);
-        alert("new App.init()");
+        //alert("new App.init()");
         window.addEventListener('online', thisApp.connectivitychange);
         window.addEventListener('offline', thisApp.connectivitychange);
         
