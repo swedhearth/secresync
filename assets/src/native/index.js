@@ -1,6 +1,6 @@
 /* 'frequent_0.84_GitHub' */
 "use strict";
-console.log("index core_MobileOptimisation_93");
+console.log("index core MobileOptimisation_94"");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -73,57 +73,36 @@ DONE!!! Blur disable from start
 mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.stringify(window.history.state));
 (async _ =>{
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
-/*     if(locationSearch){
-        //mobileDebug("In Index. locationSearch is present. window.location.search = ", locationSearch);
+    if(locationSearch){
         const wasHistoryLength = window.sessionStorage?.getItem("historyLength");
-        //mobileDebug("In Index. wasHistoryLength = ", wasHistoryLength);
-        //mobileDebug("In Index. window.history.length = ", window.history.length);
-        
         if(wasHistoryLength){ // Maybe if no history - then don;t do it?
-
-            //mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
-            let goBackBy = wasHistoryLength - window.history.length -2;
-            
-             //alert("wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + goBackBy);
-             
-            if(wasHistoryLength > window.history.length){
-                //alert("wasHistoryLength is greater than Now History Length. wasHistoryLength: " + wasHistoryLength + ". Now History Length = " + window.history.length + ". Will go back:  " + (1 - window.history.length));
-                window.history.go(1 - window.history.length);
-            }else if(window.history.length + goBackBy < 1){
-                //alert("wasHistoryLength minus goBackBy was less than 1. Will go back by: 1 - window.history.length =  " + (1 - window.history.length));
-                
+            const wasHistoryLengthInt = parseInt(wasHistoryLength); // not needed really
+            let goBackBy = wasHistoryLengthInt - window.history.length - 2;
+            if(wasHistoryLengthInt > window.history.length || window.history.length + goBackBy < 1){
                 window.history.go(1 - window.history.length);
             }else{
-                window.history.go(wasHistoryLength - window.history.length -2); //then go 2 pages back in history to avoid going to the cloud authorisation page
+                window.history.go(goBackBy); //then go 2 pages back in history to avoid going to the cloud authorisation page
             }
-            // maybe it should be (wasHistoryLength - window.history.length - 1) e.g 5 - 2  + 1 = 3 + 1 = go(-4)
             return null;
         }
         locationSearch = "";
-    } */
-    if(!locationSearch){
-        window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
     }
-    
-    //let loop = 0;
-    while (!window.history?.state?.lastBackExists) {
-        // mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
-/*        console.log("In Index. Promise number: " + loop + ". window.history.state = " + JSON.stringify(window.history.state))
-        await new Promise(res => setTimeout(res, 300)); // Allow  History to reload. 300ms should be enough */
+
+    window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
+
+    while (!window.history.state.lastBackExists) {
         await new Promise(res => {
             window.addEventListener("popstate", res, {once:true}); //must add popstate as history back is delayed
             window.history.back();
         });
     }
-    //mobileDebug("In Index. after while loop - the final current history.state", JSON.stringify(window.history.state));
-/*     locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
-    window.sessionStorage?.removeItem("locationSearch"); */
-    
-    
-    
-    return Object.fromEntries(new URLSearchParams(locationSearch || ""));
+
+    locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
+    window.sessionStorage?.removeItem("locationSearch");
+
+    return Object.fromEntries(new URLSearchParams(locationSearch));
     
 })().then(urlSearchParams => {
 
@@ -140,12 +119,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     /* ------------------------------------------------------------ Initiate and start App -------------------------------------------------------------- */
     new App(urlSearchParams).init().then(thisApp => {
         if(developerMode) console.log(thisApp);
-/*         window.addEventListener('popstate',  e => {
-            if(!window.history.state){
-                thisApp.message.exitAppConfirm();
-                window.history.pushState({lastBackExists: true}, '', '');
-            }
-        }); */
+        alert("new App.init()");
         window.addEventListener('online', thisApp.connectivitychange);
         window.addEventListener('offline', thisApp.connectivitychange);
         
