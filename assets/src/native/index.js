@@ -73,16 +73,14 @@ DONE!!! Blur disable from start
 mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.stringify(window.history.state));
 (async _ =>{
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
-    if(locationSearch){
+/*     if(locationSearch){
         //mobileDebug("In Index. locationSearch is present. window.location.search = ", locationSearch);
         const wasHistoryLength = window.sessionStorage?.getItem("historyLength");
         //mobileDebug("In Index. wasHistoryLength = ", wasHistoryLength);
         //mobileDebug("In Index. window.history.length = ", window.history.length);
         
         if(wasHistoryLength){ // Maybe if no history - then don;t do it?
-        
-           
-            
+
             //mobileDebug("In Index. will go back by = ", wasHistoryLength - window.history.length -2);
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
@@ -104,11 +102,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             return null;
         }
         locationSearch = "";
+    } */
+    if(!locationSearch){
+        window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
     }
-    //mobileDebug("In Index. after if(locationSearch). window.history.state = ", JSON.stringify(window.history.state));
-    window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
     
-    let loop = 0;
+    //let loop = 0;
     while (!window.history.state.lastBackExists) {
         // mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
 /*        console.log("In Index. Promise number: " + loop + ". window.history.state = " + JSON.stringify(window.history.state))
@@ -119,10 +118,12 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         });
     }
     //mobileDebug("In Index. after while loop - the final current history.state", JSON.stringify(window.history.state));
-    locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
-    window.sessionStorage?.removeItem("locationSearch");
+/*     locationSearch = window.sessionStorage?.getItem("locationSearch") || "";
+    window.sessionStorage?.removeItem("locationSearch"); */
     
-    return Object.fromEntries(new URLSearchParams(locationSearch));
+    
+    
+    return Object.fromEntries(new URLSearchParams(locationSearch || ""));
     
 })().then(urlSearchParams => {
 

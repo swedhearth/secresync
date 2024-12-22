@@ -250,6 +250,8 @@ function AppDbStore(thisApp){
             if (!storeObj.handlePlain && !storeObj.handle) return;
             if (!thisApp.online) return storeObj.syncPaused ? null : storeObj.syncPause().then(thisApp.alert.offline);
             storeObj.syncStart();
+            
+            const itIsPainInTheButtOneDrivePlainHandle = storeObj.handlePlain && storeObj.key === "oneDriveFile";
 
             // Retrieve encrypted file content using the plain handle from redirecion or the decrypted IDBX handle using a freshly obtained credentials
             const encryptedCloudFileData = await getEncryptedFileData( storeObj.handlePlain || await thisApp.cryptoHandle.decryptToString(storeObj.handle) );
@@ -323,6 +325,13 @@ function AppDbStore(thisApp){
             const cloudDbObj = await thisApp.cryptoHandle.decryptToJson(encryptedCloudFileData);
             if (storeObj.handlePlain) await storeObj.handleUpdate(thisApp.cryptoHandle.encryptString(storeObj.handlePlain));
             if (!thisApp.dbObj) thisApp.cryptoHandle.setDbObj(cloudDbObj); // If application database object doesn't exists, the cloud file data is set as the application database object (thisApp.dbObj)
+                
+/*             if(itIsPainInTheButtOneDrivePlainHandle){
+                alert("Beacause it is the Plain Handle from OneDrive redirect that causes issues to the input Elements with Virtual Keyboard. I will try to reload the App");
+                thisApp.reload();
+                return false;
+            } */
+            
             return storeObj.connect(cloudDbObj); // Sync cloud data with the application database object
         };
         

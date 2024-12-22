@@ -2279,7 +2279,7 @@ html.invert .willExport div:first-child::before{
     padding: 0.75rem;
     background: red;
     z-index: 2;
-    /* display: none; */
+    display: none;
 
 }
 .svgIcon.noDrop{

@@ -698,7 +698,6 @@ function App(urlSearchParams){
                     let painted;
                     
                     for(const storeObj of savedStoreObjs){
-                        if(storeObj.testOutside) storeObj.testOutside();
                         await storeObj.read().catch(storeObj.catchLoad); // Catch catchLoad is OK!!!!!!!!! catchLoad CAN THROW but will be caught by the try - catch in this.start
                         if(this.dbObj && !painted) {
                             painted = true;
