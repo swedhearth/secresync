@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_91";
+    let tempVer = "MobileOptimisation_93";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
