@@ -1,6 +1,6 @@
 /* 'frequent_0.84_GitHub' */
 "use strict";
-console.log("index core_0.084_GitHub");
+console.log("index core_MobileOptimisation_93");
 /* 
 TO DO:
 - Google Drive Integration - Will not do
@@ -108,7 +108,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     }
     
     //let loop = 0;
-    while (!window.history.state.lastBackExists) {
+    while (!window.history?.state?.lastBackExists) {
         // mobileDebug("In Index. Promise number:", loop++, "window.history.state = ", JSON.stringify(window.history.state));
 /*        console.log("In Index. Promise number: " + loop + ". window.history.state = " + JSON.stringify(window.history.state))
         await new Promise(res => setTimeout(res, 300)); // Allow  History to reload. 300ms should be enough */
