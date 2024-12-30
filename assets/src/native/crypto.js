@@ -3,6 +3,7 @@ function Crypto(){
     "use strict";
 
     const decodeText = u8Ary => new TextDecoder().decode(u8Ary);
+    const encodeText = string => new TextEncoder().encode(string);
     
     const bufferFromIterable = (...iterables) => new Blob(iterables).arrayBuffer(); //iterable object such as an Array, ArrayBuffers, TypedArrays, DataViews, Blobs, strings, or a mix of any of such elements
     const bufferFromB64 = base64 => fetch(`data:application/octet-stream;base64,${base64}`).then(response => response.arrayBuffer()); //ASYNC
@@ -19,9 +20,9 @@ function Crypto(){
             reader.readAsDataURL(new Blob(iterables));
         });
     const safeB64From = (...iterables) => b64From(...iterables).then(b64 => b64.substring(b64.indexOf(',') + 1).replace(/[+/=]/g, c => ({'+': '-', '/': '_', '=': ''}[c])));// remove the `data:...;base64, from the start then make safe B64 String
-    const trimmedB64FromU8Ary = u8Ary => btoa(String.fromCharCode.apply(null, u8Ary)).replace(/=+$/, '');// SYNC function uses Binary to ASCII
+    const trimmedB64FromAry = ary => btoa(String.fromCharCode.apply(null, ary)).replace(/=+$/, '');// SYNC function uses Binary to ASCII
 
-    const b64FromTimeInt = timeInt => trimmedB64FromU8Ary(u8AryFrom(new BigUint64Array([BigInt(timeInt)]).buffer).reverse().filter(Boolean));
+    const b64FromTimeInt = timeInt => trimmedB64FromAry(u8AryFrom(new BigUint64Array([BigInt(timeInt)]).buffer).reverse().filter(Boolean));
     const timeIntFromB64 = timeB64String => u8AryFromB64(timeB64String).reduce((p, c)=> p * 256 + c);
 
     const digest = data => window.crypto.subtle.digest('SHA-256', data); //data: ArrayBuffers, TypedArrays or DataViews // returns ArrayBuffer
@@ -406,35 +407,28 @@ function Crypto(){
     Vendor.prototype.prepareForSend = function(excludeRevs){
         const vO = {...this};
         if(excludeRevs) delete vO.rev;
-        vO.b = trimmedB64FromU8Ary(this.base);
+        vO.b = trimmedB64FromAry(this.base);
         vO.c = b64FromTimeInt(this.cr8);
         vO.m = b64FromTimeInt(this.mod);
         const { base, cr8, mod, exp, ...vendorRest } = vO;
         return vendorRest;
     };
     
-    Vendor.prototype.prepareForShare = async function(plainPinString = false, getPlainText = false){ // TO DOOOOOOOOOOOOOOOOOOOOO
-        const {plainString} = await this.getCurrentPassword();
-        const vO = JSON.stringify({
-            ps: plainString,
-            nm: this.name,
-            lg: this.log,
-            nt: this.note,
-            ul: this.url,
-            tg: this.tags,
-        });
-        
-        if(getPlainText) return vO;
-
-        const vOBuffer = await compressedBufferFromIterable(vO); // compress JSON string
-        const persistId = await randomU8Ary(32).buffer; //ArrayBuffer
-        const cryptoKeyCipherPass = await getCryptoKeyCipherKey(plainPinString, persistId, true); //plainPinString === false - will become "0" hexString in getCryptoKeyCipherPass, cryptoKeyCipherPass: ArrayBuffer
-        if(developerMode) console.log("cryptoKeyCipherPass = ", cryptoKeyCipherPass);
-        const cipher = await encryptUsePass(vOBuffer, cryptoKeyCipherPass, minPbkdf2Loops, aesGcmObj); // returns ArrayBuffer
-        if(developerMode) console.log("cipher = ", cipher);
-        const trimmedB64cipher = trimmedB64FromU8Ary(cipher);
-        return [hexFrom(persistId), trimmedB64cipher];
+    Vendor.prototype.prepareForShare = async function(plainText){
+        const plainPassString = this.cPass || (await this.getCurrentPassword()).plainString;
+        if(plainText) return [plainPassString, null];
+        const chrAry = vPass.baseChr2dAry.flat().join("").split("");
+        const passIndexAry = plainPassString.split("").map(c => chrAry.indexOf(c));
+        const alphanumString = vPass.baseChr2dAry[0][0];
+        const plainPinString = [...randomU8Ary(6)].map(bin => alphanumString[bin % alphanumString.length]).join("");
+        const pinDigestAry = [...u8AryFrom(await window.crypto.subtle.digest("SHA-256", encodeText(plainPinString)))];
+        const xoredShareAry = pinDigestAry.map((v,i) => v ^ passIndexAry[i]);
+        const xoredPinLen = (pinDigestAry.reduce((acc, val) => acc + val, 0) % 32) ^ plainPinString.length;
+        xoredShareAry.push(xoredPinLen);
+        const shareB64 = window.btoa(String.fromCharCode.apply(null, xoredShareAry)).replace(/[+/=]/g, c => ({'+': '-', '/': '_', '=': ''}[c]));
+        return [plainPinString, shareB64];
     };
+
 
     /* -------------------------------------------- New DB Object ------------------------------------------------------- */
     function DatabaseObject(dbObj, doUpdateMod){

@@ -888,40 +888,92 @@ function Interface(thisApp){
 
             const shareVendor = async _ => { //shareCredentials
                 console.log("----------------SHARE MODULE-------------------TO DO-----------------------------SHARE MODULE-------------------TO DO-----------------------------");
-                
-                //addModalToHistory(true); //force adding to history
-                
-                
-                const drawBarcode = async (e, shareName) => { //barcode
-                    
-                    e.target.toggleClass("selected");
-                    const shareSection = e.currentTarget.forebear(2);
-                    const existingWrp = shareSection.kidsByClass(`${shareName}Wrp`)[0]; //barcodeWrp
-                    if(existingWrp) return existingWrp.kill();
 
+                const drawBarcode = async (e, shareName) => { //barcode
+                    const shareSection = e.currentTarget.forebear(2);
+                    const existingWrp = shareSection.kidsByClass(`${shareName}`)[0]; //barcode(link or plain)Wrp
+                    if(existingWrp) return existingWrp.kill();
+                    shareSection.ridKids(2); // Remove the barcodeWrp
+
+                    const [plainString, shareB64] = await vendObj.prepareForShare(shareName === "barcodeText"); // plainString = plainPinString or plainPassword
+                    const shareText = shareB64 ? `${thisApp.URL}/share.html?${shareB64}` : plainString;
+                    
                     const shareTitleBar = shareSection.kid();
                     const shareOptionsBar = shareSection.kid(1);
-                    const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
 
-                    const size = Math.min(shareSection.clientHeight - shareTitleBar.clientHeight - shareOptionsBar.clientHeight, thisApp.settings.appWidth.current) * 0.82;
-                    const barcodeWrp = dom.addDiv("barcodeWrp")
+                    const size = (Math.min(shareSection.clientHeight - shareTitleBar.clientHeight - shareOptionsBar.clientHeight - window.MILLIMITER * 10, thisApp.settings.appWidth.current) * 0.98) - window.MILLIMITER * 20;
+                    const barcodeWrp = dom.addDiv(`barcodeWrp ${shareName}`);
+
                     try{
                         QrCreator.render({
-                            text: vPass, //max 2900 char
+                            text: shareText, //max 2900 char
                             radius: 0.5, // 0.0 to 0.5
                             ecLevel: 'H', // L, M, Q, H
                             fill: '#000', // foreground color
                             background: "#fff", // color or null for transparent
                             size: size // in pixels
                         }, barcodeWrp);
+                        
                         shareSection.attach(barcodeWrp);
+                        
+                        if(shareB64){
+                            barcodeWrp.attach(
+                                dom.addDiv("sharePinDivWrp").attachAry([
+                                    dom.addDiv("", "PIN:"),
+                                    dom.addDiv("sharePinDiv", plainString),
+                                    getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
+                                        window.navigator.vibrate(200);
+                                        navigator.clipboard.writeText(plainString);//.then(_ => thisApp.message[msgName]());
+                                    })
+                                ])
+                            )
+                        }
                     }catch(err){
                         console.log(err); // error message TODO To Do !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     }
                 };
+                
+            const webShare = async (e, shareName) => {
+                    const shareSection = e.currentTarget.forebear(2);
+                    const existingWrp = shareSection.kidsByClass(`${shareName}`)[0]; //barcode(link or plain)Wrp
+                    if(existingWrp) return existingWrp.kill();
+                    shareSection.ridKids(2); // Remove the barcodeWrp
+                
+                
+                const [plainPinString, shareB64] = await vendObj.prepareForShare(false); 
+                const shareUrl = `${thisApp.URL}/share.html?${shareB64}`;
+                const barcodeWrp = dom.addDiv(`barcodeWrp ${shareName}`).attach(
+                                dom.addDiv("sharePinDivWrp").attachAry([
+                                    dom.addDiv("", "PIN:"),
+                                    dom.addDiv("sharePinDiv", plainPinString),
+                                    getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
+                                        window.navigator.vibrate(200);
+                                        navigator.clipboard.writeText(plainPinString);//.then(_ => thisApp.message[msgName]());
+                                    })
+                                ])
+                            );
+                
+                    const shareData = {
+                      title: "SecreSync",
+                      //text: "Lets Share Secret",
+                      url: shareUrl,
+                      //file:[new File([blob], "file.png", {type: blob.type})]
+                    };
+                    if (!navigator.canShare) {
+                      console.log("navigator.canShare() not supported.");
+                    } else if (navigator.canShare(shareData)) {
+                      //console.log("navigator.canShare() supported. We can use navigator.share() to send the data.",  navigator.canShare(shareData));
+                      await navigator.share(shareData);
+                      shareSection.attach(barcodeWrp);
+                    } else {
+                      console.log("Specified data cannot be shared.");
+                    }
+            };
 
                 const contextIcons = [
-                    getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", e => drawBarcode(e, "barcode")),
+                    getSvgIcon("shareBarcodeText", "secreSyncPlainTextBarcode-TODO", e => drawBarcode(e, "barcodeText")),
+                    getSvgIcon("shareBarcodeLink", "secreSyncShareSiteLinkBarcode-TODO", e => drawBarcode(e, "barcodeLink")), //
+                    getSvgIcon("webShare", "secreSyncShareWebShare-TODO", e => webShare(e, "webShareLink")),
                     []
                 ];
 
@@ -940,7 +992,9 @@ function Interface(thisApp){
                 .attachTo(document.body);
                 
 
+                //const [plainPinString, shareB64] = await vendObj.prepareForShare();
                 
+                //console.log("plainPinString", plainPinString, "shareB64", shareB64);
 
                 addModalToHistory(true); //force adding to history
 
@@ -954,49 +1008,12 @@ function Interface(thisApp){
                 
                 
 
-/*                 const disposableModal = dom.addDiv("disposableModal settingsSection").attach(
-                    dom.addDiv("settingsOptionsBar").attach(
-                        getSvgIcon("crosx", "btnClose", _ => history.back())
-                    )
-                ).attachTo(document.body); */
-                
-/*                 const drawBarcode = async _ => {
-                    const vPass = vendObj.cPass || (await vendObj.getCurrentPassword()).plainString;
-                    const {height, width} = window.visualViewport;
-                    const size = Math.min(height, width) * 0.82;
-                    
-                    ;
-                    
-                    try{
-                        const barcodeContainer = dom.addDiv("barcodeContainer")
-                        QrCreator.render({
-                            text: vPass, //max 2900 char
-                            radius: 0.5, // 0.0 to 0.5
-                            ecLevel: 'L', // L, M, Q, H
-                            fill: '#000', // foreground color
-                            background: "#fff", // color or null for transparent
-                            size: size // in pixels
-                        }, barcodeContainer);
-                      
-                      disposableModal.ridKids(1).attach(barcodeContainer);
-                    }catch(err){
-                        console.log(err);
-                    }
-                    
-                };
-                
-                disposableModal.attach(
-                    dom.addDiv("settingsOptionsBar").attach(
-                        getSvgIcon("secreSyncBarcode", "secreSyncBarcode-TODO", drawBarcode)
-                    )
-                ); */
-                
 
                 
                 
                 return;
                 
-                const device = await navigator.bluetooth.requestDevice({
+/*                 const device = await navigator.bluetooth.requestDevice({
                     //acceptAllDevices: true,
                     filters: [ { name: "Hubert's A52s" }],
                     //optionalServices: ["battery_service"],
@@ -1065,7 +1082,7 @@ function Interface(thisApp){
                     } else {
                       console.log("Specified data cannot be shared.");
                     }
-                });
+                }); */
             };
 
             

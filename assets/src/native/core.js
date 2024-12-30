@@ -248,6 +248,13 @@ function isURL(string){
         
         [...doc.querySelectorAll('*')].forEach(dom); // domify all the elements present in DOM at the start in the html document
         
+        window.MILLIMITER = (_ => {
+            const divDom = dom.addDiv().setAttr("style", "height:1000mm").attachTo(doc.body);
+            const mm = divDom.clientHeight / 1000;
+            divDom.kill();
+            return mm;
+        })();
+        console.log(MILLIMITER);
         window.REM = parseInt(getComputedStyle(document.documentElement).fontSize);
         window.TOUCH_DEVICE = !!navigator.maxTouchPoints || (doc.body.on("touchstart", _ => window.TOUCH_DEVICE = true, {once: true}), false);
         

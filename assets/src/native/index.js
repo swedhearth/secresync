@@ -127,8 +127,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
-        console.log('origViewPortHeightInt',origViewPortHeightInt);
-        //mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
+        //console.log('origViewPortHeightInt', origViewPortHeightInt);
+        
+        mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
+        
         let squeezedViewPortHeightInt = window.virtualKeyboardIsDisplayed = 0;
         let resizeDelay;
         let transformDelay;
@@ -138,6 +140,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
 
         const viewportResizeHandler = e => {
+            mobileDebug("viewportResizeHandler triggered. disableResize: ", disableResize, "eventViewPortHeightInt: ", parseInt(e.target.height), "squeezedViewPortHeightInt", squeezedViewPortHeightInt);
             if(disableResize) return;
             clearTimeout(resizeDelay);
             const eventViewPortHeightInt = parseInt(e.target.height);
@@ -182,7 +185,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
 
         window.visualViewport.addEventListener('scroll', viewportScrollHandler);
         window.visualViewport.addEventListener('resize', viewportResizeHandler);
-        mobileDebug("viewportScrollHandler and viewportResizeHandler addEventListener");
+        mobileDebug("viewportScrollHandler and viewportResizeHandler addEventListener. virtualKeyboard in navigator = ", "virtualKeyboard" in navigator);
 
 
 

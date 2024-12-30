@@ -314,11 +314,7 @@ input:focus-visible, textarea:focus-visible{
     outline: var(--trace-input-outline-focus);
     background: var(--input-background);
     box-shadow: unset;
-    
-    
 }
-
-
 
 input::placeholder, textarea::placeholder{
     transition: all 0.3s ease;
@@ -463,7 +459,6 @@ legend.appThemeLegend:before{
 
 .secreSyncIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
-    
 }
 
 .containIcon{
@@ -2103,28 +2098,73 @@ border-top: 1px solid var(--module-bckg);
 /*shareContainer*/
 
 /* Barcode Share*/
-.barcodeWrp{
-    position: relative;
-    left:50%;
-    transform:translateX(-50%);
-    background: white;
-    padding: 5vmin;
-    display: flex;
-    box-shadow: 1vmin 1vmin 2vmin var(--app-shade-grey-100);
-    border-radius: 5vmin;
-    margin: 5mm 0;
-    display: inline-block;
+.shareSection{
+    text-align:center;
 }
+.barcodeWrp{
+    background: white;
+    padding: 10mm;
+    box-shadow: 0.2vmin 0.2vmin 0.5vmin var(--app-shade-grey-100);
+    border-radius: 2.5vmin;
+    margin: 1vmin;
+    
+    display: inline-block;
+/*     flex-wrap: wrap;
+    justify-content: center; */
+    
+}
+.barcodeWrp canvas{
+    margin: auto;
+    display: block;
+}
+.barcodeLink{
+    padding-bottom: 0;
+}
+.sharePinDivWrp{
+    line-height: 10mm;
+    /* position: absolute; */
 
+    /* text-align: center; */
+    width: 100%;
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
+    letter-spacing: 0.1em;
+    display:flex;
+justify-content: space-between;
+    align-items: center;
+    padding:1mm;
+}
+.sharePinDiv{
+        font-size: 5mm;
+    font-weight: 900;
+}
 .secreSyncBarcode{
     background-color: var(--module-bckg);
     background-image: url(../../../assets/static/appSvg/sprite.svg#secreSyncBarcode);
 }
 
-html.invert .barcodeWrp, html.invert .secreSyncBarcode{
+.shareBarcodeLink{
+    background-color: var(--module-bckg);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#barcodeLink);
+}
+
+.shareBarcodeText{
+    background-color: var(--module-bckg);
+    background-image: url(../../../assets/static/appSvg/sprite.svg#barcodeText);
+}
+
+html.invert .barcodeWrp, html.invert .secreSyncBarcode, html.invert .shareBarcodeLink, html.invert .shareBarcodeText{
     filter: invert(1);
 }
 
+
+.webShare{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#webShare);
+}
+.webShareLink{
+        width: 98%;
+    box-sizing: border-box;
+}
 .disposableModalSection{ /* Same as .settingsSection .... .disposableModalSection?*/
     max-width: var(--max-app-width);
     background: var(--module-bckg);
