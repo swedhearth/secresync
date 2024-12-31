@@ -419,12 +419,12 @@ function Crypto(){
         if(plainText) return [plainPassString, null];
         const chrAry = vPass.baseChr2dAry.flat().join("").split("");
         const passIndexAry = plainPassString.split("").map(c => chrAry.indexOf(c));
-        const alphanumString = vPass.baseChr2dAry[0][0];
+        const alphanumString = "abcdefghijklmnopqrstuvwxyz0123456789"; //36 characters  ** 6 = 2,176,782,336 possible results //vPass.baseChr2dAry[0][0];
         const plainPinString = [...randomU8Ary(6)].map(bin => alphanumString[bin % alphanumString.length]).join("");
         const pinDigestAry = [...u8AryFrom(await window.crypto.subtle.digest("SHA-256", encodeText(plainPinString)))];
         const xoredShareAry = pinDigestAry.map((v,i) => v ^ passIndexAry[i]);
-        const xoredPinLen = (pinDigestAry.reduce((acc, val) => acc + val, 0) % 32) ^ plainPinString.length;
-        xoredShareAry.push(xoredPinLen);
+        const xoredPassLen = (pinDigestAry.reduce((acc, val) => acc + val, 0) % 32) ^ plainPassString.length;
+        xoredShareAry.push(xoredPassLen);
         const shareB64 = window.btoa(String.fromCharCode.apply(null, xoredShareAry)).replace(/[+/=]/g, c => ({'+': '-', '/': '_', '=': ''}[c]));
         return [plainPinString, shareB64];
     };

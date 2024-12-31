@@ -16,11 +16,11 @@ const urlSearchParams = Object.fromEntries(new URLSearchParams(window.location.s
 if(urlSearchParams.b){
     inputSharedPassInput.addEventListener("input", async e => {
         outputSharedPassFieldset.className = (e.target.value ? "" : "elNoShow");
-        const pinBuff = new TextEncoder().encode(inputSharedPassInput.value);
+        const pinBuff = new TextEncoder().encode(inputSharedPassInput.value.toLowerCase());
         const pinDigestAry = [...new Uint8Array(await window.crypto.subtle.digest("SHA-256", pinBuff))];
         const xoredShareAry = window.atob(urlSearchParams.b.replace(/[-_.]/g, c => ({'-': '+', '_': '/'}[c]))).split("").map(c => c.charCodeAt(0));
-        const xoredPinLen = xoredShareAry.pop();
-        const passPlainLen = (pinDigestAry.reduce((acc, val) => acc + val, 0) % 32) ^ xoredPinLen;
+        const xoredPassLen = xoredShareAry.pop();
+        const passPlainLen = (pinDigestAry.reduce((acc, val) => acc + val, 0) % 32) ^ xoredPassLen;
         const passIndexAry = xoredShareAry.map((v,i) => v ^ pinDigestAry[i]);
         const plainPass = passIndexAry.map(idx => chrAry[idx]).join("");
         outputSharedPassInput.value = plainPass.substring(0, passPlainLen);
