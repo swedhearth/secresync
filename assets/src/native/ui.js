@@ -896,7 +896,7 @@ function Interface(thisApp){
                     shareSection.ridKids(2); // Remove the barcodeWrp
 
                     const [plainString, shareB64] = await vendObj.prepareForShare(shareName === "barcodeText"); // plainString = plainPinString or plainPassword
-                    const shareText = shareB64 ? `${thisApp.URL}/share.html?${shareB64}` : plainString;
+                    const shareText = shareB64 ? `${thisApp.URL}share/?b=${shareB64}` : plainString;
                     
                     const shareTitleBar = shareSection.kid();
                     const shareOptionsBar = shareSection.kid(1);
@@ -941,17 +941,18 @@ function Interface(thisApp){
                 
                 
                 const [plainPinString, shareB64] = await vendObj.prepareForShare(false); 
-                const shareUrl = `${thisApp.URL}/share.html?${shareB64}`;
+                const shareUrl = `${thisApp.URL}share/?b=${shareB64}`;
+                console.log("shareUrl", shareUrl, "thisApp.URL", thisApp.URL);
                 const barcodeWrp = dom.addDiv(`barcodeWrp ${shareName}`).attach(
-                                dom.addDiv("sharePinDivWrp").attachAry([
-                                    dom.addDiv("", "PIN:"),
-                                    dom.addDiv("sharePinDiv", plainPinString),
-                                    getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
-                                        window.navigator.vibrate(200);
-                                        navigator.clipboard.writeText(plainPinString);//.then(_ => thisApp.message[msgName]());
-                                    })
-                                ])
-                            );
+                    dom.addDiv("sharePinDivWrp").attachAry([
+                        dom.addDiv("", "PIN:"),
+                        dom.addDiv("sharePinDiv", plainPinString),
+                        getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
+                            window.navigator.vibrate(200);
+                            navigator.clipboard.writeText(plainPinString);//.then(_ => thisApp.message[msgName]());
+                        })
+                    ])
+                );
                 
                     const shareData = {
                       title: "SecreSync",
@@ -976,6 +977,18 @@ function Interface(thisApp){
                     getSvgIcon("webShare", "secreSyncShareWebShare-TODO", e => webShare(e, "webShareLink")),
                     []
                 ];
+                
+                
+/* Display Password QR Code
+
+Description: Generate a QR code that contains the plain password for local sharing.
+Display Encrypted Password QR Code
+
+Description: Generate a QR code with a hyperlink and a PIN to decrypt the password.
+Share Password Link with PIN
+
+Description: Display the PIN and use web share to send a hyperlink where the PIN reveals the password. */
+
 
                 const shareSection = dom.addDiv("disposableModalSection shareSection")
                 .attach(
@@ -1626,9 +1639,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         elIdx++;
                     };
                     
-                    window.addEventListener('popstate',  _ => {
-                        exportVendors.forEach(exportVendObj => delete exportVendObj.exp);
-                    }, {once: true});
+                    window.addEventListener('popstate', _ => exportVendors.forEach(exportVendObj => delete exportVendObj.exp), {once: true});
 
                     exportFilteredSection.attach(
                         dom.addDiv("disposableModalTitleBar exportFilteredBar")
@@ -2451,11 +2462,6 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
 
 /* Apply settings */
-    //if(thisApp.localStorage.get("appTheme") === "true") document.body.addClass("invert");
-    //const appWidth = thisApp.localStorage.get("appWidth");
-    //if(appWidth) document.documentElement.style.setProperty("--max-app-width", appWidthStyle);
-    
-
     if(thisApp.settings.appTheme){
         document.documentElement.classList.add("invert");
     }
@@ -2470,7 +2476,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 // /* Temp and tests */
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {
-            thisApp.dbObj.credentials.push({plainPassString: "swedhearth75059515357", plainPinString: "8156", timestamp: Date.now()});
+
             
             console.log(thisApp.dbObj);
 /*             dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())

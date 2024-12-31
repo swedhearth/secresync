@@ -320,7 +320,7 @@ function Crypto(){
             ["!,;.?:@$%*_&~"], //basicSpecial91a (13 chrs) = 75 chrs
             ["#^-+=[]{}()|`/<>"], //basicSpecialb91b (16 chrs) = 91 chrs
             Array.from({ length: 165 }, (_, idx) => String.fromCharCode(idx + 192)).join("")//extendedSpecial (165 chrs - 2byte characters) = 256 chrs (1 character for each byte of vendor password)
-        ], //421 bytes in total (decoded to utf8), 161 unique bytes (0 - 256) // base256 - 91 one-byte characters + 165 two-byte characters // Add the basePassChr2dAry as a vPass.baseChr2dAry
+        ], //421 bytes in total (decoded to utf8), 161 unique bytes (0 - 256) // base256 - 91 one-byte characters + 165 two-byte characters
         grades: [
             { value: 256, color: [0, 100] }, //RG - N/A
             { value: 200, color: [0, 150] }, //RG - "superior"

@@ -87,7 +87,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
             return null;
         }
-        locationSearch = "";
+        window.location.replace(window.location.origin + window.location.pathname.replace("index.html", ""));
     }
 
     window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
@@ -110,16 +110,16 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     if(!urlSearchParams){
         setTimeout(_ =>{
             if(confirm("IN INDEX - !!! This has been caught when no urlSearchParams and 2 seconds ellapsed. WILL RELOAD. history.state: " + JSON.stringify(window.history.state) + " - window.history.length = " + window.history.length)){
-                window.location.replace(window.location.origin + window.location.pathname);
+                window.location.replace(window.location.origin + window.location.pathname.replace("index.html", ""));
             }
         }, 2000);
         return;
     }
 
     /* ------------------------------------------------------------ Initiate and start App -------------------------------------------------------------- */
-    new App(urlSearchParams).init().then(thisApp => {
+    new App(urlSearchParams).init().then(async thisApp => {
         if(developerMode) console.log(thisApp);
-        //alert("new App.init()");
+
         window.addEventListener('online', thisApp.connectivitychange);
         window.addEventListener('offline', thisApp.connectivitychange);
         
@@ -127,7 +127,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
 
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
-        //console.log('origViewPortHeightInt', origViewPortHeightInt);
         
         mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
         
@@ -138,9 +137,8 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         
         window.testWithVitualKeyboard = true;
 
-
         const viewportResizeHandler = e => {
-            mobileDebug("viewportResizeHandler triggered. disableResize: ", disableResize, "eventViewPortHeightInt: ", parseInt(e.target.height), "squeezedViewPortHeightInt", squeezedViewPortHeightInt);
+            mobileDebug("viewportResizeHandler triggered. eventViewPortHeightInt: ", parseInt(e.target.height), "squeezedViewPortHeightInt", squeezedViewPortHeightInt);
             if(disableResize) return;
             clearTimeout(resizeDelay);
             const eventViewPortHeightInt = parseInt(e.target.height);
@@ -186,9 +184,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
         window.visualViewport.addEventListener('scroll', viewportScrollHandler);
         window.visualViewport.addEventListener('resize', viewportResizeHandler);
         mobileDebug("viewportScrollHandler and viewportResizeHandler addEventListener. virtualKeyboard in navigator = ", "virtualKeyboard" in navigator);
-
-
-
 
         let appInstalled = false;
         window.addEventListener("appinstalled", () => {

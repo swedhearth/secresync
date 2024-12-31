@@ -472,23 +472,14 @@ function App(urlSearchParams){
     this.name = "SecreSync";
     this.longName = "Secrets Synchronised";
     this.urlSearchParams = urlSearchParams;
-    this.URL = window.location.origin + window.location.pathname;//"https://swedhearth.github.io/secresync/"
+    this.URL = window.location.origin + window.location.pathname.replace("index.html", "");//"https://swedhearth.github.io/secresync/" || "https://swedhearth.github.io/secresync/index.html"
     this.consent = null; // null = in private mode(storage disabled, false = consent not given, true = storage available
 
     this.urlReplace = url => url && location.replace(url);
     this.reload = _ => this.urlReplace(this.URL);
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
-    
-
-
-    //let lastActiveTime = 0;
-    
-/*     const logOffApp = async type => {
-        this.reload();
-    }; */
 
     this.online = navigator.onLine;
-    
 
     this.connectivitychange = e => {
 
@@ -497,8 +488,6 @@ function App(urlSearchParams){
         this.online = e.type !== "offline";
         
          mobileDebug("connectivitychange. e.type = ", e.type);
-/*        mobileDebug("connectivitychange. Is this.dbObj? = ", !!this.dbObj);
-        mobileDebug("connectivitychange. document.visibilityState = ", document.visibilityState); */
 
         this.dbStore.getRemoteObjects().forEach(storeObj => storeObj.switchConnection()); 
         if(wasOnline !== this.online && !this.hidden && this.dbObj) this.message[e.type](); // message.online : message.offline
@@ -648,8 +637,9 @@ function App(urlSearchParams){
         this.ui.localiseDbStores();
         
 
-        
+        console.log("App Init before await App Start");
         this.start(null, false);
+        await new Promise(res => setTimeout(res, 500));// wait 500ms to enable the app start - otherwise it will mess with the origViewPortHeightInt when returning from OneDrive redirection
         return this;
     };
 
@@ -673,7 +663,7 @@ function App(urlSearchParams){
         this.dbStore.checkExtraSync(this); // new Database - should not ask if you want to sync the existing localFile (ahould do the same in storeObj.remoteRead?)
     };
 
-    this.start = async (msg, err, appStartFailCount = 0) =>{
+    this.start = async (msg, err, appStartFailCount = 0) => {
         const maxAppStartFails = 4;
         this.cryptoHandle = new CryptoHandle(this);
         try{
@@ -696,7 +686,7 @@ function App(urlSearchParams){
                 if(msg) this.message[err ? "error" : "digest"](msg);
                 if(savedStoreObjs.length){
                     let painted;
-                    
+                    console.log("start storeObj.reads");
                     for(const storeObj of savedStoreObjs){
                         await storeObj.read().catch(storeObj.catchLoad); // Catch catchLoad is OK!!!!!!!!! catchLoad CAN THROW but will be caught by the try - catch in this.start
                         if(this.dbObj && !painted) {
