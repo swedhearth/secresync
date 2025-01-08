@@ -98,7 +98,9 @@ input:focus-visible{
 .copyClipboard {
     background-image: url(../assets/static/appSvg/sprite.svg#copyClipboard);
 }
-
+.pasteClipboard{
+    background-image: url(../assets/static/appSvg/sprite.svg#pasteClipboard);
+}
 .secreSyncIcon{
     background-image: url(../assets/static/appSvg/sprite.svg#secreSync);
     padding: 10mm;

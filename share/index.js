@@ -1,7 +1,3 @@
-const shareForm = document.getElementById("shareForm");
-const inputSharedPassInput = document.getElementById("inputSharedPassInput");
-const outputSharedPassFieldset = document.getElementById("outputSharedPassFieldset");
-const outputSharedPassInput = document.getElementById("outputSharedPassInput");
 
 const baseChr2dAry = [ // excluded characters: " and '
     ["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"], //alphanum91 = 62 chrs
@@ -9,10 +5,9 @@ const baseChr2dAry = [ // excluded characters: " and '
     ["#^-+=[]{}()|`/<>"], //basicSpecialb91b (16 chrs) = 91 chrs
     Array.from({ length: 165 }, (_, idx) => String.fromCharCode(idx + 192)).join("")//extendedSpecial (165 chrs - 2byte characters) = 256 chrs (1 character for each byte of vendor password)
 ];
-
 const chrAry = baseChr2dAry.flat().join("").split("");
-
 const urlSearchParams = Object.fromEntries(new URLSearchParams(window.location.search)); // this is in the location part of the url
+
 if(urlSearchParams.b){
     inputSharedPassInput.addEventListener("input", async e => {
         outputSharedPassFieldset.className = (e.target.value ? "" : "elNoShow");
@@ -34,6 +29,18 @@ shareForm.addEventListener("submit", e => {
 toggleShowPass.addEventListener("click", e => {
     toggleShowPass.classList.toggle("passEyeHide");
     outputSharedPassInput.type = outputSharedPassInput.type === "password" ? "text" : "password";
+});
+
+toggleShowPin.addEventListener("click", e => {
+    toggleShowPin.classList.toggle("passEyeHide");
+    inputSharedPassInput.type = inputSharedPassInput.type === "password" ? "text" : "password";
+});
+
+pasteClipboard.addEventListener("click", e => {
+    navigator.clipboard.readText().then((clipText) => {
+        inputSharedPassInput.value = clipText;
+        inputSharedPassInput.dispatchEvent(new Event('input'));
+    });
 });
 
 copyClipboard.addEventListener("click", e => {

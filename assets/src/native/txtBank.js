@@ -312,6 +312,8 @@ const txtBankObj = {
       "customPassCopied": "Custom Password has been copied to the clipboard.",
       "passCopied": "Password has been copied to the clipboard.",
       "logCopied": "Login has been copied to the clipboard.",
+      "pinCopied": "PIN has been copied to the clipboard.",
+      "shareFail": "Specified data cannot be shared.",
       "newPassGenerated": "A new password for the account '${vName}' has been generated.",
       "vendorDeleted": "The '${ vName }' Account has been deleted.",
       "exitAppConfirm": "Press the Back Button again to exit the application.",
@@ -346,7 +348,8 @@ const txtBankObj = {
       "remoteConnectionCancelled": "The application's connection to the cloud has been cancelled.",
       "remoteFileMissing": "A problem occurred.<br>It seems that ${ sName } is connected to the application,<br>but the data could not be loaded.<br><br>It is possible that the database file was deleted from the cloud.<br><br>The cloud connection will be removed.",
       "noSessionStorage": "I can't connect to the cloud.<br><br>It seems like access to the browser's session storage, which is necessary for connecting the application to the cloud, has been disabled.",
-      "remoteRedirectError": "I can't connect to the cloud.<br><br>An error occurred during redirection.<br><br>Please try again."
+      "remoteRedirectError": "I can't connect to the cloud.<br><br>An error occurred during redirection.<br><br>Please try again.",
+      "textAreaLimitReached": "You have reached the maximum character limit."
     },
     "app": {
       "titles": {
@@ -400,12 +403,14 @@ const txtBankObj = {
         "btnClose": "Close",
         "copyLogBtn": "Copy Login",
         "copyPassBtn": "Copy Password",
+        "copyPinBtn":  "Copy PIN",
         "decrease": "Decrease",
         "increase": "Increase",
         "newPassBtn": "Generate a New Password",
         "showPassToggleBtn": "Toggle Password Visibility",
         "openLinkBtn": "Open a Hyperlink",
         "deleteVendorBtn": "Delete an Account",
+        "undoChangesBtn": "Undo Changes",
         "deleteTrashedBtn": "Permanently remove from the bin",
         "deleteRevisionBtn": "Delete this version",
         "toggleToLog": "Convert a Note to Login Credentials",
@@ -416,6 +421,7 @@ const txtBankObj = {
         "appWidth" : "Adjust Width",
         "appLayout": "Change Layout",
         "appLogOff": "Set Logoff Delay",
+        "selfProfile": "My Profile",
         "appIconSize": "Adjust Icon Size",
         "appBlur": "Toggle Blur Effect",
         "credChecked": "Disable PIN-Only Login",
@@ -438,7 +444,10 @@ const txtBankObj = {
         "msgHistory": "Notification History",
         "installApp": "Install SecreSync on this device",
         "updateApp": "A new version of SecreSync is available. Update the application",
-        "restoreSettings": "Restore Defaults"
+        "restoreSettings": "Restore Defaults",
+        "shareBarcodeText": "Display Password QR Code", //*Description: Generate a QR code that contains the plain password for local sharing.*
+        "shareBarcodeLink": "Display Encrypted Password QR Code", //*Description: Generate a QR code with a link and a PIN to decrypt the password.*
+        "shareWebshareLink": "Share Password Link with PIN" //*Description: Share a link and display a PIN to decrypt the password.*
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -513,13 +522,17 @@ const txtBankObj = {
         "appLayoutMobile": "Mobile Layout",
         "appLayoutDesktop": "Desktop Layout",
         "appLogOff": "Set the delay time before the application logs off automatically.<br>Current delay: ${value} seconds.",
+        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
         "appIconSize": "Change the size of the application icons.<br>Current icon size: ${value} pixels.",
         "appBlur": "Enable or disable the blur effect when the application is not in focus.<br>Current setting: ${value}.",
         "appBlurEnabled": "Enabled",
         "appBlurDisabled": "Disabled",
         "appTheme": "Switch between Light and Dark themes of the application.<br>Current theme: ${value}.",
         "darkThemeEnabled": "Dark Theme",
-        "darkThemeDisabled": "Light Theme"
+        "darkThemeDisabled": "Light Theme",
+        "shareBarcodeText": "Generate a QR code that contains the plain password for local sharing.",
+        "shareBarcodeLink": "Generate a QR code with a link and a PIN to decrypt the password.",
+        "shareWebshareLink": "Share a link and display a PIN to decrypt the password."
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -842,6 +855,8 @@ const txtBankObj = {
       "customPassCopied": "La contraseña personalizada se ha copiado al portapapeles.",
       "passCopied": "La contraseña se ha copiado al portapapeles.",
       "logCopied": "Los detalles de inicio de sesión se han copiado al portapapeles.",
+      "pinCopied": "El PIN ha sido copiado al portapapeles.",
+      "shareFail": "No se pueden compartir los datos especificados.",
       "newPassGenerated": "Se ha generado una nueva contraseña para la cuenta '${vName}'.",
       "vendorDeleted": "La cuenta '${ vName }' se ha eliminado.",
       "exitAppConfirm": "Presione nuevamente el botón Atrás para salir de la aplicación.",
@@ -876,7 +891,8 @@ const txtBankObj = {
       "remoteConnectionCancelled": "La conexión de la aplicación con la nube ha sido cancelada.",
       "remoteFileMissing": "Ha ocurrido un problema.<br>Parece que ${ sName } está conectado a la aplicación,<br>pero no se pudieron cargar los datos.<br><br>Es posible que el archivo de la base de datos haya sido eliminado de la nube.<br><br>La conexión con la nube se eliminará.",
       "noSessionStorage": "No puedo conectarme a la nube.<br><br>Parece que el acceso al almacenamiento de sesión del navegador, que es necesario para conectar la aplicación a la nube, ha sido deshabilitado.",
-      "remoteRedirectError": "No puedo conectarme a la nube.<br><br>Ocurrió un error durante la redirección.<br><br>Inténtalo de nuevo."
+      "remoteRedirectError": "No puedo conectarme a la nube.<br><br>Ocurrió un error durante la redirección.<br><br>Inténtalo de nuevo.",
+      "textAreaLimitReached": "Has alcanzado el límite máximo de caracteres."
     },
     "app": {
       "titles": {
@@ -930,12 +946,14 @@ const txtBankObj = {
         "btnClose": "Cerrar",
         "copyLogBtn": "Copiar detalles de inicio de sesión",
         "copyPassBtn": "Copiar contraseña",
+        "copyPinBtn":  "Copiar PIN",
         "decrease": "Disminuir",
         "increase": "Aumentar",
         "newPassBtn": "Generar una nueva contraseña",
         "showPassToggleBtn": "Alternar visibilidad de la contraseña",
         "openLinkBtn": "Abrir un hipervínculo",
         "deleteVendorBtn": "Eliminar una cuenta",
+        "undoChangesBtn": "Deshacer cambios",
         "deleteTrashedBtn": "Eliminar permanentemente de la papelera",
         "deleteRevisionBtn": "Eliminar esta versión",
         "toggleToLog": "Convertir una nota en credenciales de inicio de sesión",
@@ -946,6 +964,7 @@ const txtBankObj = {
         "appWidth": "Ajustar el ancho",
         "appLayout": "Cambiar diseño",
         "appLogOff": "Establecer retraso de cierre de sesión",
+        "selfProfile": "Mi perfil",
         "appIconSize": "Ajustar el tamaño de los iconos",
         "appBlur": "Activar/Desactivar efecto de desenfoque",
         "credChecked": "Desactivar inicio de sesión solo con PIN",
@@ -968,7 +987,10 @@ const txtBankObj = {
         "msgHistory": "Historial de notificaciones",
         "installApp": "Instala SecreSync en este dispositivo",
         "updateApp": "Una nueva versión de SecreSync está disponible. Actualiza la aplicación",
-        "restoreSettings": "Restaurar valores predeterminados"
+        "restoreSettings": "Restaurar valores predeterminados",
+        "shareBarcodeText": "Mostrar código QR de la contraseña",
+        "shareBarcodeLink": "Mostrar código QR de la contraseña cifrada",
+        "shareWebshareLink": "Compartir enlace de la contraseña con PIN"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -1043,13 +1065,17 @@ const txtBankObj = {
         "appLayoutMobile": "Diseño móvil",
         "appLayoutDesktop": "Diseño de escritorio",
         "appLogOff": "Establezca el tiempo de retraso antes de que la aplicación cierre sesión automáticamente.<br>Retraso actual: ${value} segundos.",
+        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
         "appIconSize": "Cambia el tamaño de los iconos de la aplicación.<br>Tamaño actual de los iconos: ${value} píxeles.",
         "appBlur": "Habilitar o deshabilitar el efecto de desenfoque cuando la aplicación no está en foco.<br>Configuración actual: ${value}.",
         "appBlurEnabled": "Habilitado",
         "appBlurDisabled": "Désactivé",
         "appTheme": "Cambia entre los temas claro y oscuro de la aplicación.<br>Tema actual: ${value}.",
         "darkThemeEnabled": "Tema oscuro",
-        "darkThemeDisabled": "Tema claro"
+        "darkThemeDisabled": "Tema claro",
+        "shareBarcodeText": "Generar un código QR que contiene la contraseña en texto plano para compartir localmente.",
+        "shareBarcodeLink": "Generar un código QR con un link y un PIN para descifrar la contraseña.",
+        "shareWebshareLink": "Compartir un link y mostrar un PIN para descifrar la contraseña."
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1371,6 +1397,8 @@ const txtBankObj = {
       "customPassCopied": "Le mot de passe personnalisé a été copié dans le presse-papiers.",
       "passCopied": "Le mot de passe a été copié dans le presse-papiers.",
       "logCopied": "Les détails de connexion ont été copiés dans le presse-papiers.",
+      "pinCopied": "Le code PIN a été copié dans le presse-papiers.",
+      "shareFail": "Les données spécifiées ne peuvent pas être partagées.",
       "newPassGenerated": "Un nouveau mot de passe pour le compte '${vName}' a été généré.",
       "vendorDeleted": "Le compte '${ vName }' a été supprimé avec succès.",
       "exitAppConfirm": "Appuyez à nouveau sur le bouton Retour pour quitter l'application.",
@@ -1405,7 +1433,8 @@ const txtBankObj = {
       "remoteConnectionCancelled": "La connexion de l'application au cloud a été annulée.",
       "remoteFileMissing": "Un problème est survenu.<br>Il semble que ${ sName } soit connecté à l'application,<br>mais les données n'ont pas pu être chargées.<br><br>Il est possible que le fichier de la base de données ait été supprimé du cloud.<br><br>La connexion au cloud sera supprimée.",
       "noSessionStorage": "Je ne peux pas me connecter au cloud.<br><br>Il semble que l'accès au stockage de session du navigateur, qui est nécessaire pour connecter l'application au cloud, ait été désactivé.",
-      "remoteRedirectError": "Je ne peux pas me connecter au cloud.<br><br>Une erreur s'est produite lors de la redirection.<br><br>Veuillez réessayer."
+      "remoteRedirectError": "Je ne peux pas me connecter au cloud.<br><br>Une erreur s'est produite lors de la redirection.<br><br>Veuillez réessayer.",
+      "textAreaLimitReached": "Vous avez atteint la limite maximale de caractères."
     },
     "app": {
       "titles": {
@@ -1459,12 +1488,14 @@ const txtBankObj = {
         "btnClose": "Fermer",
         "copyLogBtn": "Copier les Détails de Connexion",
         "copyPassBtn": "Copier le Mot de Passe",
+        "copyPinBtn":  "Copier le code PIN",
         "decrease": "Diminuer",
         "increase": "Augmenter",
         "newPassBtn": "Générer un Nouveau Mot de Passe",
         "showPassToggleBtn": "Afficher/Cacher le Mot de Passe",
         "openLinkBtn": "Ouvrir un Hyperlien",
         "deleteVendorBtn": "Supprimer un Compte",
+        "undoChangesBtn": "Annuler les modifications",
         "deleteTrashedBtn": "Supprimer définitivement de la corbeille",
         "deleteRevisionBtn": "Supprimer cette version",
         "toggleToLog": "Convertir une Note en Identifiants de Connexion",
@@ -1475,6 +1506,7 @@ const txtBankObj = {
         "appWidth" : "Ajuster la largeur",
         "appLayout": "Changer la disposition",
         "appLogOff": "Définir le délai de déconnexion",
+        "selfProfile": "Mon profil",
         "appIconSize": "Ajuster la taille des icônes",
         "appBlur": "Activer/Désactiver l'effet de flou",
         "credChecked": "Désactiver la Connexion par PIN Uniquement",
@@ -1492,12 +1524,15 @@ const txtBankObj = {
         "oneDriveFile": "Base de Données OneDrive",
         "localFile": "Fichier de base de données de l'appareil",
         "secreSync": "SecreSync",
-        "share": "Share",
+        "share": "Partager",
         "settings": "Paramètres",
         "msgHistory": "Historique des Notifications",
         "installApp": "Installez SecreSync sur cet appareil",
         "updateApp": "Une nouvelle version de SecreSync est disponible. Mettez à jour l'application",
-        "restoreSettings": "Restaurer les paramètres par défaut"
+        "restoreSettings": "Restaurer les paramètres par défaut",
+        "shareBarcodeText": "Afficher le code QR du mot de passe",
+        "shareBarcodeLink": "Afficher le code QR du mot de passe chiffré",
+        "shareWebshareLink": "Partager le lien du mot de passe avec le code PIN"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1572,13 +1607,17 @@ const txtBankObj = {
         "appLayoutMobile": "Disposition mobile",
         "appLayoutDesktop": "Disposition de bureau",
         "appLogOff": "Définissez le temps de délai avant la déconnexion automatique de l'application.<br>Délai actuel : ${value} secondes.",
+        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
         "appIconSize": "Changez la taille des icônes de l'application.<br>Taille actuelle des icônes : ${value} pixels.",
         "appBlur": "Activez ou désactivez l'effet de flou lorsque l'application n'est pas au premier plan.<br>Paramètre actuel : ${value}.",
         "appBlurEnabled": "Activé",
         "appBlurDisabled": "Désactivé",
         "appTheme": "Basculez entre les thèmes clair et sombre de l'application.<br>Thème actuel : ${value}.",
         "darkThemeEnabled": "Thème sombre",
-        "darkThemeDisabled": "Thème clair"
+        "darkThemeDisabled": "Thème clair",
+        "shareBarcodeText": "Générer un code QR contenant le mot de passe en clair pour le partage local.",
+        "shareBarcodeLink": "Générer un code QR avec un lien et un code PIN pour déchiffrer le mot de passe.",
+        "shareWebshareLink": "Partager un lien et afficher un code PIN pour déchiffrer le mot de passe."
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1900,6 +1939,8 @@ const txtBankObj = {
       "customPassCopied": "Własne hasło zostało skopiowane do schowka.",
       "passCopied": "Hasło zostało skopiowane do schowka.",
       "logCopied": "Login został skopiowany do schowka.",
+      "pinCopied": "PIN został skopiowany do schowka.",
+      "shareFail": "Nie można udostępnić określonych danych.",
       "newPassGenerated": "Nowe hasło dla konta '${ vName }' zostało wygenerowane.",
       "vendorDeleted": "Konto '${ vName }' zostało usunięte.",
       "exitAppConfirm": "Naciśnij ponownie przycisk Wstecz, aby wyjść z aplikacji.",
@@ -1934,7 +1975,8 @@ const txtBankObj = {
       "remoteConnectionCancelled": "Połączenie aplikacji z chmurą zostało anulowane.",
       "remoteFileMissing": "Wystąpił problem.<br>Wygląda na to, że ${ sName } jest połączona z aplikacją,<br>jednak nie udało się wczytać danych.<br><br>Możliwe, że plik bazy danych został usunięty z chmury.<br><br>Połączenie z chmurą zostanie usunięte.",
       "noSessionStorage": "Nie mogę połączyć się z chmurą.<br><br>Wygląda na to, że dostęp do pamięci sesji przeglądarki, która jest niezbędna do połączenia aplikacji z chmurą, został wyłączony.",
-      "remoteRedirectError": "Nie mogę połączyć się z chmurą.<br><br>Wystąpił błąd podczas przekierowania.<br><br>Spróbuj ponownie."
+      "remoteRedirectError": "Nie mogę połączyć się z chmurą.<br><br>Wystąpił błąd podczas przekierowania.<br><br>Spróbuj ponownie.",
+      "textAreaLimitReached": "Maksymalny limit znaków został osiągnięty."
     },
     "app": {
       "titles": {
@@ -1988,12 +2030,14 @@ const txtBankObj = {
         "btnClose": "Zamknij",
         "copyLogBtn": "Kopiuj Dane Logowania",
         "copyPassBtn": "Kopiuj Hasło",
+        "copyPinBtn":  "Kopiuj PIN",
         "decrease": "Odejmij",
         "increase": "Dodaj",
         "newPassBtn": "Wygeneruj Nowe Hasło",
         "showPassToggleBtn": "Przełącz Widoczność",
         "openLinkBtn": "Otwórz Odnośnik",
         "deleteVendorBtn": "Usuń Konto",
+        "undoChangesBtn": "Cofnij zmiany",
         "deleteTrashedBtn": "Trwale usuń z kosza",
         "deleteRevisionBtn": "Usuń tę wersję",
         "toggleToLog": "Konwertuj Notatkę na Dane Logowania",
@@ -2004,6 +2048,7 @@ const txtBankObj = {
         "appWidth" : "Dostosuj szerokość",
         "appLayout": "Zmień układ", 
         "appLogOff": "Ustaw opóźnienie wylogowania",
+        "selfProfile": "Mój profil",
         "appIconSize": "Dostosuj rozmiar ikon",
         "appBlur": "Przełącz efekt rozmycia",
         "credChecked": "Wyłącz Logowanie Tylko za Pomocą PIN",
@@ -2021,12 +2066,15 @@ const txtBankObj = {
         "oneDriveFile": "Baza Danych OneDrive",
         "localFile": "Baza Danych Urządzenia", //bazy danych pliku urządzenia // "Zapasowa Kopia Bazy Danych"
         "secreSync": "SecreSync",
-        "share": "Share",
+        "share": "Udostępnij",
         "settings": "Ustawienia",
         "msgHistory": "Historia Powiadomień",
         "installApp": "Zainstaluj SecreSync na tym urządzeniu",
         "updateApp": "Nowa wersja SecreSync jest dostępna. Zaktualizuj aplikację",
-        "restoreSettings": "Przywróć ustawienia domyślne"
+        "restoreSettings": "Przywróć ustawienia domyślne",
+        "shareBarcodeText": "Wyświetl kod QR hasła",
+        "shareBarcodeLink": "Wyświetl zaszyfrowany kod QR hasła",
+        "shareWebshareLink": "Udostępnij link do hasła z PIN-em"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",
@@ -2101,13 +2149,17 @@ const txtBankObj = {
         "appLayoutMobile": "Układ mobilny",
         "appLayoutDesktop": "Układ desktopowy",
         "appLogOff": "Ustaw czas opóźnienia przed automatycznym wylogowaniem aplikacji.<br>Aktualne opóźnienie: ${value} sekund.",
+        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}<br>PIN: ${plainPinString}<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
         "appIconSize": "Zmień rozmiar ikon aplikacji.<br>Aktualny rozmiar ikon: ${value} pikseli.",
         "appBlur": "Włącz lub wyłącz efekt rozmycia, gdy aplikacja nie jest w fokusie.<br>Aktualne ustawienie: ${value}.",
         "appBlurEnabled": "Włączone",
         "appBlurDisabled": "Wyłączone",
         "appTheme": "Przełącz między jasnym i ciemnym motywem aplikacji.<br>Aktualny motyw: ${value}.",
         "darkThemeEnabled": "Motyw ciemny",
-        "darkThemeDisabled": "Motyw jasny"
+        "darkThemeDisabled": "Motyw jasny",
+        "shareBarcodeText": "Wygeneruj kod QR zawierający zwykłe hasło do lokalnego udostępniania.",
+        "shareBarcodeLink": "Wygeneruj kod QR z linkiem i PIN-em do odszyfrowania hasła.",
+        "shareWebshareLink": "Udostępnij link i wyświetl PIN do odszyfrowania hasła."
         
       },
       "values": {

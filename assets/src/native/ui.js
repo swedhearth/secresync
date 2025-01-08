@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_100";
+    let tempVer = "MobileOptimisation_101";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -70,7 +70,8 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                        if(inpEl.isBlured && !window.itIsPainInTheButtOneDrivePlainHandle) entry.target.blur();
+                        /* if(inpEl.isBlured && !window.itIsPainInTheButtOneDrivePlainHandle)  */
+                            entry.target.blur();
                     }, 200);
                     
                     //entry.target.blur();
@@ -493,6 +494,8 @@ function Interface(thisApp){
         this.noSessionStorage = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("noSessionStorage"), sKey: "secreSync"});
         this.remoteRedirectError = sKey => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("remoteRedirectError"), sKey});
         
+        this.textAreaLimitReached = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("textAreaLimitReached"), sKey: "secreSync"});
+        
         this.noDbObjError = _ => appAlert("noDbObjError");
         this.deleteVendor = vendName => appAlert("deleteVendor", {vName: vendName});
         this.deleteVendorPermanent = vendName => appAlert("deleteVendorPermanent", {vName: vendName});
@@ -667,6 +670,8 @@ function Interface(thisApp){
         this.customPassCopied = _ => msgFlash("customPassCopied");
         this.passCopied = _ => msgFlash("passCopied");
         this.logCopied = _ => msgFlash("logCopied");
+        this.pinCopied = _ => msgFlash("pinCopied");
+        this.shareFail = _ => msgErr("shareFail");
         this.exitAppConfirm = _ => msgFlash("exitAppConfirm");
         this.logShort = _ => msgErr("logShort");
         this.nameShort = _ => msgErr("nameShort");
@@ -736,6 +741,8 @@ function Interface(thisApp){
        
        let vFormScrollTop = 0;
        
+       //let vEntryActive = null; // Please change it!!!!
+       
        const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
             const nameLogMinLen = 3;
             const boxNoteElMaxLen = 10000;
@@ -743,6 +750,21 @@ function Interface(thisApp){
             if(addHistory) addModalToHistory();
             
             let isNew = !vendObj || vendObj.isNew || false;
+            
+            const clearDraftVendor = _ => {
+                thisApp.draftVendObj = null;
+                thisApp.vEntryActive = null;
+                appSectionList.kidsByClass("draftVendObj").forEach(vEntry => vEntry.killClass("draftVendObj"));
+            };
+            
+            const addDraftVendor = _ => {
+                //console.log("addDraftVendor, isNew ?  =", isNew, " ... thisApp.vEntryActive =", thisApp.vEntryActive);
+                if(!isNew && thisApp.vEntryActive){
+                    thisApp.vEntryActive.addClass("draftVendObj");
+                    thisApp.draftVendObj = vendObj;
+                    undoChangesBtn.show();
+                }
+            };
             
             if(submitForm){
                 if(!vendObj.name || vendObj.name.length < nameLogMinLen) return thisApp.message.nameShort();
@@ -752,7 +774,12 @@ function Interface(thisApp){
                 if(existingVendor && existingVendor.id !== vendObj.id) return thisApp.message.vendorExists(vendObj.name);
                 
                 const hasChanged = !vendObj.mod || isNew; // if mode is null then the stores need updating
-                if(isNew) vendObj.mod = vendObj.cr8 = null;
+
+                if(isNew){
+                    vendObj.mod = vendObj.cr8 = null;
+                }else{
+                    clearDraftVendor();
+                }
 
                 vendObj = new thisApp.crypto.Vendor(vendObj); // if vendObj was new is not new anymore
                 if(hasChanged) {
@@ -768,10 +795,22 @@ function Interface(thisApp){
                 }
             }
             
+            let showUndoChangesBtn = false;
+            if(!isNew && thisApp.draftVendObj?.id === vendObj?.id && (addHistory || edit)){
+                vendObj = thisApp.draftVendObj;
+                edit = true;
+                showUndoChangesBtn = true;
+            }else if(addHistory){
+                clearDraftVendor();
+            }
+
+            
             const displayMode = !isNew && !edit;
             vendObj = new thisApp.crypto.Vendor(vendObj, thisApp.dbObj.vendors);
+            
+
             if(isNew) vendObj.isNew = true;
-            if(toggleForm) vendObj.mod = null;
+            if(toggleForm || showUndoChangesBtn) vendObj.mod = null;
             
             // populate Revisions Array if vendObj has revisions and Revisions Array has not already been populated
             if(displayMode && vendObj.rev && !revAry.length){
@@ -878,6 +917,12 @@ function Interface(thisApp){
                 e.target.value = e.target.value.replace(/"/g, "'"); // Replace double quotations as they mess up export to CVS
                 vendObj[e.target.name] = e.target.value;
                 vendObj.mod = null;
+                addDraftVendor();
+            };
+            
+            const undoChanges = e => {
+                clearDraftVendor();
+                closeForm();
             };
 
             const clearFormInput = inpEl => {
@@ -887,23 +932,40 @@ function Interface(thisApp){
             };
 
             const shareVendor = async _ => { //shareCredentials
-                console.log("----------------SHARE MODULE-------------------TO DO-----------------------------SHARE MODULE-------------------TO DO-----------------------------");
-
-                const drawBarcode = async (e, shareName) => { //barcode
-                    const shareSection = e.currentTarget.forebear(2);
-                    const existingWrp = shareSection.kidsByClass(`${shareName}`)[0]; //barcode(link or plain)Wrp
-                    if(existingWrp) return existingWrp.kill();
-                    shareSection.ridKids(2); // Remove the barcodeWrp
+            
+                const shareSection = dom.addDiv("disposableModalSection shareSection");
+                const shareTitleBar = dom.addDiv("disposableModalTitleBar shareTitleBar");
+                const shareOptionsBar = dom.addDiv("disposableOptionsBar shareOptionsBar");
+                let shareContentWrp = null;
+                
+                const prepareShare = async (e, shareName) => {
+                    const closeContentWrap = !!shareSection.kidsByClass(`${shareName}`)[0];
+                    shareContentWrp && shareContentWrp.kill();
+                    shareContentWrp = null;
+                    if(closeContentWrap) return [];
 
                     const [plainString, shareB64] = await vendObj.prepareForShare(shareName === "barcodeText"); // plainString = plainPinString or plainPassword
                     const shareText = shareB64 ? `${thisApp.URL}share/?b=${shareB64}` : plainString;
                     
-                    const shareTitleBar = shareSection.kid();
-                    const shareOptionsBar = shareSection.kid(1);
-
+                    shareContentWrp = dom.addDiv(`shareContentWrp ${shareName}`);
+                    
+                    const sharePinDivWrp = shareB64 ? dom.addDiv("sharePinDivWrp").attachAry([
+                        dom.addDiv("", "PIN:"),
+                        dom.addDiv("sharePinDiv", plainString),
+                        getSvgIcon("copyClipboard", "copyPinBtn", _ => {
+                            window.navigator.vibrate(200);
+                            navigator.clipboard.writeText(plainString).then(thisApp.message.pinCopied);
+                        })
+                    ]) : null;
+                    
+                    return [sharePinDivWrp, shareText];
+                };
+                
+                const drawBarcode = async (e, shareName) => { //barcode
+                    const [sharePinDivWrp, shareText] = await prepareShare(e, shareName);
+                    if(!shareContentWrp) return;
+                    
                     const size = (Math.min(shareSection.clientHeight - shareTitleBar.clientHeight - shareOptionsBar.clientHeight - window.MILLIMITER * 10, thisApp.settings.appWidth.current) * 0.98) - window.MILLIMITER * 20;
-                    const barcodeWrp = dom.addDiv(`barcodeWrp ${shareName}`);
-
                     try{
                         QrCreator.render({
                             text: shareText, //max 2900 char
@@ -912,195 +974,75 @@ function Interface(thisApp){
                             fill: '#000', // foreground color
                             background: "#fff", // color or null for transparent
                             size: size // in pixels
-                        }, barcodeWrp);
+                        }, shareContentWrp);
                         
-                        shareSection.attach(barcodeWrp);
-                        
-                        if(shareB64){
-                            barcodeWrp.attach(
-                                dom.addDiv("sharePinDivWrp").attachAry([
-                                    dom.addDiv("", "PIN:"),
-                                    dom.addDiv("sharePinDiv", plainString),
-                                    getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
-                                        window.navigator.vibrate(200);
-                                        navigator.clipboard.writeText(plainString);//.then(_ => thisApp.message[msgName]());
-                                    })
-                                ])
-                            )
-                        }
+                        shareSection.attach(shareContentWrp.attach(sharePinDivWrp))
+
                     }catch(err){
-                        console.log(err); // error message TODO To Do !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        thisApp.message.shareFail();
                     }
                 };
                 
-            const webShare = async (e, shareName) => {
-                    const shareSection = e.currentTarget.forebear(2);
-                    const existingWrp = shareSection.kidsByClass(`${shareName}`)[0]; //barcode(link or plain)Wrp
-                    if(existingWrp) return existingWrp.kill();
-                    shareSection.ridKids(2); // Remove the barcodeWrp
-                
-                
-                const [plainPinString, shareB64] = await vendObj.prepareForShare(false); 
-                const shareUrl = `${thisApp.URL}share/?b=${shareB64}`;
-                console.log("shareUrl", shareUrl, "thisApp.URL", thisApp.URL);
-                const barcodeWrp = dom.addDiv(`barcodeWrp ${shareName}`).attach(
-                    dom.addDiv("sharePinDivWrp").attachAry([
-                        dom.addDiv("", "PIN:"),
-                        dom.addDiv("sharePinDiv", plainPinString),
-                        getSvgIcon("copyClipboard", "copyPin_TODO ", _ => {
-                            window.navigator.vibrate(200);
-                            navigator.clipboard.writeText(plainPinString);//.then(_ => thisApp.message[msgName]());
-                        })
-                    ])
-                );
+                const webShare = async (e, shareName) => {
+                    const [sharePinDivWrp, shareText] = await prepareShare(e, shareName);
+                    if(!shareContentWrp) return;
                 
                     const shareData = {
                       title: "SecreSync",
-                      //text: "Lets Share Secret",
-                      url: shareUrl,
-                      //file:[new File([blob], "file.png", {type: blob.type})]
+                      text: "Lets Share Secret",
+                      url: shareText,
                     };
-                    if (!navigator.canShare) {
-                      console.log("navigator.canShare() not supported.");
-                    } else if (navigator.canShare(shareData)) {
-                      //console.log("navigator.canShare() supported. We can use navigator.share() to send the data.",  navigator.canShare(shareData));
-                      await navigator.share(shareData);
-                      shareSection.attach(barcodeWrp);
-                    } else {
-                      console.log("Specified data cannot be shared.");
-                    }
-            };
 
-                const contextIcons = [
-                    getSvgIcon("shareBarcodeText", "secreSyncPlainTextBarcode-TODO", e => drawBarcode(e, "barcodeText")),
-                    getSvgIcon("shareBarcodeLink", "secreSyncShareSiteLinkBarcode-TODO", e => drawBarcode(e, "barcodeLink")), //
-                    getSvgIcon("webShare", "secreSyncShareWebShare-TODO", e => webShare(e, "webShareLink")),
-                    []
+                    if (navigator.canShare(shareData)) {
+                        await navigator.share(shareData);
+                        shareSection.attach(shareContentWrp.attach(sharePinDivWrp));
+                    } else {
+                        thisApp.message.shareFail();
+                    }
+                };
+                
+                const shareHelp = _ => {
+                    shareContentWrp && shareContentWrp.kill();
+                    shareContentWrp = dom.addDiv("shareContentWrp").attachAry([
+                        dom.addDiv("shareHelpRow").attachAry([
+                            getSvgIcon("shareBarcodeText", true),
+                            //dom.addSpan("", getTxtBankTitleTxt("shareBarcodeText")),
+                            dom.addSpan("", getTxtBankHtmlTxt("shareBarcodeText"))
+                        ]),
+                        dom.addDiv("shareHelpRow").attachAry([
+                            getSvgIcon("shareBarcodeLink", true),
+                            //dom.addSpan("", getTxtBankTitleTxt("shareBarcodeLink")),
+                            dom.addSpan("", getTxtBankHtmlTxt("shareBarcodeLink"))
+                        ]),
+                        dom.addDiv("shareHelpRow").attachAry([
+                            getSvgIcon("shareWebshareLink", true),
+                            //dom.addSpan("", getTxtBankTitleTxt("shareWebshareLink")),
+                            dom.addSpan("", getTxtBankHtmlTxt("shareWebshareLink"))
+                        ])
+                    ]);
+                    
+                    shareSection.attach(shareContentWrp);
+                }
+
+                const shareOptions = [
+                    getSvgIcon("shareBarcodeText", true, e => drawBarcode(e, "barcodeText")),
+                    getSvgIcon("shareBarcodeLink", true, e => drawBarcode(e, "barcodeLink")),
+                    navigator.canShare ? getSvgIcon("shareWebshareLink", true, e => webShare(e, "webshareLink")) : []
                 ];
-                
-                
-/* Display Password QR Code
+                const shareTitleEls = [
+                    getSvgIcon("share", true, shareHelp),
+                    dom.addSpan("", getTxtBankTitleTxt("share")),
+                    getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack)
+                ];
 
-Description: Generate a QR code that contains the plain password for local sharing.
-Display Encrypted Password QR Code
-
-Description: Generate a QR code with a hyperlink and a PIN to decrypt the password.
-Share Password Link with PIN
-
-Description: Display the PIN and use web share to send a hyperlink where the PIN reveals the password. */
-
-
-                const shareSection = dom.addDiv("disposableModalSection shareSection")
-                .attach(
-                    dom.addDiv("disposableModalTitleBar shareTitleBar")
-                    .attach(getSvgIcon("share", true, _ => console.log("Sharing is caring")))
-                    .attach(dom.addSpan("", getTxtBankTitleTxt("share"))) // TO DO
-                    .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack))
-                )
-                .attach(
-                    dom.addDiv("disposableOptionsBar shareOptionsBar").attachAry(
-                        contextIcons
-                    )
-                )
-                .attachTo(document.body);
-                
-
-                //const [plainPinString, shareB64] = await vendObj.prepareForShare();
-                
-                //console.log("plainPinString", plainPinString, "shareB64", shareB64);
-
+                shareSection.attachAry([shareTitleBar.attachAry(shareTitleEls), shareOptionsBar.attachAry(shareOptions)]).attachTo(document.body);
                 addModalToHistory(true); //force adding to history
-
-                
-                
-                
-                
-                
-                
-                
-                
-                
-
-
-                
-                
-                return;
-                
-/*                 const device = await navigator.bluetooth.requestDevice({
-                    //acceptAllDevices: true,
-                    filters: [ { name: "Hubert's A52s" }],
-                    //optionalServices: ["battery_service"],
-                }).catch(err => console.error(err));
-                if(!device) return;
-                //await connectDevice(device)
-                
-                device.addEventListener("gattserverdisconnected", e => console.log("Bluetooth Disconnected", e));
-                const bluetooth = await device.gatt.connect(); // bluetooth === server
-                console.log("Getting UART service. bluetooth = ", bluetooth);
-                const service = await bluetooth.getPrimaryService("battery_service");
-                const characteristic_tx = service.getCharacteristic('new_alert');
-                characteristic_tx.writeValue(new TextEncoder().encode("Hello from JS"));
-                await characteristic_tx.startNotifications();
-                characteristic_tx.addEventListener("characteristicvaluechanged", e => {
-                    console.log("characteristicvaluechanged", e);
-                    const val = e.target.value;
-                    console.log(val);
-                });
-                
-                
-                
-                
-                
-                
-                
-                
-                return alert("TO DO!");
-
-                const plainPinString = prompt("PIN");
-                const [persistIdHexString, trimmedB64cipher] = await vendObj.prepareForShare(plainPinString);
-
-                        // Canvas
-                const canvas = document.createElement('canvas');
-                canvas.width = 500;
-                canvas.height = 500;
-                const ctx = canvas.getContext("2d");
-
-                ctx.beginPath();
-                ctx.rect(20, 40, 50, 50);
-                ctx.fillStyle = "#FF0000";
-                ctx.fill();
-                ctx.closePath();
-
-                const b = canvas.toBlob(async blob => {
-                    console.log(blob);
-
-                    const pinIndicator = plainPinString ? 1 : 0;
-                    const tempLocalUrl = "file:///C:/Users/hs0606/Dropbox%20(Personal)/codes/Local%20Password%20Manager/SecreSync_AssetsWorking/_Share_Vendor/index.html";
-                    const shareUrl = tempLocalUrl + "?i=" + persistIdHexString + pinIndicator + "&c=" + trimmedB64cipher; //encodeURIComponent(cipherB64;)
-                    console.log(shareUrl.length);
-                    console.log(shareUrl);
-                    if(shareUrl.length > 2000) return alert("ShareString is TOO LONG!");
-                    //return;
-                    const shareData = {
-                      title: "SecreSync",
-                      //text: "Lets Share Secret",
-                      //url: shareUrl,
-                      //file:[new File([blob], "file.png", {type: blob.type})]
-                    };
-                    if (!navigator.canShare) {
-                      console.log("navigator.canShare() not supported.");
-                    } else if (navigator.canShare(shareData)) {
-                      console.log("navigator.canShare() supported. We can use navigator.share() to send the data.",  navigator.canShare(shareData));
-                      await navigator.share(shareData);
-                    } else {
-                      console.log("Specified data cannot be shared.");
-                    }
-                }); */
             };
 
             
             // Sections
-            const passSection = async (labelHtml, inpType = "password") => {
+            const getPassSection = async (inpType = "password") => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelPass")
                 const vPass = await vendObj.getCurrentPassword();
                 const passFieldset = getFieldsetEl("padded", labelHtml, "pass");
                 const passInpEl = getInpEl({
@@ -1112,22 +1054,25 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
 
                 const getNewPass = async _ => {
                     vendObj.base = null;
+                    const isNew = vendObj.isNew;
                     vendObj = new thisApp.crypto.Vendor(vendObj);
                     vendObj.mod = null;
+                    if(isNew) vendObj.isNew = true;
                     //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
-                    const newPassFieldset = await passSection(labelHtml, passInpEl.type);
+                    const newPassFieldset = await getPassSection(passInpEl.type);
                     passFieldset.replaceWith(newPassFieldset);
                     
                     //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
                     
                     thisApp.message.newPassGenerated(vendObj.name);
+                    addDraftVendor();
                 };
 
                 const getRangeInpFieldset = (min, max, value, rangeNameId, rangeLabelHtml) => {
                     const changeRangeInput = async e => {
                         e.target.value = parseInt(e.target.value);
                         changeVprop(e);
-                        const newPassFieldset = await passSection(labelHtml, passInpEl.type);
+                        const newPassFieldset = await getPassSection(passInpEl.type);
                         passFieldset.replaceWith(newPassFieldset);
                         //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
                         //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
@@ -1186,9 +1131,7 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                         dom.addDiv("passGradeBarWrp").attach(dom.addDiv().setAttr("style", "background:" + vPass.color + ";width:" + ((100 * vPass.entropy) / 256) + "%;"))
                     ]);
 
-                return vendObj.cPass && displayMode 
-                    ? [] 
-                    : passFieldset.attachAry([
+                return passFieldset.attachAry([
                         getPassEyeIcon(passInpEl),
                         passInpEl,
                         displayMode ? getCopyIcon(passInpEl, "copyPassBtn", "passCopied") : getSvgIcon("newPassBtn", true, getNewPass),
@@ -1197,8 +1140,11 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                         passGrade
                     ]);
             };
+            
+            const passSection = vendObj.isNote || (vendObj.cPass && displayMode) ? [] : await getPassSection("password");
 
-            const logSection = labelHtml => {
+            const logSection = vendObj.isNote ? [] : (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelLog");
                 const logInpEl = getInpEl({
                     type: "text",
                     name: "log",
@@ -1208,14 +1154,21 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                     _onInput: changeVprop
                 });
 
-                return vendObj.log || !displayMode ? getFieldsetEl("padded", labelHtml, "log").attachAry([
+/*                 return vendObj.log || !displayMode ? getFieldsetEl("padded", labelHtml, "log").attachAry([
                     getSvgIcon(),
                     logInpEl,
                     displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
-                ]) : [];
-            };
+                ]) : []; */
+                
+                return getFieldsetEl("padded", labelHtml, "log").attachAry([
+                    getSvgIcon(),
+                    logInpEl,
+                    displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
+                ]);
+            })();
 
-            const customPassSection = labelHtml => {
+            const customPassSection = vendObj.isNote ? [] : (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelCustomPass");
                 const passInpEl = getInpEl({
                     type: "password",
                     name: "cPass",
@@ -1230,7 +1183,7 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                     passInpEl,
                     displayMode ? getCopyIcon(passInpEl, "copyPassBtn", "customPassCopied") : getClearInputIcon(_ => clearFormInput(passInpEl))
                  ]) : "";
-            };
+            })();
             
             const boxNoteFitContent = _ => {
                 boxNoteEl.style.height = "auto"; // Resize boxNote textarea
@@ -1255,7 +1208,10 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                     
                     if(e.isTrusted){
                         changeVprop(e); // only user input and not the dispatched event
-                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit");
+                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1){
+                            thisApp.alert.textAreaLimitReached();
+                            //alert("you reached the limit");
+                        }
                         window.requestAnimationFrame(_ => boxNoteEl.focus()); // refocus if the input event will trigger the scroll event, which blurs the boxNoteEl
                     }
                     
@@ -1266,9 +1222,10 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
             
             boxNoteEl.value = vendObj.note || "";
 
-            const notesSection = labelHtml => displayMode && !vendObj.note ? [] : getFieldsetEl("padded", labelHtml, "note").attach(boxNoteEl);
+            const notesSection = displayMode && !vendObj.note ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelNote"), "note").attach(boxNoteEl);
 
-            const urlSection = labelHtml => {
+            const urlSection = (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelUrl")
                 const urlInpEl = getInpEl({
                     type: "text",
                     name: "url",
@@ -1289,9 +1246,11 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                             ? getSvgIcon()
                             : getClearInputIcon(_ => clearFormInput(urlInpEl))
                 ]);
-            };
+            })();
 
-            const standardSection = (prop, labelHtml) => {
+            const nameSection = (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelName");
+                const prop = "name";
                 const inpEl = getInpEl({
                     type: "text",
                     name: prop,
@@ -1306,7 +1265,7 @@ Description: Display the PIN and use web share to send a hyperlink where the PIN
                     inpEl,
                     displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
                 ]);
-            };
+            })();
             
             
 const tagsEl  = dom.addTextarea("inpEl boxNote")
@@ -1319,21 +1278,31 @@ const tagsEl  = dom.addTextarea("inpEl boxNote")
                 .on("input", e => {
 
                         changeVprop(e); // only user input and not the dispatched event
-                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1) alert("you reached the limit"); // TODO TO DO!!!!!!!!!!!!!!!!!!!!!!!
-                })
+                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1){
+                            thisApp.alert.textAreaLimitReached();
+                            //alert("you reached the limit"); // TODO TO DO!!!!!!!!!!!!!!!!!!!!!!!
+                        }
+                });
             
  tagsEl.value = vendObj.tags || "";
-            const tagsSection = labelHtml => displayMode && !vendObj.tags ? [] : getFieldsetEl("padded", labelHtml, "tags").attach(tagsEl);
+            const tagsSection = displayMode && !vendObj.tags ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelTags"), "tags").attach(tagsEl);
             
             const formSectionsAry = [ //htmls
-                standardSection("name", getTxtBankHtmlTxt("formLabelName")),
-                vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
-                vendObj.isNote ? [] : await passSection(getTxtBankHtmlTxt("formLabelPass")),
-                vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
-                notesSection(getTxtBankHtmlTxt("formLabelNote")),
-                urlSection(getTxtBankHtmlTxt("formLabelUrl")),
+                //standardSection("name", getTxtBankHtmlTxt("formLabelName")),
+                nameSection,
+                logSection,
+                //vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
+                //vendObj.isNote ? [] : await passSection(getTxtBankHtmlTxt("formLabelPass")),
+                passSection,
+                //vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
+                customPassSection,
+                //notesSection(getTxtBankHtmlTxt("formLabelNote")),
+                notesSection,
+                //urlSection(getTxtBankHtmlTxt("formLabelUrl")),
+                urlSection,
                 //standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
-                tagsSection(getTxtBankHtmlTxt("formLabelTags"))
+                //tagsSection(getTxtBankHtmlTxt("formLabelTags"))
+                tagsSection
             ];
             
             const recordModWrp = !displayMode // Show only if Display
@@ -1391,7 +1360,9 @@ const actionBtn = revisionIdx || vendObj.isTrash
                     : getSvgIcon(displayMode ? "editFormBtn" : "submitFormBtn", true, _ => paintFormSection(false, vendObj, displayMode, !displayMode));
 const middleTopEl = displayMode
                     ? dom.addDiv("formTitle", vendObj.name || "")
-                    : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
+                    //: getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
+                    : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : "formIconEdit" , vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog");
+                    
 const closeFormBtn = getSvgIcon("btnCloseForm", "btnClose", closeForm);
 const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnClose", closeForm);
 
@@ -1411,22 +1382,25 @@ const deleteOldBtn = revisionIdx
         : [];
 const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
 const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
+const undoChangesBtn = getSvgIcon("undoChanges", "undoChangesBtn", undoChanges).hide();
+if(showUndoChangesBtn) undoChangesBtn.show();
 const revisionsBtn = revisionWrp 
-    ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), true, revisionIdx 
+    ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), "revisions", revisionIdx 
             ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
             :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
         )
     : [];
 
-const oridinaryLayoutFootEls = displayMode ? [shareEl, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [closeFormBtnMobile, deleteOldBtn, vendObj.isTrash || vendObj.isNote || revisionIdx ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtnMobile, deleteCurrentBtn, toggleVendorBtn, actionBtn];
+const oridinaryLayoutFootEls = displayMode ? [shareEl, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, undoChangesBtn, deleteCurrentBtn];
+const mobileLayoutFootEls = displayMode ? [closeFormBtnMobile, deleteOldBtn, vendObj.isTrash || vendObj.isNote || revisionIdx ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtnMobile, undoChangesBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
 
 const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             
             const formHead = dom.addDiv("formHead").attachAry(fomHeadEls);
             const formFoot = dom.addDiv("formFoot").attachAry(fomFootEls);
             
-            
+
+
             vFormScrollTop = displayMode ? 0 : vFormScrollTop;
 
             const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
@@ -1435,19 +1409,139 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             });
             
             vForm.attach(formHead).attach(modWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());//.attach(revisionWrp)
-            appSectionForm.isDisplay = displayMode;
+            appSectionForm.isDisplay = displayMode; // for swipe
 
             boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
             toggleScrollWrpOverflow(vForm);
             
-            if(vFormScrollTop) vForm.scrollTo(0, vFormScrollTop);
-            //if(displayMode) vForm.on("dblclick", _=> paintFormSection(false, vendObj, displayMode, !displayMode));
+            if(vFormScrollTop){
+                let scrollTopForm = vFormScrollTop;
+                if(!vendObj.isNote && edit) {
+                    scrollTopForm += passSection.clientHeight;
+                }
+                vForm.scrollTo(0, scrollTopForm);
+            }
+
 
         };
         /////////////////////////////////////////////////END MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /////////////////////////////////////////////////MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function paintListSection(){
+            
+            /** ************************************************************************************************************************************************************************************
+            -----------------------------                                                   appMoreTaskbar Buttons                                          ---------------------------------------- 
+            *****************************************************************************************************************************************************************************************/
+            
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Download a copy of the snc database file  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const exportDb = async _ => {
+                const getFilteredVendors = _ => new Promise((res, rej) => {
+                    spinner.start();
+                    const exportFilteredSection = dom.addDiv("disposableModalSection").onClick(toggleScrollBar);
+                    const vListWrp = dom.addDiv("exportFilteredListWrp");
+                    
+                    const vEntry = vendObj => dom.addDiv("vEmpty")
+                        .onClick(e => {
+                            e.currentTarget.toggleClass("willExport");
+                            vendObj.exp = !vendObj.exp;
+                        })
+                        .observedBy(new IntersectionObserver(entries => {
+                            entries.forEach(entry => {
+                                if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
+                                    entry.target.cssName("vEntry").attach(
+                                        dom.addDiv(vendObj.isTrash ? "vTrash" : vendObj.isNote ? "vNote" : "vLog")
+                                        .attach(dom.addDiv("inpEl vName", vendObj.name))
+                                    );
+                                    attachListElement();
+                                }
+                            });
+                        }, {}));
+
+                    const exportVendors = thisApp.dbObj.vendors;
+                    const vListElements = exportVendors.map(vendObj => vEntry(vendObj));
+                    const stopSpinnerDelay = 200; //200ms give enough time after vListElement is attached to the vListWrp to trigger the next IntersectionObserver
+                    let stopSpinnerTimout;
+                    let elIdx = 0;
+                    const attachListElement = _ => {
+                        if(!vListElements[elIdx]) return;
+                        vListWrp.attach(vListElements[elIdx]);
+                        requestAnimationFrame(_ => {
+                            clearTimeout(stopSpinnerTimout);
+                            stopSpinnerTimout = setTimeout(_ => {
+                                toggleScrollWrpOverflow(exportFilteredSection);
+                                spinner.stop();
+                            }, stopSpinnerDelay);
+                        });
+                        elIdx++;
+                    };
+                    
+                    window.addEventListener('popstate', _ => exportVendors.forEach(exportVendObj => delete exportVendObj.exp), {once: true});
+
+                    exportFilteredSection.attach(
+                        dom.addDiv("disposableModalTitleBar exportFilteredBar")
+                        .attach(
+                            getSvgIcon("expDbIcon", "expDb", _ => {
+                                res(exportVendors.filter(exportVendObj => exportVendObj.exp));
+                                historyStack.goBack();
+                            })
+                        )
+                        .attach(dom.addSpan("", getTxtBankTitleTxt("expDbFiltered")))
+                        .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack))
+                    )
+                    .attach(vListWrp)
+                    .attachTo(document.body);
+
+                    vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");
+                    addModalToHistory(true); //force adding to history
+                });
+                
+                if(!thisApp.dbObj.vendors.length) return thisApp.message.exportDbFail();
+                const exportFullDb = await thisApp.alert.exportDb();
+                if(exportFullDb === null) return;
+                
+                let exportDBFile;
+                if(!exportFullDb){
+                    const filteredVendors = await getFilteredVendors();
+                    if(!filteredVendors.length) return thisApp.message.exportDbFail();
+                    exportDBFile = await thisApp.cryptoHandle.getFilteredDbFileBlobForExport(filteredVendors);
+                }else{
+                    exportDBFile = await thisApp.cryptoHandle.getDbFileBlob()
+                }
+                
+                const downloadedFileName = downloadFile(exportDBFile, "secre.snc");
+                await new Promise(res => setTimeout(res, 1000));
+                thisApp.message.dbFileDownloaded(downloadedFileName);
+            };
+            
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Import Database from another lpm Database file - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const importDb = async _ => {
+                if(!await thisApp.alert.importDbPickFile()) return;
+                thisApp.message.pickImportFile();
+                spinner.start("in importDB");
+                try{
+                    const fileContentsBuffer = await pickFile();
+                    const dbRawCredentials = await thisApp.ui.credentials.importDb();
+                    if(!dbRawCredentials || !dbRawCredentials.length) return thisApp.message.importDbCancel();
+                    const [plainPassString, plainPinString] = dbRawCredentials;
+                    const importedDBJson = await thisApp.cryptoHandle.decryptToJson(fileContentsBuffer, { plainPassString, plainPinString }, 0, true);
+                    if (!await thisApp.alert.importDb()) return thisApp.message.importDbCancel();
+                    importedDBJson.vendors.forEach(importVendObj => {
+                        importVendObj.id = null; // nextID
+                        importVendObj.imp = new Date().getTime();
+                        let importCount = 1;
+                        const getImportName = _ => `${importVendObj.name} (i_${importCount})`;
+                        while (thisApp.dbObj.vendors.some(vendObj => vendObj.name === getImportName())) importCount++;
+                        importVendObj.name = getImportName();
+                        thisApp.dbObj.vendors.push(new thisApp.crypto.Vendor(importVendObj, thisApp.dbObj.vendors));
+                    });
+                    await thisApp.dbStore.updateAll(thisApp);
+                    thisApp.message.importDbSuccess();
+                    repaintUI();
+                }catch(err){
+                    thisApp.message.importDbFail();
+                    spinner.stop("in importDb -> catch");
+                }
+            };
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Emergency Database - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const downloadEmergencyHtmlDB = async _ => {
@@ -1462,7 +1556,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     if(!decryptedString) return alert("Error");
                     const dbObject = JSON.parse(decryptedString);
                     document.body.ridKids();
-                    const dbObj = new thisCrypto.DatabaseObject(dbObject);
+                    const dbObj = new thisCrypto.AppDbObj(dbObject);
                     const vendAry = dbObj.vendors;
 
                     const vendAryWithPass = await Promise.all(vendAry.map(async vendObj => (vendObj.pass = await vendObj.getCurrentPassword().then(vPass => vPass.plainString), vendObj)));
@@ -1562,247 +1656,147 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 thisApp.message.emergDbCreated(emrgDbName);
             };
 
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Donate - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-/*             const getDonate = _ => {
-                 console.log("TO DO getDonate");
-            } */
-            
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Import Database from another lpm Database file - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const importDb = async _ => {
-                if(!await thisApp.alert.importDbPickFile()) return;
-                thisApp.message.pickImportFile();
-                spinner.start("in importDB");
-                try{
-                    const fileContentsBuffer = await pickFile();
-                    const dbRawCredentials = await thisApp.ui.credentials.importDb();
-                    if(!dbRawCredentials || !dbRawCredentials.length) return thisApp.message.importDbCancel();
-                    const [plainPassString, plainPinString] = dbRawCredentials;
-                    const importedDBJson = await thisApp.cryptoHandle.decryptToJson(fileContentsBuffer, { plainPassString, plainPinString }, 0, true);
-                    if (!await thisApp.alert.importDb()) return thisApp.message.importDbCancel();
-                    importedDBJson.vendors.forEach(importVendObj => {
-                        importVendObj.id = null; // nextID
-                        importVendObj.imp = new Date().getTime();
-                        let importCount = 1;
-                        const getImportName = _ => `${importVendObj.name} (i_${importCount})`;
-                        while (thisApp.dbObj.vendors.some(vendObj => vendObj.name === getImportName())) importCount++;
-                        importVendObj.name = getImportName();
-                        thisApp.dbObj.vendors.push(new thisApp.crypto.Vendor(importVendObj, thisApp.dbObj.vendors));
-                    });
-                    await thisApp.dbStore.updateAll(thisApp);
-                    thisApp.message.importDbSuccess();
-                    repaintUI();
-                }catch(err){
-                    thisApp.message.importDbFail();
-                    spinner.stop("in importDb -> catch");
-                }
-            };
-            
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Download a copy of the snc database file  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const exportDb = async _ => {
-                const getFilteredVendors = _ => new Promise((res, rej) => {
-                    spinner.start();
-                    const exportFilteredSection = dom.addDiv("disposableModalSection").onClick(toggleScrollBar);
-                    const vListWrp = dom.addDiv("exportFilteredListWrp");
-                    
-                    const vEntry = vendObj => dom.addDiv("vEmpty")
-                        .onClick(e => {
-                            e.currentTarget.toggleClass("willExport");
-                            vendObj.exp = !vendObj.exp;
-                        })
-                        .observedBy(new IntersectionObserver(entries => {
-                            entries.forEach(entry => {
-                                if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
-                                    entry.target.cssName("vEntry").attach(
-                                        dom.addDiv(vendObj.isTrash ? "vTrash" : vendObj.isNote ? "vNote" : "vLog")
-                                        .attach(dom.addDiv("inpEl vName", vendObj.name))
-                                    );
-                                    attachListElement();
-                                }
-                            });
-                        }, {}));
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Settings - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const openSettings = e => {
+                const killExistingFieldset = settingName => document.querySelector(`.${settingName}Field`)?.kill();
+                
+                // Fieldsets Builders
+                const addStaticSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
+                    killExistingFieldset(settingName);
+                    const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
+                    const thisSettingValue = thisApp.settings[settingName] = !thisApp.settings[settingName];
 
-                    const exportVendors = thisApp.dbObj.vendors;
-                    const vListElements = exportVendors.map(vendObj => vEntry(vendObj));
-                    const stopSpinnerDelay = 200; //200ms give enough time after vListElement is attached to the vListWrp to trigger the next IntersectionObserver
-                    let stopSpinnerTimout;
-                    let elIdx = 0;
-                    const attachListElement = _ => {
-                        if(!vListElements[elIdx]) return;
-                        vListWrp.attach(vListElements[elIdx]);
-                        requestAnimationFrame(_ => {
-                            clearTimeout(stopSpinnerTimout);
-                            stopSpinnerTimout = setTimeout(_ => {
-                                toggleScrollWrpOverflow(exportFilteredSection);
-                                spinner.stop();
-                            }, stopSpinnerDelay);
-                        });
-                        elIdx++;
+                    thisApp.localStorage.set(settingName, thisSettingValue);
+                    adjustValue(thisSettingValue);
+                    
+                    getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`)
+                    .attach(dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(thisSettingValue)})))
+                    .attachTo(settingsSection).onClick(e => e.currentTarget.kill());
+                };
+
+                const addRangeSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
+                    e.target.toggleClass("selected");
+                    if(killExistingFieldset(settingName)) return;
+                    
+                    const thisSetting = thisApp.settings[settingName];
+                    const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
+                    const toggleRestoreDiv = value => restoreDiv[thisSetting.def() === value ? "hide" : "show"]();
+
+                    const value = thisSetting.get();
+                    const onInput = e => {
+                        let value = e.target?.value || e;
+                        if(e.target){
+                            thisSetting.set(value);
+                        }else{
+                            rangeInputEl.value = value;
+                        }
+                        const valueInt = parseInt(value);
+                        toggleRestoreDiv(valueInt);
+                        adjustDetailsDiv.txt(getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}));
+                        if(adjustValue) adjustValue(valueInt);
                     };
                     
-                    window.addEventListener('popstate', _ => exportVendors.forEach(exportVendObj => delete exportVendObj.exp), {once: true});
+                    const rangeInputEl = getInpEl({
+                        type: "range",
+                        name: settingName + "InpEl",
+                        min: thisSetting.min,
+                        max: thisSetting.max,
+                        value: value,
+                        _onInput: onInput,
+                        _noBlur: true
+                    });
 
-                    exportFilteredSection.attach(
-                        dom.addDiv("disposableModalTitleBar exportFilteredBar")
-                        .attach(
-                            getSvgIcon("expDbIcon", "expDb", _ => {
-                                res(exportVendors.filter(exportVendObj => exportVendObj.exp));
-                                historyStack.goBack();
-                            })
-                        )
-                        .attach(dom.addSpan("", getTxtBankTitleTxt("expDbFiltered")))
-                        .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack))
-                    )
-                    .attach(vListWrp)
-                    .attachTo(document.body);
+                    const changeRangeInputValue = value => {
+                        rangeInputEl.value = parseInt(rangeInputEl.value) + value;
+                        rangeInputEl.dispatchEvent(new Event('input'));
+                    };
+                    
+                    const restoreDiv = dom.addDiv("restoreSettings", getTxtBankTitleTxt("restoreSettings")).onClick(_ => thisSetting.restoreDefault(onInput));
+                    toggleRestoreDiv(value);
 
-                    vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");
-                    addModalToHistory(true); //force adding to history
-                });
-                
-                if(!thisApp.dbObj.vendors.length) return thisApp.message.exportDbFail();
-                const exportFullDb = await thisApp.alert.exportDb();
-                if(exportFullDb === null) return;
-                
-                let exportDBFile;
-                if(!exportFullDb){
-                    const filteredVendors = await getFilteredVendors();
-                    if(!filteredVendors.length) return thisApp.message.exportDbFail();
-                    exportDBFile = await thisApp.cryptoHandle.getFilteredDbFileBlobForExport(filteredVendors);
-                }else{
-                    exportDBFile = await thisApp.cryptoHandle.getDbFileBlob()
-                }
-                
-                const downloadedFileName = downloadFile(exportDBFile, "secre.snc");
-                await new Promise(res => setTimeout(res, 1000));
-                thisApp.message.dbFileDownloaded(downloadedFileName);
-            }
-            
-            /** ----------------- ---------------------- -------------- SETTINGS ------------------ -------------------- ------------------ ----------------------- --------------- --------------**/
-            /** ----------------- ---------------------- -------------------- -------------- SETTINGS ------------------ ------------------ ----------------------- --------------- --------------**/
-            /** ----------------- ---------------------- -------------------------------- --------------------  SETTINGS ------------------ ----------------------- --------------- --------------**/
-            /** ----------------- ---------------------- -------------------- -------------- SETTINGS ------------------ ------------------ ----------------------- --------------- --------------**/
-            /** ----------------- ---------------------- -------------- SETTINGS ------------------ -------------------- ------------------ ----------------------- --------------- --------------**/
+                    const adjustDetailsDiv = dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}))
 
-            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Change Database Credentials - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getChangePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change().then(e => {thisApp.message.dbCredentialsChangeSucess();}).catch(err => {thisApp.message.dbCredentialsChangeFail();}).finally(_ => spinner.stop("in getChangePassword")); // if not in curly brackets the finally function does not fire!!!
-
-            const addStaticSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
-                const settingsSection = e.currentTarget.forebear(2);
-                const existingFieldset = settingsSection.kidsByClass(`${settingName}Field`)[0];
-                if(existingFieldset) existingFieldset.kill();
-                const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
-                const thisSettingValue = thisApp.settings[settingName] = !thisApp.settings[settingName];
-
-                thisApp.localStorage.set(settingName, thisSettingValue);
-                adjustValue(thisSettingValue);
+                    getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`).attachAry([ //"appLayoutLegend",
+                        getSvgIcon("decrease", true, _ => changeRangeInputValue(-thisSetting.step)),
+                        rangeInputEl,
+                        getSvgIcon("increase", true, _ => changeRangeInputValue(thisSetting.step)),
+                        adjustDetailsDiv,
+                        restoreDiv
+                    ]).attachTo(settingsSection);
+                };
                 
-                getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`)
-                .attach(dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(thisSettingValue)})))
-                .attachTo(settingsSection).onClick(e => e.currentTarget.kill());
-            };
-
-            const addRangeSettingFieldset = (e, settingName, adjustValue, adjustDetaisTextObj) => {
-                e.target.toggleClass("selected");
-                const settingsSection = e.currentTarget.forebear(2);
-                const existingFieldset = settingsSection.kidsByClass(`${settingName}Field`)[0];
-                if(existingFieldset) return existingFieldset.kill();
+                // Settings Functions
+                const changeAppBlur = (e, settingName) => {
+                    addStaticSettingFieldset(e, settingName, _ => e.target.toggleClass("blurIcon"), {true: "appBlurEnabled", false: "appBlurDisabled"});
+                };
                 
-                const thisSetting = thisApp.settings[settingName];
-                const getAdjustDetailsText = value => adjustDetaisTextObj ? getTxtBankHtmlTxt(adjustDetaisTextObj[value]) : value;
-                const toggleRestoreDiv = value => restoreDiv[thisSetting.def() === value ? "hide" : "show"]();
+                const changeAppTheme = (e, settingName) => {
+                    const adjustValue = value => {
+                        document.documentElement.classList.toggle("invert");
+                        const themeColor = thisApp.settings.appTheme ? '#050505' : '#fafafa';
+                        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+                        document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
+                    };
+                    addStaticSettingFieldset(e, settingName, adjustValue, {true: "darkThemeEnabled", false: "darkThemeDisabled"});
+                };
                 
+                const changeAppLayout = (e, settingName) =>{
+                    const layoutValueTextObj = {
+                        "1": "appLayoutMobile",
+                        "2": "appLayoutDesktop",
+                    };
+                    const adjustValue = value => thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
+                    addRangeSettingFieldset(e, settingName, adjustValue, layoutValueTextObj);
+                };
                 
-                const value = thisSetting.get();
-                const onInput = e => {
-                    let value = e.target?.value || e;
-                    if(e.target){
-                        thisSetting.set(value);
-                    }else{
-                        rangeInputEl.value = value;
+                const changeAppWidth = (e, settingName) => {
+                    const adjustValue = valueInt => {
+                        document.documentElement.style.setProperty("--max-app-width", `${valueInt}px`);
+                        thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
                     }
-                    const valueInt = parseInt(value);
-                    toggleRestoreDiv(valueInt);
-                    adjustDetailsDiv.txt(getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}));
-                    if(adjustValue) adjustValue(valueInt);
+                    addRangeSettingFieldset(e, settingName, adjustValue);
                 };
                 
-                const rangeInputEl = getInpEl({
-                    type: "range",
-                    name: settingName + "InpEl",
-                    min: thisSetting.min,
-                    max: thisSetting.max,
-                    value: value,
-                    _onInput: onInput,
-                    _noBlur: true
-                });
+                const changeMaxRevisions = addRangeSettingFieldset;
                 
-                const changeRangeInputValue = value => {
-                    rangeInputEl.value = parseInt(rangeInputEl.value) + value;
-                    rangeInputEl.dispatchEvent(new Event('input'));
+                const changeAppLogOff = addRangeSettingFieldset;
+
+                const changeAppIconSize = (e, settingName) => {
+                    const adjustValue = valueInt => {
+                         document.documentElement.style.setProperty("--svg-background-size", `${valueInt}%`);
+                    }
+                    addRangeSettingFieldset(e, settingName, adjustValue);
                 };
                 
-                const restoreDiv = dom.addDiv("restoreSettings", getTxtBankTitleTxt("restoreSettings")).onClick(_ => thisSetting.restoreDefault(onInput));
-                toggleRestoreDiv(value);
-
-                const adjustDetailsDiv = dom.addDiv("adjustDetais", getTxtBankHtmlTxt(settingName, {value: getAdjustDetailsText(value)}))
-
-                getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`).attachAry([ //"appLayoutLegend",
-                    getSvgIcon("decrease", true, _ => changeRangeInputValue(-thisSetting.step)),
-                    rangeInputEl,
-                    getSvgIcon("increase", true, _ => changeRangeInputValue(thisSetting.step)),
-                    adjustDetailsDiv,
-                    restoreDiv
-                ]).attachTo(settingsSection);
-            };
-            
-            const changeAppBlur = (e, settingName) => {
-                addStaticSettingFieldset(e, settingName, _ => e.target.toggleClass("blurIcon"), {true: "appBlurEnabled", false: "appBlurDisabled"});
-            };
-            
-            const changeAppTheme = (e, settingName) => {
-                const adjustValue = value => {
-                    document.documentElement.classList.toggle("invert");
-                    const themeColor = thisApp.settings.appTheme ? '#050505' : '#fafafa';
-                    document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
-                    document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
+                const getDonate = _ => {
+                     console.log("TO DO getDonate");
                 };
-                addStaticSettingFieldset(e, settingName, adjustValue, {true: "darkThemeEnabled", false: "darkThemeDisabled"});
-            };
-            
-            const changeAppLayout = (e, settingName) =>{
-                const layoutValueTextObj = {
-                    "1": "appLayoutMobile",
-                    "2": "appLayoutDesktop",
+                
+                const showSelfProfile = (e, settingName, idx = 0) => { // Improve visuals in the next version
+                    killExistingFieldset(settingName);
+
+                    const credObj = { ...thisApp.dbObj.credentials[idx] };
+                    credObj.timestamp = new Date(credObj.timestamp).toUKstring();
+                    
+                    getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`)
+                    .attach(
+                        dom.addDiv("adjustDetais").attachAry([
+                            thisApp.dbObj.credentials[idx + 1] ? getSvgIcon("previousVersion", true, _ => showSelfProfile(e, settingName, ++idx)) : getSvgIcon(),
+                            dom.addDiv("profileDetails", getTxtBankHtmlTxt(settingName, credObj)),
+                            idx ? getSvgIcon("nextVersion", true, _ => showSelfProfile(e, settingName, --idx)) : getSvgIcon() 
+                        ])
+                    )
+                    .attachTo(settingsSection).onClick(e => e.currentTarget.kill());
                 };
-                const adjustValue = value => thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
-                addRangeSettingFieldset(e, settingName, adjustValue, layoutValueTextObj);
-            };
-            
-            const changeAppWidth = (e, settingName) => {
-                const adjustValue = valueInt => {
-                    document.documentElement.style.setProperty("--max-app-width", `${valueInt}px`);
-                    thisApp.settings.isMobileLayout() ? document.body.addClass("mobileLayout") : document.body.killClass("mobileLayout");
-                }
-                addRangeSettingFieldset(e, settingName, adjustValue);
-            };
-            
-            const changeMaxRevisions = addRangeSettingFieldset;
-            
-            const changeAppLogOff = addRangeSettingFieldset;
-
-            const changeAppIconSize = (e, settingName) => {
-                const adjustValue = valueInt => {
-                     document.documentElement.style.setProperty("--svg-background-size", `${valueInt}%`);
-                }
-                addRangeSettingFieldset(e, settingName, adjustValue);
-            };
-            
-            const getDonate = _ => {
-                 console.log("TO DO getDonate");
-            };
-
-            const openSettings = e => {
+                
+                const changePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change()
+                    .then(e => {thisApp.message.dbCredentialsChangeSucess();})
+                    .catch(err => {thisApp.message.dbCredentialsChangeFail();})
+                    .finally(_ => spinner.stop("in changePassword")); // if not in curly brackets the finally function does not fire!!!
+                
+                // Create and show the Settings Section
                 const contextIcons = [
+                    getSvgIcon("selfProfile", true, e => showSelfProfile(e, "selfProfile")),
                     getSvgIcon("appLogOff", true, e => changeAppLogOff(e, "appLogOff")),
                     getSvgIcon("appLayout", true, e => changeAppLayout(e, "appLayout")),
                     getSvgIcon("appWidth", true, e => changeAppWidth(e, "appWidth")),
@@ -1812,42 +1806,31 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     getSvgIcon("secreSyncIcon" + (thisApp.settings.appBlur ? " blurIcon" : ""), "appBlur", e => changeAppBlur(e, "appBlur")),
                     getSvgIcon("changeDbPass", true, thisApp.dbObj 
                         ? _ => {
-                            window.addEventListener('popstate',  getChangePassword, {once: true});
+                            window.addEventListener('popstate',  changePassword, {once: true});
                             historyStack.goBack();
                         }
                         : null),
                     getSvgIcon("donate", true, getDonate)
                 ];
                 
-                dom.addDiv("disposableModalSection settingsSection")
+                const setingTitleBar = dom.addDiv("disposableModalTitleBar setingTitleBar")
                 .attach(
-                    dom.addDiv("disposableModalTitleBar setingTitleBar")
-                    .attach(
-                        langModule(thisApp, _ => {
-                            window.addEventListener('popstate',  openSettings, {once: true});
-                            historyStack.goBack();
-                            repaintUI();
-                        })
-                    )
-                    .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
-                    .attach( // TO DO TODO!!!!!!!!!!!!!!!!!!
-                        getSvgIcon("disposableModalClose", "btnClose", _ => { 
-                            historyStack.goBack();
-                        })
-                    )
-                )
-                .attach(
-                    dom.addDiv("disposableOptionsBar settingsOptionsBar").attachAry(
-                        contextIcons
-                    )
-                )
-                .onClick(function(e){
-                    if(e.target === e.currentTarget) {
+                    langModule(thisApp, _ => {
+                        window.addEventListener('popstate',  openSettings, {once: true});
                         historyStack.goBack();
-                    }
+                        repaintUI();
+                    })
+                )
+                .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
+                .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack));
+                
+                const settingsSection = dom.addDiv("disposableModalSection settingsSection")
+                .attach(setingTitleBar)
+                .attach(dom.addDiv("disposableOptionsBar settingsOptionsBar").attachAry(contextIcons))
+                .onClick(e => {
+                    if(e.target === e.currentTarget)  historyStack.goBack();
                 }).attachTo(document.body);
                 
-
                 addModalToHistory(true); //force adding to history
             };
             
@@ -1857,159 +1840,103 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             const getListBarWrp = css => dom.addDiv(`vlistBarWrp ${css}`);
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - APP_TASKBAR and APP_MORETASKBAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-            
             appMoreTaskbar = dom.addDiv("appMoreTaskbar").attachAry([ // must be outside to enable history.back (popstate)
                 getSvgIcon("reloadApp", true, thisApp.reload),
                 dom.addDiv("flexIconWrp").attachAry([
                     getSvgIcon("expDbIcon", "expDb", exportDb),
                     getSvgIcon("impDbIcon", "impDb", importDb),
                     getSvgIcon("emergDbIcon", "emergDb", downloadEmergencyHtmlDB),
-
                     getSvgIcon("settings", true, openSettings)
                 ]),
-                getSvgIcon("arrowUp", "hide", (e => {//history.back();
-                    historyStack.goBack();
-                    //e.target.forebear(1).toggleClass("appMoreTaskbarShow");
-                    //appMoreTaskbar.toggleClass("appMoreTaskbarShow");
-                }))
+                getSvgIcon("arrowUp", "hide", historyStack.goBack)
             ]);
 
-
-            const getSearchForm = _ => {
+            searchFormEl = (_ => { // this must be outside of the paintList
                 let lastSearchString = "";
-               // let preventScrollBlur = false;
                 let inputTimeout;
                 let inputIsBlured = true;
-                const inputDelay = 500; //500ms
-                const searchFormEl = dom.addForm("searchForm searchFormHide");
-                
-                searchFormEl.preventScrollBlur = false;
-                
+
                 const searchInputEl = getInpEl({
                     type: "text",
                     name: "inputBoxSearch",
                     id: "inputBoxSearch",
                     placeholder: getTxtBankHtmlTxt("inputBoxSearch"),
                     _noBlur: true
-                });
-                
-                const searchEvent = (e, attentionMethod) => {
-
-                    e.preventDefault(); ////???????????????????
-                    if(lastSearchString !== searchInputEl.value){
-                        searchFormEl.preventScrollBlur = true;
-
-                        lastSearchString = searchInputEl.value;
-                        paintList(); //vListWrp
-
-                        setTimeout(_ => {
-                            searchFormEl.preventScrollBlur = false; // give time for the list repaint after the search
-
-                        },1000);
-                    }
-                    
-
-                    if(attentionMethod === "blur") searchInputEl.blur();
-                    if(attentionMethod === "focus") searchInputEl.focus({ preventScroll: true });
-                };
-                
-                searchFormEl.clearSearch = (e, attentionMethod) => {
-                    searchInputEl.value = "";
-                    searchEvent(e, attentionMethod);
-                    
-                };
-
-                const hideFormEl = getSvgIcon("arrowUp", "hide",  historyStack.goBack);
-
-                searchInputEl.on("blur", e => {
+                }).on("blur", e => {
                     setTimeout(_ => {
                         inputIsBlured = searchInputEl !== document.activeElement;
-                    },100);
-                });
-                searchInputEl.on("focus", e => {
+                    }, 100);
+                }).on("focus", e => {
                     inputIsBlured = false;
                 });
                 
-                const searchResetBtn = getClearInputIcon(e => {
-                    searchFormEl.clearSearch(e, inputIsBlured ? "auto" : "focus");
-                });
+                const searchFormEl = dom.addForm("searchForm searchFormHide");
                 
-                const delayInput = e => {
-                    clearTimeout(inputTimeout);
-                    inputTimeout = setTimeout(_ => searchEvent(e, "focus"), inputDelay);
+                searchFormEl.preventScrollBlur = false;
+                searchFormEl.getValue = _ => searchInputEl.value;
+                searchFormEl.scrollBlur = _ => searchInputEl.blur();
+                searchFormEl.clearSearch = (e, attentionMethod) => {
+                    searchInputEl.value = "";
+                    searchEvent(e, attentionMethod);
                 };
-                
                 searchFormEl.showForm = e => { //addModalToHistory(true);
                     history.pushState({barOpen: true}, '', '');
                     searchFormEl.killClass("searchFormHide");
                     searchFormEl.clearSearch(e, "focus");
                 };
                 
-/*                 const hideForm = e => {//history.back();
-                    if(history.state.lastBackExists){
-                        console.log("howMany times does hideForm fire?");
-                        searchFormEl.addClass("searchFormHide");
-                        searchFormEl.clearSearch(e, "blur");
+                const searchEvent = (e, attentionMethod) => {
+                    e.preventDefault();
+                    if(lastSearchString !== searchInputEl.value){
+                        searchFormEl.preventScrollBlur = true;
+                        lastSearchString = searchInputEl.value;
+                        paintList(); //vListWrp
+                        setTimeout(_ => {
+                            searchFormEl.preventScrollBlur = false; // give time for the list repaint after the search
+                        },1000);
                     }
-                }; */
+
+                    if(attentionMethod === "blur") searchInputEl.blur();
+                    if(attentionMethod === "focus") searchInputEl.focus({ preventScroll: true });
+                    //if(attentionMethod === "auto") Leave as it was
+                };
                 
-                //window.addEventListener('popstate',  hideForm);
+                const delayInput = e => {
+                    clearTimeout(inputTimeout);
+                    inputTimeout = setTimeout(_ => searchEvent(e, "focus"), 500);
+                };
                 
-                searchFormEl.getValue = _ => searchInputEl.value;
+                const hideFormEl = getSvgIcon("arrowUp", "hide",  historyStack.goBack);
                 
-                searchFormEl.scrollBlur = _ => searchInputEl.blur();
+                const searchResetBtn = getClearInputIcon(e =>  searchFormEl.clearSearch(e, inputIsBlured ? "auto" : "focus"));
                 
                 return searchFormEl.attachAry([
                     hideFormEl,
                     searchInputEl,
                     searchResetBtn
-                ]).on("input", delayInput).on("submit", searchEvent);//.on("reset", clearSearch)
-            };
+                ]).on("input", delayInput).on("submit", searchEvent);
+            })();
 
-            searchFormEl = getSearchForm(); // this must be outside of the paintList
-            
-            //console.log("searchFormEl = ", searchFormEl);
-
-/*             const getAppTaskbar = _ => dom.addDiv("appTaskbar").attachAry([
-                getSvgIcon("inputBoxSearchBtn", true, searchFormEl.showForm),
-                dom.addDiv("flexIconWrp").attachAry(Object.values(thisApp.dbStore).map(storeObj => storeObj.syncIcon)),
-                getSvgIcon("moreMenu", true, e => {
-                    //addModalToHistory(true);
-                    e.target.forebear(1).sibling(1).toggleClass("appMoreTaskbarShow");
-                }),
-                searchFormEl
-            ]); */
-            
             const appTaskbar = dom.addDiv("appTaskbar").attachAry([
                 getSvgIcon("inputBoxSearchBtn", true, searchFormEl.showForm),
                 dom.addDiv("flexIconWrp").attachAry(Object.values(thisApp.dbStore).map(storeObj => storeObj.syncIcon)),
                 getSvgIcon("moreMenu", true, e => {
-                    //addModalToHistory(true);
-                    //e.target.forebear(1).sibling(1).toggleClass("appMoreTaskbarShow");
                     history.pushState({barOpen: true}, '', '');
                     appMoreTaskbar.addClass("appMoreTaskbarShow");
                 }),
                 searchFormEl
             ]);
-            
-            
-/*             const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
-                getAppTaskbar(),
-                getAppMoreTaskbar()
-            ]); */
 
             const vListMainBarWrp = getListBarWrp("vListMainBarWrp" + (thisApp.settings.isMobileLayout() ? " mainBarToggle" : "")).attachAry([
                 appTaskbar,
                 appMoreTaskbar
             ]);
+            
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListTaskBarWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-            //const getListBarLabel = html => dom.addDiv("vListBarLabel").html(html);
             const getListTaskBar = _ => {
                 const vListSortBar = dom.addDiv("vListSortBar");
                 const vListChangeBar = dom.addDiv("vListChangeBar");
-                console.log(ado.sortTypes);
+
                 const getSortIcons = _ => {
                     const sortIcons = ado.sortTypes.map(iconName => 
                         getSvgIcon("sortIcon " + (iconName + adoSorts.sortOrder) + (adoSorts.sortBy === iconName ? "" : " elDimmed"), iconName, e => changeSorts(e.target, iconName))
@@ -2025,27 +1952,11 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     paintList();
                 };
 
-                
                 const getChangeIcons = _ => {
                     const changeDetails = (iconEl, iconName) => {
-/*                         const types = ["typeLog", "typeNote"];
-                        const visibleTypes = types.includes(iconName) && Object.keys(adoDetails).filter(detailName => types.includes(detailName) && adoDetails[detailName]);
-                        if(adoDetails[iconName] && visibleTypes.length < 2){ // 
-                            ado.changeDetail(iconName); // make this type false 
-                            iconName = types.find(icoName => icoName !== iconName); //change this iconName to the other icon's name - so this type will be set to true after the if bracket
-                            iconEl.forebear(1).kidsByClass(iconName)[0].toggleClass("elDimmed");// show the other icon
-                        }
                         ado.changeDetail(iconName);
                         iconEl.toggleClass("elDimmed").forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
-                        
-                        paintList(); */
-
-                        ado.changeDetail(iconName);
-                        iconEl.toggleClass("elDimmed").forebear(3).scrollTo(0,0); // vListScrollWrp - scroll to top
-                        
                         paintList();
-                        
-                        
                     };
                     const changeTask = e => {
                         const el = e.target;
@@ -2069,24 +1980,20 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 return [vListChangeBar.attachAry(getChangeIcons()), vListSortBar.attachAry(getSortIcons())];
             };
 
-            //const vListBarLabel = getListBarLabel();
-            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attachAry(getListTaskBar());//.attach(vListBarLabel)
+            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attachAry(getListTaskBar());
             const vListWrp = dom.addDiv("vListWrp");
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListScrollWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const vListScrollWrp = dom.addDiv(getScrollWrpClass())
                 .onClick(toggleScrollBar)
                 .on("scroll", e => {
-
-                    if(searchFormEl.preventScrollBlur && thisApp.settings.isMobileLayout()) return console.log("Will return from scrolling"); // vListScrollTop = e.target.scrollTop; ?????
-
+                    if(searchFormEl.preventScrollBlur && thisApp.settings.isMobileLayout()) return;
                     if(!searchFormEl.preventScrollBlur) searchFormEl.scrollBlur();
 
-                    const cssMethods = ["killClass", "addClass"];
                     const scrollDifference = vListScrollTop - e.target.scrollTop;
-                    const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? cssMethods.reverse() : cssMethods;
+                    const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? ["addClass", "killClass"] : ["killClass", "addClass"];
                     vListMainBarWrp[appTaskCssMethod]("mainBarToggle"); 
-                    vListTaskBarWrp[listTaskCssMethod]("taskBarToggle"); //[listTaskCssMethod]("taskBarWrpZeroTop")
+                    vListTaskBarWrp[listTaskCssMethod]("taskBarToggle");
                     vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp[appTaskCssMethod]("taskBarWrpDoubleTop")); // For Bars when Note or Tags are found
                     vListScrollTop = e.target.scrollTop;
                 }).attachAry([
@@ -2098,6 +2005,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             
             const paintList = (searchStr = searchFormEl.getValue()) => {
+                vListMainBarWrp.addClass("mainBarToggle"); 
+                 vListTaskBarWrp.killClass("taskBarToggle");
+                
                 const sortList = {
                     vSortName: {
                         Asc: ary => ary.sort((a, b) => a.name.localeCompare(b.name)),
@@ -2138,11 +2048,14 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 };
 
                 const vEntry = vendObj => dom.addDiv("vEmpty")
-                    .onClick(_ => paintFormSection(true, vendObj))
+                    .onClick(e => {
+                        paintFormSection(true, vendObj);
+                        thisApp.vEntryActive = e.currentTarget;
+                    })
                     .observedBy(new IntersectionObserver(entries => {
                         entries.forEach(entry => {
                             if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
-                                entry.target.cssName("vEntry").attach(
+                                entry.target.cssName("vEntry" + (thisApp.draftVendObj?.id === vendObj.id ? " draftVendObj" : "")).attach(
                                     dom.addDiv(vendObj.isTrash ? "vTrash" : vendObj.isNote ? "vNote" : "vLog")
                                     .attach(dom.addDiv("inpEl vName").html(highlightSrchStr(vendObj.name)))
                                     .attachAry([

@@ -28,7 +28,7 @@ function App(urlSearchParams){
         
         this.setDbObj = (dbObj, doUpdateMod) => {
             dbCipher = null;
-            thisApp.dbObj = new thisApp.crypto.DatabaseObject(dbObj, doUpdateMod); 
+            thisApp.dbObj = new thisApp.crypto.AppDbObj(dbObj, doUpdateMod); 
         };
         
         this.saveOpfsFile = async(opfsFileName, fileContent) => {
@@ -560,7 +560,7 @@ function App(urlSearchParams){
         await this.makePrivate();
     };
     
-    function Setting(thisApp, name, min, max, def, step = 1){
+    function Setting(thisApp, name, min, max, def, step = 1, noSet){
         this.min = min;
         this.max = max;
         this.def = def;
@@ -572,20 +572,18 @@ function App(urlSearchParams){
             if(present < this.min) return this.min;
             if(present > this.max) return this.max;
             return present;
-        }
+        };
         this.set = string => {
+            if(noSet) return;
             thisApp.localStorage.set(name, string);
             this.current = parseInt(string);
         };
         this.current = this.get();
         this.restoreDefault = onInput => {
             this.current = this.def();
-            
-            console.log(this.current)
-            
             thisApp.localStorage.delete(name);
             onInput(this.current);
-        }
+        };
     }
     
     function AppSettings(thisApp){
@@ -606,6 +604,8 @@ function App(urlSearchParams){
         this.appBlur = thisApp.localStorage.get("appBlur") === "true";
         
         this.appIconSize = new Setting(thisApp, "appIconSize", 30, 90, _=> 60, 5);
+        
+        //this.selfProfile = new Setting(thisApp, "selfProfile", 1, 1, _=> 1, 1, true);
     }
 
     /* Initiate App*/
@@ -654,9 +654,8 @@ function App(urlSearchParams){
 
     this.createNewDb = async _ => {
         this.dbStore.restoreObjectsSync();
-        const credentialsObj = await this.cryptoHandle.decryptToJson(false);
-        console.log(credentialsObj);
-        this.cryptoHandle.setDbObj(credentialsObj, true);
+        const dbObjCredentials = await this.cryptoHandle.decryptToJson(false);
+        this.cryptoHandle.setDbObj(dbObjCredentials, true);
         this.dbObj.isNew = true;
         this.paint();
        //throw "where does it throw when create a new db?" dbObj
@@ -679,10 +678,10 @@ function App(urlSearchParams){
             }
             msg = msg || (msg === null ? (redirectedStoreObj ? this.message.remoteAuthorised() : savedStoreObjs.length ? this.message.existingDb() : this.message.loadDb(this.consent)) : false);
             try{
-                if (msg === "BackButtonPressed" || msg === "DeleteDatabase") {
+/*                 if (msg === "BackButtonPressed" || msg === "DeleteDatabase") {
                     alert('msg === "BackButtonPressed" || msg === "DeleteDatabase" in the APP START (this.start)');
                     throw msg;
-                }
+                } */
                 if(msg) this.message[err ? "error" : "digest"](msg);
                 if(savedStoreObjs.length){
                     let painted;

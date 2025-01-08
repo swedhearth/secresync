@@ -253,10 +253,10 @@ function AppDbStore(thisApp){
             
             //window.itIsPainInTheButtOneDrivePlainHandle = storeObj.handlePlain && storeObj.key === "oneDriveFile";
             
-            if(storeObj.handlePlain && storeObj.key === "oneDriveFile"){
+/*             if(storeObj.handlePlain && storeObj.key === "oneDriveFile"){
                 alert("window.itIsPainInTheButtOneDrivePlainHandle = true. Blur on input turned off");
                 window.itIsPainInTheButtOneDrivePlainHandle = true;
-            }
+            } */
 
             // Retrieve encrypted file content using the plain handle from redirecion or the decrypted IDBX handle using a freshly obtained credentials
             const encryptedCloudFileData = await getEncryptedFileData( storeObj.handlePlain || await thisApp.cryptoHandle.decryptToString(storeObj.handle) );
@@ -514,7 +514,7 @@ function AppDbStore(thisApp){
         
         const getTokenFromCode = async (redirectCode, codeVerifier) => {
             const tokenResponse = await getAccessToken(authTokenRequestObj(redirectCode, codeVerifier));
-            alert("Check if it is now that the virtual keyboard misbeheaves")
+            //alert("Check if it is now that the virtual keyboard misbeheaves")
             return tokenResponse.refresh_token; // this.handlePlain
         };
         

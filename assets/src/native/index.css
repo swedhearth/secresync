@@ -299,7 +299,7 @@ html.invert .svgIcon.selected {
     margin: 0 0.5rem; /* 0.5vw; */
     padding: 0.5em 0.5rem;  /* 2.5em; */
     border-radius:0.5em;
-    /* color: var(--main-font-color); */
+    color: var(--main-font-color);
 }
 
 .inpEl[type="range"]{
@@ -455,6 +455,10 @@ legend.appBlurLegend:before{
 
 legend.appThemeLegend:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#appTheme);
+}
+
+legend.selfProfileLegend:before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#selfProfile);
 }
 
 .secreSyncIcon{
@@ -943,8 +947,8 @@ html.invert .localIcon{
     
     
 position: sticky;
-/* top: 0;
-padding: 0; */
+ top: 0;
+
 justify-content: space-between;
 background: var(--module-bckg);
 padding: 1mm;
@@ -1406,6 +1410,10 @@ body.mobileLayout .appMoreTaskbarShow{
     background-image: url(../../../assets/static/appSvg/sprite.svg#expDb);
 }
 
+.selfProfile{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#selfProfile);
+}
+
 html.invert .expDbIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#expDbInvert);
 }
@@ -1437,6 +1445,7 @@ html.invert .emergDbIcon{
     justify-content: flex-end;
     z-index: 1;
     position: relative;
+    align-self: flex-start;
 }
 
 
@@ -1590,6 +1599,7 @@ margin: unset;
 .vListWrp{
     position:relative;
     margin-top: -12mm;
+    padding-top:1mm;
 }
 
 /* body.mobileLayout .vListWrp{
@@ -1613,7 +1623,29 @@ margin: unset;
 }
 
 html.invert .vEntry{
-        box-shadow: -1px -1px 1px 0px var(--app-shade-grey-190), 0 0 3px 0px var(--app-shade-grey-190);
+    box-shadow: -1px -1px 1px 0px var(--app-shade-grey-190), 0 0 3px 0px var(--app-shade-grey-190);
+}
+.vEntry.draftVendObj{
+    box-shadow: 1px 1px 1px 0px rgb(255 150 0), 0 0 1px 0px rgb(255 150 0);
+    background: rgb(255 245 230);
+}
+html.invert .vEntry.draftVendObj{
+    box-shadow: -1px -1px 1px 0px rgb(0 100 255), 0 0 3px 0px rgb(0 100 255);
+    background: rgb(230 245 255)
+}
+.vEntry.draftVendObj > div:before{
+        background-color: rgb(255 200 0);
+
+    -webkit-mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+    mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+    
+    background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+    /* background-image: unset; */
+    background-blend-mode: overlay;
+}
+html.invert .vEntry.draftVendObj > div:before{
+    background-color: rgb(0 160 255);
+
 }
 
 .vListWrp .vEntry:last-child{
@@ -1888,6 +1920,10 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     background-image: url(../../../assets/static/appSvg/sprite.svg#typeNote);
 }
 
+.formIconEdit{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+}
+
 .formIconTypeLogNew{
     background-image: url(../../../assets/static/appSvg/sprite.svg#typeLogNew);
 }
@@ -1980,6 +2016,10 @@ html.invert .revisions.selected{
 .share{
     background-image: url(../../../assets/static/appSvg/sprite.svg#share);
 }
+.undoChanges{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#undoChanges);
+}
+
 
 .appForm .padded:nth-last-child(2){ /*Last Padded Fieldsed in the Form*/
     margin-bottom: 1vh;
@@ -2101,7 +2141,7 @@ border-top: 1px solid var(--module-bckg);
 .shareSection{
     text-align:center;
 }
-.barcodeWrp{
+.shareContentWrp{
     background: white;
     padding: 10mm;
     box-shadow: 0.2vmin 0.2vmin 0.5vmin var(--app-shade-grey-100);
@@ -2109,11 +2149,19 @@ border-top: 1px solid var(--module-bckg);
     margin: 1vmin;
     
     display: inline-block;
-/*     flex-wrap: wrap;
-    justify-content: center; */
-    
+
 }
-.barcodeWrp canvas{
+.shareHelpRow{
+    display: flex;
+        align-items: center;
+        text-align: left;
+}
+
+/* .shareHelpRow span{
+    padding: 2rem;
+}
+ */
+.shareContentWrp canvas{
     margin: auto;
     display: block;
 }
@@ -2144,25 +2192,25 @@ justify-content: space-between;
 }
 
 .shareBarcodeLink{
-    background-color: var(--module-bckg);
+    /* background-color: var(--module-bckg); */
     background-image: url(../../../assets/static/appSvg/sprite.svg#barcodeLink);
 }
 
 .shareBarcodeText{
-    background-color: var(--module-bckg);
+    /* background-color: var(--module-bckg); */ 
     background-image: url(../../../assets/static/appSvg/sprite.svg#barcodeText);
 }
 
-html.invert .barcodeWrp, html.invert .secreSyncBarcode, html.invert .shareBarcodeLink, html.invert .shareBarcodeText{
+html.invert .shareContentWrp, html.invert .secreSyncBarcode{ /*, html.invert .shareBarcodeLink, html.invert .shareBarcodeText*/
     filter: invert(1);
 }
 
 
-.webShare{
-    background-image: url(../../../assets/static/appSvg/sprite.svg#webShare);
+.shareWebshareLink{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#webshareLink);
 }
-.webShareLink{
-        width: 98%;
+.webshareLink{
+    width: 98%;
     box-sizing: border-box;
 }
 .disposableModalSection{ /* Same as .settingsSection .... .disposableModalSection?*/
@@ -2245,6 +2293,8 @@ html.invert .willExport div:first-child::before{
 }
 
 .adjustDetais{
+    display: flex;
+    justify-content: space-between;
     width:100%;
     padding: 1mm;
     line-height: 1.5;
