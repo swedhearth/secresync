@@ -67,6 +67,9 @@ TODo - settings to display the current and the past credentials
 TOTO- Time zone and timeformat setting
 DONE!!! Blur disable from start
 
+
+Check the persist password methods on live production server ->  the "online" Alert - not available -> is it an close button to not save on the device? -> ALSO check the "offlineCredNoSave" alert -> wtf?
+
 */
 
 // get url search parameters

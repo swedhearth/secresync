@@ -753,8 +753,8 @@ function AppDbStore(thisApp){
             refreshExpiredStoreObjs: savedStoreObjs.filter(store => store.refreshExpiredToken) // find all that require handle refresh (will only refresh first in array if confirmed)
         }
     };
-    AppDbStore.prototype.updateAll = async function(thisApp){ //this.dbStore.updateAll
-        if(thisApp) thisApp.cryptoHandle.setDbObj(thisApp.dbObj, true); // update thisApp.dbObj and change dbObj.mod
+    AppDbStore.prototype.updateAll = async function(thisApp, doUpdateMod){ //this.dbStore.updateAll
+        if(thisApp) thisApp.cryptoHandle.setDbObj(thisApp.dbObj, doUpdateMod); // update thisApp.dbObj and change dbObj.mod
         return new Promise((res, rej) => {
             Promise.allSettled(this.getAllObjects().map(storeObj => storeObj.update().catch(storeObj.catchUpdate)))
             .then(results => {

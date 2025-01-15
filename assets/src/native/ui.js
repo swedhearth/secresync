@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_101";
+    let tempVer = "MobileOptimisation_102";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -146,6 +146,7 @@ function Interface(thisApp){
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
     const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
+    const updateAppStatusBar = (cssNames, html) => appStatusBar.ridKids().attach(dom.addDiv("statusContainer" + cssNames).attach(dom.addDiv("vListBarLabel").html(html)));
     let searchFormEl, appMoreTaskbar; /// These must be outside of paintList to enable popstate firing
     
     
@@ -464,8 +465,8 @@ function Interface(thisApp){
         });
         this.importDb = _  => showCredentials(false, false, false, false, true, { //canDelete, canPersist, isPersisted, isPinOnly, isUnlock
             title: getTxtBankHtmlTxt("credFormTitleImport"), //""Unlock Database for Import"
-            passInputLabel: getTxtBankHtmlTxt("credFormImpPass"), //"Enter Password:", TODO!!!!!!!!!!!!!!!!!!!!!
-            pinInputLabel: getTxtBankHtmlTxt("credFormImportPin"), //"Enter PIN:",  TODO!!!!!!!!!!!!!!!!!!!!!
+            passInputLabel: getTxtBankHtmlTxt("credFormImpPass"), //"Enter Password:",
+            pinInputLabel: getTxtBankHtmlTxt("credFormImportPin"), //"Enter PIN:",
         });
     }
 
@@ -484,8 +485,8 @@ function Interface(thisApp){
         };
         
         this.offline = storeKey => appAlert("offline", {sKey: storeKey});
-        //this.offlineCredNoVerify = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoVerify"), sKey: "secreSync"});
-        //this.offlineCredNoSave = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoSave"), sKey: "secreSync"});
+        this.offlineCredNoVerify = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoVerify"), sKey: "secreSync"});
+        this.offlineCredNoSave = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("offlineCredNoSave"), sKey: "secreSync"}); // Not Functioning until the "online" credentials are working
         this.IdxDbError = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("IdxDbError"), sKey: "secreSync"});
         this.appFailed = _ => appAlert("fromMessage", {sMsg: getTxtBankMsgTxt("appFailed"), sKey: "secreSync"});
         
@@ -542,11 +543,15 @@ function Interface(thisApp){
         this.registerAuth = _ => appAlert("registerAuth");
         this.persistOnline = _ => appAlert("persistOnline");
         this.oneDriveRefreshAccess = _ => appAlert("oneDriveRefreshAccess");
+        
+        
+        
+        this.saveVendorChanges =_ => appAlert("saveVendorChanges");
     }
  
      /* Messages -----------------------------------------------------------------------*/
     function  Messages() {
-        const msgVisibleTime = 2000; //(2s)
+        this.msgVisibleTime = 3000; //(2s)
         const msgTransitionTime = 300; //(300ms) // css 
         let timerHide = 0;
         let msgPromise = null;
@@ -568,7 +573,7 @@ function Interface(thisApp){
                 timerHide = setTimeout(_=>{ 
                     msgModuleSlideDown();// start sliding down
                     timerHide = setTimeout(_ => res(msgClearPromise()), msgTransitionTime)// finish sliding down
-                }, msgVisibleTime)
+                }, this.msgVisibleTime)
             }).then(_ => this.resetFullArchive());
         };
         
@@ -614,17 +619,12 @@ function Interface(thisApp){
                     )
                 ))
             );
- 
-    
+
         this.openFullArchive = e => {
             msgClearPromise();
-
             addModalToHistory(true); //force adding to history
-
             this.paintFullArchive().addClass("fullArchive");
             msgIsFullArchive = true;
-
-
         };
         
         this.isFullArchive = _ => msgIsFullArchive;
@@ -724,7 +724,7 @@ function Interface(thisApp){
         this.tempOnlineChangeWhileAppHidden = appOnline => msgShow(new MsgObj("_TEMP_ Application connectivity has changed while the app was hidden. Is the app online?: " + appOnline.toString(), "flash"));
         this.tempVisibilityChange = appHidden => msgShow(new MsgObj("_TEMP_ Application visibility has changed. Is the app hidden?: " + appHidden.toString(), "flash"));
         
-        this.tapToRegisterHistory = _ => msgShow(new MsgObj("TO DO - tapToRegisterHistory", "flash"));// TODO TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        this.tapToOpenFullArchive = _ => msgTxt("tapToOpenFullArchive");
 
     };
 
@@ -734,114 +734,61 @@ function Interface(thisApp){
         const adoDetails = ado.details;
         const adoSorts = ado.sorts;
 
-
         let vListScrollTop = 0;
-
+        let vFormScrollTop = 0;
+        
+        let saveDraftVendTimer = null;
+       
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       
-       let vFormScrollTop = 0;
-       
-       //let vEntryActive = null; // Please change it!!!!
-       
        const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
-            const nameLogMinLen = 3;
-            const boxNoteElMaxLen = 10000;
-
-            if(addHistory) addModalToHistory();
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Form Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const saveDraftVendor = _ => {
+                if(thisApp.dbObj.draftVendObj && thisApp.dbObj.draftVendObj === vendObj){
+                    thisApp.dbStore.updateAll(thisApp, true).catch(err => null);
+                    console.log("saveDraftVendor SAVED", thisApp.dbObj);
+                }
+                // thisApp.dbObj.draftVendObj && thisApp.dbObj.draftVendObj === vendObj && thisApp.dbStore.updateAll(thisApp, true).catch(err => null);
+            };
             
-            let isNew = !vendObj || vendObj.isNew || false;
-            
-            const clearDraftVendor = _ => {
-                thisApp.draftVendObj = null;
-                thisApp.vEntryActive = null;
+            const clearDraftVendor = skipSaving => {
+                if(!thisApp.dbObj.draftVendObj) return;
+                thisApp.dbObj.draftVendObj = null;
                 appSectionList.kidsByClass("draftVendObj").forEach(vEntry => vEntry.killClass("draftVendObj"));
+                if(!skipSaving) thisApp.dbStore.updateAll(thisApp, true).catch(err => null);
             };
             
             const addDraftVendor = _ => {
-                //console.log("addDraftVendor, isNew ?  =", isNew, " ... thisApp.vEntryActive =", thisApp.vEntryActive);
-                if(!isNew && thisApp.vEntryActive){
-                    thisApp.vEntryActive.addClass("draftVendObj");
-                    thisApp.draftVendObj = vendObj;
+                if(thisApp.dbObj.draftVendObj === vendObj) {
+                    clearTimeout(saveDraftVendTimer);
+                    saveDraftVendTimer = setTimeout(saveDraftVendor, Math.min(thisApp.settings.appLogOff.current * 600, 15000)); // 60% of the current appLogOff timer or 15 seconds after last edit
+                }else{
+                    thisApp.vEntryActive?.addClass("draftVendObj"); 
+                    thisApp.dbObj.draftVendObj = vendObj;
                     undoChangesBtn.show();
                 }
             };
             
-            if(submitForm){
-                if(!vendObj.name || vendObj.name.length < nameLogMinLen) return thisApp.message.nameShort();
-                if(vendObj.log && vendObj.log.length < nameLogMinLen) return thisApp.message.logShort();
-                
-                const existingVendor = thisApp.dbObj.vendors.find(vObj => !vObj.isTrash && vObj.name.toLowerCase() === vendObj.name.toLowerCase());
-                if(existingVendor && existingVendor.id !== vendObj.id) return thisApp.message.vendorExists(vendObj.name);
-                
-                const hasChanged = !vendObj.mod || isNew; // if mode is null then the stores need updating
-
-                if(isNew){
-                    vendObj.mod = vendObj.cr8 = null;
-                }else{
-                    clearDraftVendor();
-                }
-
-                vendObj = new thisApp.crypto.Vendor(vendObj); // if vendObj was new is not new anymore
-                if(hasChanged) {
-                    if(isNew){
-                        isNew = false;
-                        thisApp.dbObj.vendors.push(vendObj);
-                    }else{
-                        thisApp.dbObj.vendors = thisApp.dbObj.vendors.map(vObj => vObj.id !== vendObj.id ? vObj : updateRevision(vObj));
-                    }
-
-                    updateStoresAfterChange(vendObj);
-                    repaintUI(); // update Vendor List (paintList)
-                }
-            }
-            
-            let showUndoChangesBtn = false;
-            if(!isNew && thisApp.draftVendObj?.id === vendObj?.id && (addHistory || edit)){
-                vendObj = thisApp.draftVendObj;
-                edit = true;
-                showUndoChangesBtn = true;
-            }else if(addHistory){
-                clearDraftVendor();
-            }
-
-            
-            const displayMode = !isNew && !edit;
-            vendObj = new thisApp.crypto.Vendor(vendObj, thisApp.dbObj.vendors);
-            
-
-            if(isNew) vendObj.isNew = true;
-            if(toggleForm || showUndoChangesBtn) vendObj.mod = null;
-            
-            // populate Revisions Array if vendObj has revisions and Revisions Array has not already been populated
-            if(displayMode && vendObj.rev && !revAry.length){
-                revAry = vendObj.rev.map(revObj => new thisApp.crypto.Vendor(JSON.parse(revObj))).reverse();
-                revAry.unshift(vendObj);
-                revAry = revAry;
-            }
-
-            function updateStoresAfterChange(vendObj) {
-                thisApp.dbStore.updateAll(thisApp).then(rejectedPromises => {
+            const updateStoresAfterChange = vendObj => {
+                thisApp.dbStore.updateAll(thisApp, true).then(rejectedPromises => {
                     thisApp.message.submitFormSucess(vendObj.name);
                     if(rejectedPromises.length) thisApp.message.submitFormSucessModerateFail(vendObj.name);
                 }).catch(err => thisApp.message.submitFormFailed(vendObj.name, err));
             };
             
             const updateStoresAfterRemoval = vendObj => {
-                thisApp.dbStore.updateAll(thisApp).then(rejectedPromises => {
+                thisApp.dbStore.updateAll(thisApp, true).then(rejectedPromises => {
                     thisApp.message.vendorDeleted(vendObj.name);
                     if(developerMode) if(rejectedPromises.length) console.log("The following stores have not been updated", rejectedPromises); // TO DO
                 }).catch(err => {
                     thisApp.message.deleteVendorFailed(vendObj.name, err);
                 });
                 
-                repaintUI(); // update Vendor List (paintList)
+                paintListSection(); // update Vendor List (paintList)
             };
-            
-            function updateRevision (vendObjPrevious) {
+
+            const updateRevision = vendObjPrevious => {
                 vendObj.rev = vendObj.rev || []; // create revisions array if doesnt't exist
                 vendObj.rev.push(JSON.stringify(vendObjPrevious.prepareForSend(true)));
-                //if(vendObj.rev.length > revisions) vendObj.rev.shift();
-                //if(vendObj.rev.length > thisApp.settings.revisions.current) vendObj.rev.shift(); //!!!!!!!!!!!!!!!! TO DO
                 while (vendObj.rev.length > thisApp.settings.revisions.current){
                     vendObj.rev.shift();
                 }
@@ -854,7 +801,7 @@ function Interface(thisApp){
                 //vendObj is the past revision to be restored, revAry[0] was the most current vendObj to become a past revision
                 vendObj.rev = revAry[0].rev; //assign revisions Array of the current vendObj to the past revision of the vendObj to be restored
                 vendObj.mod = null;
-                paintFormSection(false, vendObj, false, true); //save the changes
+                paintFormSection(true, vendObj, false, true); //save the changes
             };
             
             const deleteRevision = async _ => {
@@ -876,7 +823,7 @@ function Interface(thisApp){
                 vendObj.name = vendObj.name + "  _ + _  " + new Date().toUKstring();
                 vendObj.isTrash = null;
                 vendObj.mod = null;
-                paintFormSection(false, vendObj, false, true);
+                paintFormSection(true, vendObj, false, true);
             };
             
             const deleteTrashed = async _ => {
@@ -898,41 +845,7 @@ function Interface(thisApp){
                 paintFormSection(false, vendObj, true, false, true)
             };
             
-
-            const closeForm = _ => {
-                if(displayMode || isNew){
-                    historyStack.goBack();
-                }else{
-                    const [vo] = thisApp.dbObj.vendors.filter(vObj => vObj.id === vendObj.id);
-                    paintFormSection(false, vo, false, false);
-                }
-            };
-
-            const getCopyIcon = (inpEl, iconTitle, msgName) => getSvgIcon("copyClipboard", iconTitle, _ => {
-                window.navigator.vibrate(200);
-                navigator.clipboard.writeText(inpEl.value).then(_ => thisApp.message[msgName]());
-            });
-
-            const changeVprop = e => {
-                e.target.value = e.target.value.replace(/"/g, "'"); // Replace double quotations as they mess up export to CVS
-                vendObj[e.target.name] = e.target.value;
-                vendObj.mod = null;
-                addDraftVendor();
-            };
-            
-            const undoChanges = e => {
-                clearDraftVendor();
-                closeForm();
-            };
-
-            const clearFormInput = inpEl => {
-                inpEl.value = ""; 
-                inpEl.dispatchEvent(new Event('input'));
-                if(lastActiveInputEl === inpEl) inpEl.focus();
-            };
-
             const shareVendor = async _ => { //shareCredentials
-            
                 const shareSection = dom.addDiv("disposableModalSection shareSection");
                 const shareTitleBar = dom.addDiv("disposableModalTitleBar shareTitleBar");
                 const shareOptionsBar = dom.addDiv("disposableOptionsBar shareOptionsBar");
@@ -1038,9 +951,159 @@ function Interface(thisApp){
                 shareSection.attachAry([shareTitleBar.attachAry(shareTitleEls), shareOptionsBar.attachAry(shareOptions)]).attachTo(document.body);
                 addModalToHistory(true); //force adding to history
             };
-
             
-            // Sections
+            const changeVprop = e => {
+                e.target.value = e.target.value.replace(/"/g, "'"); // Replace double quotations as they mess up export to CVS
+                vendObj[e.target.name] = e.target.value;
+                vendObj.mod = null;
+                addDraftVendor();
+            };
+            
+            const undoChanges = e => {
+                console.log(e.currentTarget);//(false);
+                e.currentTarget.kill();
+                closeForm(true);
+            };
+            
+            const closeForm = async reverseChange => {
+                if(displayMode || (isNew && !thisApp.dbObj.draftVendObj)){
+                    return historyStack.goBack();
+                }
+
+                let addToHistory = false;
+                let paintVendObj = thisApp.dbObj.vendors.find(vObj => vObj.id === vendObj.id); //Original VendorObject
+                
+                if(thisApp.dbObj.draftVendObj){
+                    if(reverseChange === true){
+                        if(isNew){
+                            addToHistory = true;
+                            paintVendObj = null;
+                        }
+                    }else{
+                        const saveChanges = await thisApp.alert.saveVendorChanges(); // Vendor Object form has closed now
+                        if(saveChanges === null) return; //(DO NOT CLEAR draftVendObj)
+                        if(saveChanges){
+                            paintFormSection(true, vendObj, false, true); // save and repaint (draftVendObj will clear while saving)
+                            return;
+                        }else{
+                            addToHistory = true; // do not save - restore original vendor's version
+                        }
+                    }
+                    clearDraftVendor(false);
+                }
+
+                paintFormSection(addToHistory, paintVendObj, false, false);
+            };
+            
+            const clearFormInput = inpEl => {
+                inpEl.value = ""; 
+                inpEl.dispatchEvent(new Event('input'));
+                if(lastActiveInputEl === inpEl) inpEl.focus();
+            };
+            
+            const getCopyIcon = (inpEl, iconTitle, msgName) => getSvgIcon("copyClipboard", iconTitle, _ => {
+                window.navigator.vibrate(200);
+                navigator.clipboard.writeText(inpEl.value).then(_ => thisApp.message[msgName]());
+            });
+
+
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Paint Form Entry Point - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            let isNew = !vendObj || vendObj.isNew || false;
+            
+            if(submitForm){
+                const nameLogMinLen = 3;
+                if(!vendObj.name || vendObj.name.length < nameLogMinLen) return thisApp.message.nameShort();
+                if(vendObj.log && vendObj.log.length < nameLogMinLen) return thisApp.message.logShort();
+                
+                const existingVendor = thisApp.dbObj.vendors.find(vObj => !vObj.isTrash && vObj.name.toLowerCase() === vendObj.name.toLowerCase());
+                if(existingVendor && existingVendor.id !== vendObj.id) return thisApp.message.vendorExists(vendObj.name);
+                
+                const hasChanged = !vendObj.mod || isNew; // if mode is null then the stores need updating
+
+                if(isNew) vendObj.mod = vendObj.cr8 = null;
+
+                vendObj = new thisApp.crypto.Vendor(vendObj); // if vendObj was new is not new anymore
+                clearDraftVendor(hasChanged); // do not updateStoresAfterChange if hasChanged - as it will do it further down 
+                if(hasChanged) {
+                    if(isNew){
+                        isNew = false;
+                        thisApp.dbObj.vendors.push(vendObj);
+                    }else{
+                        thisApp.dbObj.vendors = thisApp.dbObj.vendors.map(vObj => vObj.id !== vendObj.id ? vObj : updateRevision(vObj));
+                    }
+
+                    updateStoresAfterChange(vendObj);
+                    paintListSection(); // update Vendor List (paintList)
+                }
+            }
+
+            const isEditingVendorDraft = (isNew && thisApp.dbObj.draftVendObj?.id > thisApp.dbObj.vendors.length) //editing new vendor saved as draftVendObj
+                || (!isNew && thisApp.dbObj.draftVendObj?.id === vendObj?.id); //editing existing vendor saved as draftVendObj
+
+            if(isEditingVendorDraft){
+                vendObj = thisApp.dbObj.draftVendObj;
+                edit = true;
+            }else{
+                clearDraftVendor(false);
+            }
+
+            vendObj = new thisApp.crypto.Vendor(vendObj, thisApp.dbObj.vendors);
+            if(isNew) vendObj.isNew = true;
+            if(toggleForm || isEditingVendorDraft) vendObj.mod = null;
+            
+            const displayMode = !isNew && !edit;
+            appSectionForm.isDisplay = displayMode; // for swipe events
+            vFormScrollTop = displayMode ? 0 : vFormScrollTop;
+            
+            // populate Revisions Array if vendObj has revisions and Revisions Array has not already been populated
+            if(displayMode && vendObj.rev && !revAry.length){
+                revAry = vendObj.rev.map(revObj => new thisApp.crypto.Vendor(JSON.parse(revObj))).reverse();
+                revAry.unshift(vendObj);
+                revAry = revAry;
+            }
+            
+            if(addHistory) addModalToHistory();
+
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Create Form Sections - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const txtAreaElMaxLex = 10000;
+            
+            // ------------------------- Name ---------------------------------
+            const nameSection = (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelName");
+                const inpEl = getInpEl({
+                    type: "text",
+                    name: "name",
+                    placeholder: labelHtml,
+                    value: vendObj.name,
+                    disabled: displayMode,
+                    _onInput: changeVprop,
+                });
+                return getFieldsetEl("padded", labelHtml, "name").attachAry([
+                    getSvgIcon(),
+                    inpEl,
+                    displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
+                ]);
+            })();
+            
+            // -------------------------- Login ------------------------------------------
+            const logSection = vendObj.isNote || (!vendObj.log && displayMode) ? [] : (_ => {
+                const labelHtml = getTxtBankHtmlTxt("formLabelLog");
+                const logInpEl = getInpEl({
+                    type: "text",
+                    name: "log",
+                    value: vendObj.log,
+                    placeholder: labelHtml,
+                    disabled: displayMode,
+                    _onInput: changeVprop
+                });
+                return getFieldsetEl("padded", labelHtml, "log").attachAry([
+                    getSvgIcon(),
+                    logInpEl,
+                    displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
+                ]);
+            })();
+
+            // ---------------------- Password ----------------------------
             const getPassSection = async (inpType = "password") => {
                 const labelHtml = getTxtBankHtmlTxt("formLabelPass")
                 const vPass = await vendObj.getCurrentPassword();
@@ -1058,12 +1121,10 @@ function Interface(thisApp){
                     vendObj = new thisApp.crypto.Vendor(vendObj);
                     vendObj.mod = null;
                     if(isNew) vendObj.isNew = true;
-                    //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
+
                     const newPassFieldset = await getPassSection(passInpEl.type);
                     passFieldset.replaceWith(newPassFieldset);
-                    
-                    //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
-                    
+
                     thisApp.message.newPassGenerated(vendObj.name);
                     addDraftVendor();
                 };
@@ -1074,8 +1135,6 @@ function Interface(thisApp){
                         changeVprop(e);
                         const newPassFieldset = await getPassSection(passInpEl.type);
                         passFieldset.replaceWith(newPassFieldset);
-                        //passFieldset.replaceWith(await passSection(labelHtml, passInpEl.type));
-                        //newPassFieldset.dispatchEvent(new Event('pointerdown')); // focus new fieldset
                     };
                     const rangeInputEl = getInpEl({
                         type: "range",
@@ -1090,7 +1149,6 @@ function Interface(thisApp){
                         rangeInputEl.value = parseInt(rangeInputEl.value) + val;
                         rangeInputEl.dispatchEvent(new Event('input'));
                     };
-                    //return dom.addFieldset().attach(dom.addLegend("", rangeLabelHtml))
                     return getFieldsetEl("", rangeLabelHtml, false).attachAry([
                         getSvgIcon("decrease", true, _ => changeRangeInputValue(-1)),
                         rangeInputEl,
@@ -1143,31 +1201,8 @@ function Interface(thisApp){
             
             const passSection = vendObj.isNote || (vendObj.cPass && displayMode) ? [] : await getPassSection("password");
 
-            const logSection = vendObj.isNote ? [] : (_ => {
-                const labelHtml = getTxtBankHtmlTxt("formLabelLog");
-                const logInpEl = getInpEl({
-                    type: "text",
-                    name: "log",
-                    value: vendObj.log,
-                    placeholder: labelHtml,
-                    disabled: displayMode,
-                    _onInput: changeVprop
-                });
-
-/*                 return vendObj.log || !displayMode ? getFieldsetEl("padded", labelHtml, "log").attachAry([
-                    getSvgIcon(),
-                    logInpEl,
-                    displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
-                ]) : []; */
-                
-                return getFieldsetEl("padded", labelHtml, "log").attachAry([
-                    getSvgIcon(),
-                    logInpEl,
-                    displayMode ? getCopyIcon(logInpEl, "copyLogBtn", "logCopied") : getClearInputIcon(_ => clearFormInput(logInpEl))
-                ]);
-            })();
-
-            const customPassSection = vendObj.isNote ? [] : (_ => {
+            // ------------------------- Custom Password ---------------------------------
+            const customPassSection = vendObj.isNote || (!vendObj.cPass && displayMode) ? [] : (_ => {
                 const labelHtml = getTxtBankHtmlTxt("formLabelCustomPass");
                 const passInpEl = getInpEl({
                     type: "password",
@@ -1177,54 +1212,52 @@ function Interface(thisApp){
                     placeholder: labelHtml,
                     _onInput: changeVprop
                 });
-
-                return vendObj.cPass || !displayMode ? getFieldsetEl("padded", labelHtml, "pass").attachAry([
+                return getFieldsetEl("padded", labelHtml, "pass").attachAry([
                     getPassEyeIcon(passInpEl),
                     passInpEl,
                     displayMode ? getCopyIcon(passInpEl, "copyPassBtn", "customPassCopied") : getClearInputIcon(_ => clearFormInput(passInpEl))
-                 ]) : "";
+                 ]);
             })();
             
+            // ------------------------- Notes ---------------------------------
             const boxNoteFitContent = _ => {
-                boxNoteEl.style.height = "auto"; // Resize boxNote textarea
-                boxNoteEl.style.height = (boxNoteEl.scrollHeight + 5 ) + "px";
+                noteTxtAreaEl.style.height = "auto"; // Resize textarea
+                noteTxtAreaEl.style.height = (noteTxtAreaEl.scrollHeight + 5 ) + "px";
                 vForm.scrollTop = vFormScrollTop;
             };
-            const boxNoteEl = dom.addTextarea("inpEl boxNote")
+            const noteTxtAreaEl = dom.addTextarea("inpEl txtAreaEl")
                 .setAttrs({
                     name: "note",
-                    maxlength: boxNoteElMaxLen,
+                    maxlength: txtAreaElMaxLex,
                     placeholder: getTxtBankHtmlTxt("formLabelNote")
                 })
                 .setAttr(displayMode ? "disabled" : "enabled", true)
                 .on("input", e => {
-
-                    boxNoteEl.style.height = "auto"; // Resize boxNote textarea
-                    if(boxNoteEl.scrollHeight <= boxNoteEl.clientHeight){
-                        boxNoteEl.killClass("max").rows = "2";
-                    }else if(!boxNoteEl.hasClass("max")){
-                        boxNoteEl.addClass("max").rows = "1";
+                    noteTxtAreaEl.style.height = "auto"; // Resize textarea
+                    if(noteTxtAreaEl.scrollHeight <= noteTxtAreaEl.clientHeight){
+                        noteTxtAreaEl.killClass("max").rows = "2";
+                    }else if(!noteTxtAreaEl.hasClass("max")){
+                        noteTxtAreaEl.addClass("max").rows = "1";
                     }
                     
                     if(e.isTrusted){
                         changeVprop(e); // only user input and not the dispatched event
-                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1){
+                        if(noteTxtAreaEl.value.length > txtAreaElMaxLex - 1){
                             thisApp.alert.textAreaLimitReached();
-                            //alert("you reached the limit");
                         }
-                        window.requestAnimationFrame(_ => boxNoteEl.focus()); // refocus if the input event will trigger the scroll event, which blurs the boxNoteEl
+                        window.requestAnimationFrame(_ => noteTxtAreaEl.focus()); // refocus if the input event will trigger the scroll event, which blurs the noteTxtAreaEl
                     }
                     
                     boxNoteFitContent();
                 })
                 .on("transitionend", boxNoteFitContent);// fit after initioal paint of the box when triggered from dispatched Event when the max is being applied for 300ms //, {once: true}
 
-            
-            boxNoteEl.value = vendObj.note || "";
+            noteTxtAreaEl.value = vendObj.note || "";
 
-            const notesSection = displayMode && !vendObj.note ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelNote"), "note").attach(boxNoteEl);
+            const notesSection = displayMode && !vendObj.note ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelNote"), "note").attach(noteTxtAreaEl);
 
-            const urlSection = (_ => {
+            // ------------------------- URL ---------------------------------
+            const urlSection = !vendObj.url && displayMode ? [] : (_ => {
                 const labelHtml = getTxtBankHtmlTxt("formLabelUrl")
                 const urlInpEl = getInpEl({
                     type: "text",
@@ -1236,8 +1269,7 @@ function Interface(thisApp){
                     pattern: "https://.*",
                     _onInput: changeVprop
                 });
-
-                return  displayMode && !vendObj.url ? [] : getFieldsetEl("padded", labelHtml, "url").attachAry([
+                return getFieldsetEl("padded", labelHtml, "url").attachAry([
                     getSvgIcon(),
                     urlInpEl,
                     isURL(vendObj.url) && displayMode 
@@ -1248,63 +1280,61 @@ function Interface(thisApp){
                 ]);
             })();
 
-            const nameSection = (_ => {
-                const labelHtml = getTxtBankHtmlTxt("formLabelName");
-                const prop = "name";
-                const inpEl = getInpEl({
-                    type: "text",
-                    name: prop,
-                    placeholder: labelHtml,
-                    value: vendObj[prop],
-                    disabled: displayMode,
-                    _onInput: changeVprop,
-                });
-
-                return displayMode && !vendObj[prop] ? [] :  getFieldsetEl("padded", labelHtml, prop).attachAry([
-                    getSvgIcon(),
-                    inpEl,
-                    displayMode ? getSvgIcon() : getClearInputIcon(_ => clearFormInput(inpEl))
-                ]);
-            })();
-            
-            
-const tagsEl  = dom.addTextarea("inpEl boxNote")
+            // ------------------------- Tags ---------------------------------
+            const tagsTxtAreaEl  = dom.addTextarea("inpEl txtAreaEl")
                 .setAttrs({
                     name: "tags",
-                    maxlength: boxNoteElMaxLen,
+                    maxlength: txtAreaElMaxLex,
                     placeholder: getTxtBankHtmlTxt("formLabelTags")
                 })
                 .setAttr(displayMode ? "disabled" : "enabled", true)
                 .on("input", e => {
-
-                        changeVprop(e); // only user input and not the dispatched event
-                        if(boxNoteEl.value.length > boxNoteElMaxLen - 1){
-                            thisApp.alert.textAreaLimitReached();
-                            //alert("you reached the limit"); // TODO TO DO!!!!!!!!!!!!!!!!!!!!!!!
-                        }
+                    changeVprop(e);
+                    if(noteTxtAreaEl.value.length > txtAreaElMaxLex - 1){
+                        thisApp.alert.textAreaLimitReached();
+                    }
                 });
             
- tagsEl.value = vendObj.tags || "";
-            const tagsSection = displayMode && !vendObj.tags ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelTags"), "tags").attach(tagsEl);
+            tagsTxtAreaEl.value = vendObj.tags || "";
             
-            const formSectionsAry = [ //htmls
-                //standardSection("name", getTxtBankHtmlTxt("formLabelName")),
-                nameSection,
-                logSection,
-                //vendObj.isNote ? [] : logSection(getTxtBankHtmlTxt("formLabelLog")),
-                //vendObj.isNote ? [] : await passSection(getTxtBankHtmlTxt("formLabelPass")),
-                passSection,
-                //vendObj.isNote ? [] : customPassSection(getTxtBankHtmlTxt("formLabelCustomPass")),
-                customPassSection,
-                //notesSection(getTxtBankHtmlTxt("formLabelNote")),
-                notesSection,
-                //urlSection(getTxtBankHtmlTxt("formLabelUrl")),
-                urlSection,
-                //standardSection("tags", getTxtBankHtmlTxt("formLabelTags")),
-                //tagsSection(getTxtBankHtmlTxt("formLabelTags"))
-                tagsSection
-            ];
+            const tagsSection = displayMode && !vendObj.tags ? [] : getFieldsetEl("padded", getTxtBankHtmlTxt("formLabelTags"), "tags").attach(tagsTxtAreaEl);
             
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Form Components - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+            // ------------------------- Buttons ---------------------------------
+            const getNavigateRevisionBtn = step => getSvgIcon(step > 0 ? "previousVersion" : "nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx + step], false, false, false, revAry, revisionIdx + step)) 
+            const actionBtn = revisionIdx || vendObj.isTrash
+                ? revisionIdx
+                    ? getSvgIcon("restoreRevisionBtn", true, restoreRevision)
+                    : getSvgIcon("restoreTrashedBtn", true, restoreTrashed)
+                : getSvgIcon(displayMode ? "editFormBtn" : "submitFormBtn", true, _ => paintFormSection(false, vendObj, displayMode, !displayMode));
+
+            const middleTopEl = displayMode
+                ? dom.addDiv("formTitle", vendObj.name || "")
+                : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : "formIconEdit" , vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog");
+
+            const deleteOldBtn = revisionIdx
+                ? getSvgIcon("trashBin", "deleteRevisionBtn", deleteRevision)
+                : vendObj.isTrash 
+                    ? getSvgIcon("trashBin", "deleteTrashedBtn", deleteTrashed) 
+                    : [];
+
+            const revisionsBtn = displayMode && revAry.length && !vendObj.isTrash 
+                ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), "revisions", revisionIdx 
+                    ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
+                    :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
+                )
+                : [];
+
+            const closeFormBtn = getSvgIcon("btnCloseForm", "btnClose", closeForm);
+            const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnClose", closeForm);
+            const shareBtn = vendObj.isTrash ? getSvgIcon() : getSvgIcon("share", true, shareVendor);
+            const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
+            const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
+            const undoChangesBtn = getSvgIcon("undoChanges" + isEditingVendorDraft ? "" : " elNoDisplay", "undoChangesBtn", undoChanges);
+
+            // ------------------------- Info Wrap ---------------------------------
+            // Creation and Modification Wrap
             const recordModWrp = !displayMode // Show only if Display
                 ? null
                 : dom.addDiv("recordModWrp").attachAry([ 
@@ -1318,111 +1348,55 @@ const tagsEl  = dom.addTextarea("inpEl boxNote")
                         getSvgIcon("vModDateLabel", true)
                     ]),
                 ]);
-
-/*             const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
-                ? null
-                : dom.addDiv("revisionWrp").attachAry([ 
-                    revisionIdx ? dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()) : [],
-                    dom.addDiv("revisionScroll").attachAry([
-                        revisionIdx && revAry[revisionIdx + 1]
-                            ? getSvgIcon("previousVersion", true, _ => paintFormSection(false, revAry[revisionIdx + 1], false, false, false, revAry, revisionIdx + 1)) 
-                            : getSvgIcon(),
-                        getSvgIcon("revisions", true, revisionIdx 
-                            ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
-                            :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
-                        ),
-                        revAry[revisionIdx - 1]
-                            ? getSvgIcon("nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx - 1], false, false, false, revAry, revisionIdx - 1)) 
-                            : getSvgIcon()
-                    ])
-                ]); */
-                
-            const revisionWrp = !displayMode || !revAry.length || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
+            
+            // Revisions Wrap
+            const revisionWrp = !displayMode || !revAry.length || !revisionIdx || vendObj.isTrash// Show only if Display mode and Revisions Array is populated and vendObj is not in trash
                 ? null
                 : dom.addDiv("revisionWrp").attachAry([ 
                     dom.addDiv("revisionScroll").attachAry([
-                        revisionIdx && revAry[revisionIdx + 1]
-                            ? getSvgIcon("previousVersion", true, _ => paintFormSection(false, revAry[revisionIdx + 1], false, false, false, revAry, revisionIdx + 1)) 
-                            : getSvgIcon(),
+                        revAry[revisionIdx + 1] ? getNavigateRevisionBtn(1) : getSvgIcon(),
                         dom.addDiv("revisionCaption", new Date(vendObj.mod).toUKstring()),
-                        revAry[revisionIdx - 1] && revisionIdx - 1
-                            ? getSvgIcon("nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx - 1], false, false, false, revAry, revisionIdx - 1)) 
-                            : getSvgIcon()
+                        revAry[revisionIdx - 1] && revisionIdx - 1 ? getNavigateRevisionBtn(-1) : getSvgIcon()
                     ])
                 ]);
-                
-                
-                const modWrp = revisionWrp && revisionIdx ? revisionWrp : recordModWrp;
-
-
-const actionBtn = revisionIdx || vendObj.isTrash
-                    ? revisionIdx ? getSvgIcon("restoreRevisionBtn", true, restoreRevision) : getSvgIcon("restoreTrashedBtn", true, restoreTrashed)
-                    : getSvgIcon(displayMode ? "editFormBtn" : "submitFormBtn", true, _ => paintFormSection(false, vendObj, displayMode, !displayMode));
-const middleTopEl = displayMode
-                    ? dom.addDiv("formTitle", vendObj.name || "")
-                    //: getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog", true);
-                    : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : "formIconEdit" , vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog");
-                    
-const closeFormBtn = getSvgIcon("btnCloseForm", "btnClose", closeForm);
-const closeFormBtnMobile =getSvgIcon("btnCloseFormMobile", "btnClose", closeForm);
-
-const oridinaryLayoutHeadEls = [actionBtn, middleTopEl, closeFormBtn]
-const mobileLayoutHeadEls = [middleTopEl];
-const fomHeadEls = thisApp.settings.isMobileLayout() ? mobileLayoutHeadEls : oridinaryLayoutHeadEls;
-
             
+            const infoWrp = revisionWrp || recordModWrp || [];
             
-            //formHeadEdit = displayMode ? null: formHead ;
-
-const shareEl = vendObj.isTrash ? getSvgIcon() : getSvgIcon("share", true, shareVendor);
-const deleteOldBtn = revisionIdx 
-    ? getSvgIcon("trashBin", "deleteRevisionBtn", deleteRevision)
-    : vendObj.isTrash 
-        ? getSvgIcon("trashBin", "deleteTrashedBtn", deleteTrashed) 
-        : [];
-const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
-const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
-const undoChangesBtn = getSvgIcon("undoChanges", "undoChangesBtn", undoChanges).hide();
-if(showUndoChangesBtn) undoChangesBtn.show();
-const revisionsBtn = revisionWrp 
-    ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), "revisions", revisionIdx 
-            ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
-            :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
-        )
-    : [];
-
-const oridinaryLayoutFootEls = displayMode ? [shareEl, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, undoChangesBtn, deleteCurrentBtn];
-const mobileLayoutFootEls = displayMode ? [closeFormBtnMobile, deleteOldBtn, vendObj.isTrash || vendObj.isNote || revisionIdx ? [] : shareEl, revisionsBtn, actionBtn] : [closeFormBtnMobile, undoChangesBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
-
-const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
-            
+            // ------------------------- Head ---------------------------------
+            const oridinaryLayoutHeadEls = [actionBtn, middleTopEl, closeFormBtn]
+            const mobileLayoutHeadEls = [middleTopEl];
+            const fomHeadEls = thisApp.settings.isMobileLayout() ? mobileLayoutHeadEls : oridinaryLayoutHeadEls;
             const formHead = dom.addDiv("formHead").attachAry(fomHeadEls);
+            
+            // ------------------------- Foot ---------------------------------
+            const oridinaryLayoutFootEls = displayMode ? [shareBtn, revisionsBtn, deleteOldBtn] : [toggleVendorBtn, undoChangesBtn, deleteCurrentBtn];
+            const mobileLayoutFootEls = displayMode 
+                ? [closeFormBtnMobile, deleteOldBtn, vendObj.isTrash || vendObj.isNote || revisionIdx ? [] : shareBtn, revisionsBtn, actionBtn]
+                : [closeFormBtnMobile, undoChangesBtn, deleteCurrentBtn, toggleVendorBtn, actionBtn];
+            const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : oridinaryLayoutFootEls;
             const formFoot = dom.addDiv("formFoot").attachAry(fomFootEls);
             
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Attach Form - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx))
+                .attachAry([formHead, infoWrp, nameSection, logSection, passSection, customPassSection, notesSection, urlSection, tagsSection, formFoot])
+                .onClick(toggleScrollBar)
+                .on("scroll", e => {
+                    vFormScrollTop = e.target.scrollTop;
+                    if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
+                })
+                .attachTo(appSectionForm.ridKids().slideIn());
 
+            noteTxtAreaEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
 
-            vFormScrollTop = displayMode ? 0 : vFormScrollTop;
-
-            const vForm = dom.addDiv(getScrollWrpClass(revisionIdx)).onClick(toggleScrollBar).on("scroll", e => {
-                vFormScrollTop = e.target.scrollTop;
-                if(!vFormScrollTop) document.activeElement.blur(); // lose focus on input or textarea input element (hide virtual keyboard)
-            });
-            
-            vForm.attach(formHead).attach(modWrp).attachAry(formSectionsAry).attach(formFoot).attachTo(appSectionForm.ridKids().slideIn());//.attach(revisionWrp)
-            appSectionForm.isDisplay = displayMode; // for swipe
-
-            boxNoteEl.dispatchEvent(new Event('input')); // resize after attaching to the form section
-            toggleScrollWrpOverflow(vForm);
-            
             if(vFormScrollTop){
                 let scrollTopForm = vFormScrollTop;
-                if(!vendObj.isNote && edit) {
+                if(!vendObj.isNote && edit) { // try to maintain the same visual scroll top when going from display to edit mode
                     scrollTopForm += passSection.clientHeight;
                 }
                 vForm.scrollTo(0, scrollTopForm);
             }
-
-
+            
+            toggleScrollWrpOverflow(vForm);
         };
         /////////////////////////////////////////////////END MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1534,9 +1508,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         importVendObj.name = getImportName();
                         thisApp.dbObj.vendors.push(new thisApp.crypto.Vendor(importVendObj, thisApp.dbObj.vendors));
                     });
-                    await thisApp.dbStore.updateAll(thisApp);
+                    await thisApp.dbStore.updateAll(thisApp, true);
                     thisApp.message.importDbSuccess();
-                    repaintUI();
+                    paintListSection();
                 }catch(err){
                     thisApp.message.importDbFail();
                     spinner.stop("in importDb -> catch");
@@ -1818,7 +1792,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     langModule(thisApp, _ => {
                         window.addEventListener('popstate',  openSettings, {once: true});
                         historyStack.goBack();
-                        repaintUI();
+                        paintListSection();
                     })
                 )
                 .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
@@ -1871,7 +1845,6 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 });
                 
                 const searchFormEl = dom.addForm("searchForm searchFormHide");
-                
                 searchFormEl.preventScrollBlur = false;
                 searchFormEl.getValue = _ => searchInputEl.value;
                 searchFormEl.scrollBlur = _ => searchInputEl.blur();
@@ -1933,7 +1906,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             ]);
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListTaskBarWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            const getListTaskBar = _ => {
+            const listTaskBar = (_ => {
                 const vListSortBar = dom.addDiv("vListSortBar");
                 const vListChangeBar = dom.addDiv("vListChangeBar");
 
@@ -1978,9 +1951,11 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     return changeIcons;
                 };
                 return [vListChangeBar.attachAry(getChangeIcons()), vListSortBar.attachAry(getSortIcons())];
-            };
+            })();
 
-            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attachAry(getListTaskBar());
+            const vListTaskBarWrp = getListBarWrp("vListTaskBarWrp").attachAry(listTaskBar);
+            
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListWrp - Lst container - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const vListWrp = dom.addDiv("vListWrp");
             
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - vListScrollWrp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -2003,7 +1978,6 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                 ]);
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            
             const paintList = (searchStr = searchFormEl.getValue()) => {
                 vListMainBarWrp.addClass("mainBarToggle"); 
                  vListTaskBarWrp.killClass("taskBarToggle");
@@ -2025,15 +1999,15 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
                 
                 const vendAllowAry = sortList(thisApp.dbObj.vendors.filter(obj => 
-                  obj.isTrash && !adoDetails.typeNote && !adoDetails.typeLog || 
-                  !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))
+                  obj.isTrash && !adoDetails.typeNote && !adoDetails.typeLog 
+                  || !obj.isTrash && ((adoDetails.typeNote && obj.isNote) || (adoDetails.typeLog && !obj.isNote))
                 ));
 
                 const highlightSrchStr = txt => searchStr ? txt.replace(new RegExp(searchStr, 'gi'), match => dom.addSpan("hit", match).outerHTML) : txt; // add highlights to text of found searchStr
                 
                 let elIdx = 0;
                 let stopSpinnerTimout;
-                const stopSpinnerDelay = 200; //200ms give enough time after vListElement is attached to the vListWrp to trigger the next IntersectionObserver
+
                 const attachListElement = _ => {
                     if(!vListElements[elIdx]) return;
                     vListWrp.attach(vListElements[elIdx]);
@@ -2042,20 +2016,20 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                         stopSpinnerTimout = setTimeout(_ => {
                             toggleScrollWrpOverflow(vListScrollWrp);
                             spinner.stop("in paintList - requestAnimationFrame");
-                        }, stopSpinnerDelay);
+                        }, 200); //200ms give enough time after vListElement is attached to the vListWrp to establish that there will be no more vListElements attached at this time
                     });
                     elIdx++;
                 };
 
                 const vEntry = vendObj => dom.addDiv("vEmpty")
                     .onClick(e => {
-                        paintFormSection(true, vendObj);
                         thisApp.vEntryActive = e.currentTarget;
+                        paintFormSection(true, vendObj);
                     })
                     .observedBy(new IntersectionObserver(entries => {
                         entries.forEach(entry => {
                             if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
-                                entry.target.cssName("vEntry" + (thisApp.draftVendObj?.id === vendObj.id ? " draftVendObj" : "")).attach(
+                                entry.target.cssName("vEntry" + (thisApp.dbObj?.draftVendObj?.id === vendObj.id ? " draftVendObj" : "")).attach(
                                     dom.addDiv(vendObj.isTrash ? "vTrash" : vendObj.isNote ? "vNote" : "vLog")
                                     .attach(dom.addDiv("inpEl vName").html(highlightSrchStr(vendObj.name)))
                                     .attachAry([
@@ -2077,7 +2051,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     .observedBy(new IntersectionObserver(entries => {
                         entries.forEach(entry => {
                             if(entry.isIntersecting && entry.target.hasClass("vEmpty")){
-                                entry.target.replaceWith(getListBarWrp("vListAuxBarWrp").attach(getListBarLabel(html))); // will have taskBarWrpDoubleTop class when scrollUp
+                                entry.target.replaceWith(getListBarWrp("vListAuxBarWrp").attach(getListBarLabel(html)));
                                 attachListElement();
                             }
                         });
@@ -2099,17 +2073,18 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
                     const getLabelHtml = (vListHeadsProp, hits) => getTxtBankHtmlTxt(`vListHeads.${hits ? vListHeadsProp : "notFound"}`, {searchStr, hits});
                     const allHits = nameHitAry.length + tagHitAry.length + noteHitAry.length;
                     
-                    //vListBarLabel.html(searchStr ? getLabelHtml("nameFound", allHits) : allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true));
                     
                     const statusContent = searchStr 
                         ? getLabelHtml("nameFound", allHits)
                         : "<span>" + (new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer) + "</span><span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"
                     
-                    //appStatusBar.kid().ridKids().attach(getListBarLabel(statusContent)); //.html(statusContent);
+
                     
-                    appStatusBar.ridKids().attach(
+/*                     appStatusBar.ridKids().attach(
                         dom.addDiv("statusContainer" + (searchStr ? " withHit" : "")).attach(getListBarLabel(statusContent))
-                    );
+                    ); */
+                    
+                    updateAppStatusBar(searchStr ? " withHit" : "", statusContent);
                     
                     if(tagHitAry.length) tagHitAry.unshift(vListAuxBarWrp(getLabelHtml("tagsFound", tagHitAry.length))); 
                     if(noteHitAry.length) noteHitAry.unshift(vListAuxBarWrp(getLabelHtml("notesFound", noteHitAry.length)));
@@ -2118,23 +2093,24 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
 
                 vListWrp.ridKids();
                 vListElements.length ? attachListElement() : spinner.stop("in paintList - vListElements is empty");
-            }
+            };
 
+            //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Attach List Section - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+            paintList();
+            
+            //Check if draftVendObj exists and if it's ID is greater than the length of the thisApp.dbObj.vendors - wchich would mean that it is a draft of a new vendor object
+            const isNewDraftVendObj = thisApp.dbObj.draftVendObj?.id > thisApp.dbObj.vendors.length;            
             appSectionList.ridKids().attachAry([
                 vListScrollWrp,
-                getSvgIcon("addVendorBtn", true, _=> paintFormSection(true, null)) // paint form and add to windows history
+                getSvgIcon("addVendorBtn" + (isNewDraftVendObj ? " draftVendObj" : ""), "addVendorBtn", e => {
+                    thisApp.vEntryActive = e.currentTarget;
+                    paintFormSection(true, null);
+                }) // paint form and add to windows history
             ]);
-            
-            paintList();
-            appStatusBar.show();
+
             vListScrollWrp.scrollTop = vListScrollTop;
         }
         /////////////////////////////////////////////////END MAIN - LIST APP SECTION paintListSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        const repaintUI = _ => {
-            //appStatusBar.txt(new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer).show();
-            paintListSection();
-        };
         
         const resetUI = _ => {
             appSectionForm.slideOut();
@@ -2153,8 +2129,9 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
         };
 
         const initUI = _ => {
-            repaintUI();
+            paintListSection();
             resetUI();
+            appStatusBar.show();
         };
         
         return {
@@ -2210,8 +2187,11 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
             touchStart = { x: clientX, y: clientY, time: Date.now() };
             if (!window.virtualKeyboardIsDisplayed && this.messages.isHidden() && clientY + REM * 2 > document.body.clientHeight) { 
                 if(!historyStack.isUserActive()){//userActive must be true to register history to not close the application on the device or browser back button
-                    console.log("historyStack.isUserActive is FALSE");
-                    thisApp.message.tapToRegisterHistory();
+                    msgModule.addEventListener("click", this.messages.openFullArchive, {once: true});
+                    setTimeout(_ => {
+                        msgModule.removeEventListener("click", this.messages.openFullArchive, {once: true});
+                    }, this.messages.msgVisibleTime);
+                    thisApp.message.tapToOpenFullArchive();
                     return;
                 }
                 isVerticalSwipe = true;
@@ -2385,7 +2365,7 @@ const fomFootEls = thisApp.settings.isMobileLayout() ? mobileLayoutFootEls : ori
     
     if(thisApp.settings.isMobileLayout()) document.body.addClass("mobileLayout");
 
-    
+    console.log("%cEnd_ui.js_script%c!!!", "font-weight:900;color:red;font-size: 1.5rem; font-family: sans-serif", "color: teal;font-size: 1.5rem;font-size: 3rem;");
 // /* Temp and tests */
     document.body.attach(
         dom.addDiv("removeDrop").onClick(_ => {

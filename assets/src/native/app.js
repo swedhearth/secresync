@@ -27,6 +27,7 @@ function App(urlSearchParams){
         this.getFilteredDbFileBlobForExport = filteredVendors => this.encryptString(thisApp.dbObj.prepare(filteredVendors)).then(getFileBlob);
         
         this.setDbObj = (dbObj, doUpdateMod) => {
+            console.log("Setting New DBOBJ", dbObj, doUpdateMod);
             dbCipher = null;
             thisApp.dbObj = new thisApp.crypto.AppDbObj(dbObj, doUpdateMod); 
         };
@@ -476,7 +477,10 @@ function App(urlSearchParams){
     this.consent = null; // null = in private mode(storage disabled, false = consent not given, true = storage available
 
     this.urlReplace = url => url && location.replace(url);
-    this.reload = _ => this.urlReplace(this.URL);
+    this.reload = async saveState => {
+        ///saveState === true && this.dbObj.draftVendObj && await this.dbStore.updateAll(this, false).catch(err => null); // NOT NEEDED ANYMORE?
+        this.urlReplace(this.URL);
+    }
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
 
     this.online = navigator.onLine;
@@ -494,6 +498,7 @@ function App(urlSearchParams){
     };
 
     this.visibilityChange = e => {
+
         if(!this.dbObj) return;
         const reloadBy = "reloadAppBy";
         
@@ -504,7 +509,7 @@ function App(urlSearchParams){
             this.sessionStorage.set(reloadBy, Date.now() + this.settings.appLogOff.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                this.reload();
+                this.reload(true);
             }else{
                 setTimeout(_ => {
                     this.ui.blur(false);
@@ -519,7 +524,7 @@ function App(urlSearchParams){
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(_ => this.reload(), 600000);//600000 ms = 10 minutes
+            inactivityTimer = setTimeout(_ => this.reload(true), 600000);//600000 ms = 10 minutes
         }
     })();
 

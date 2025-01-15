@@ -432,9 +432,14 @@ function Crypto(){
 
     /* -------------------------------------------- New DB Object ------------------------------------------------------- */
     function AppDbObj(dbObj, doUpdateMod){
+        //console.log("in AppDbObj Object constructor", dbObj.draftVendObj);
         this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now();
         this.vendors = dbObj?.vendors?.map(vendObj => new Vendor(vendObj)) || [];
         this.credentials = dbObj?.credentials || [];
+        this.draftVendObj = dbObj?.draftVendObj ? new Vendor(dbObj.draftVendObj) : null;
+        //console.log("dbObj. After constructing: new Vendor(dbObj.draftVendObj)", new Vendor(dbObj.draftVendObj))
+        //console.log("dbObj. After constructing this.draftVendObj:", this.draftVendObj)
+        //console.log("dbObj. After constructing this:", this);
     }
     
     AppDbObj.prototype.reset = function(){
@@ -448,10 +453,12 @@ function Crypto(){
     
     AppDbObj.prototype.prepare = function(filteredVendors){
         const sendVendors = filteredVendors || this.vendors;
+        //console.log("AppDbObj.prototype.prepare - this.draftVendObj:", this.draftVendObj);
         return JSON.stringify({
             mod: this.mod,
             vendors: sendVendors.map(vendObj => vendObj.prepareForSend()),
-            credentials: this.credentials
+            credentials: this.credentials,
+            draftVendObj: this.draftVendObj ? this.draftVendObj.prepareForSend() : null
         });
     };
 

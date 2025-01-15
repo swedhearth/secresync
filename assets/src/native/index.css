@@ -473,11 +473,11 @@ legend.selfProfileLegend:before{
     filter: blur(2px);
 }
 
-.boxNote{
+.txtAreaEl{
     margin: 0 calc(2* var(--svgIcon-padding-small) + 0.9vw); /*_0.9vw = 0.5vw of the .inpEl, textarea + (2 * 0.2vw of the svgIcon)_*/
 }
 
-.boxNote.max{
+.txtAreaEl.max{
     margin: 0%;
     padding:0.5em 1em;
 }
@@ -824,6 +824,10 @@ html.invert .newDbIcon{
 
 html.invert .localIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#localInvert);
+}
+
+.draftVendObjIcon{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
 }
 
 .consent, .noConsent{
@@ -1634,15 +1638,17 @@ html.invert .vEntry.draftVendObj{
     background: rgb(230 245 255)
 }
 .vEntry.draftVendObj > div:before{
-        background-color: rgb(255 200 0);
+        background-color: rgb(255 245 230);
 
-    -webkit-mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
-    mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+    /* -webkit-mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft); */
+    /* mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft); */
     
     background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
     /* background-image: unset; */
-    background-blend-mode: overlay;
+    background-blend-mode: color-burn;;
 }
+
+
 html.invert .vEntry.draftVendObj > div:before{
     background-color: rgb(0 160 255);
 
@@ -1765,6 +1771,15 @@ html.invert .vEntry.draftVendObj > div:before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#vCr8);
     z-index: 1;
     margin-bottom: calc(var(--svgIcon-padding-medium) + 11mm); /* min(10vmin, 7mm); */
+}
+.addVendorBtn.draftVendObj{
+    background-color: rgb(255 200 0);
+    
+    box-shadow: 1px 1px 1px 0px rgb(255 150 0), 0 0 1px 0px rgb(255 150 0);
+    background-color: rgb(255 245 230);
+    
+    background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+    background-blend-mode: color-burn;
 }
 
 .hit{
@@ -1972,7 +1987,7 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
     background-image: url(../../../assets/static/appSvg/sprite.svg#saveForm);
 }
 
-.restoreRevisionBtn, .restoreTrashedBtn{
+.restoreRevisionBtn, .restoreTrashedBtn, .restoreTrashedBtnIcon{
     background-image: url(../../../assets/static/appSvg/sprite.svg#restoreRevision);
 }
 

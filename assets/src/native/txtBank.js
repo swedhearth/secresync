@@ -26,23 +26,23 @@ const txtBankObj = {
         "n": "No!<br>Just leave it as it is!",
         "i": "deleteVendorBtn"
       },
-      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
+      "deleteRevision": {
+        "q": "Are you sure you want to delete the previous version of the account '${vName}'? <br><br>This action cannot be undone.",
+        "y": "Yes, definitely!<br>Delete the previous version.",
+        "n": "No!<br>Keep the previous version.",
         "i": "deleteVendorBtn"
       },
-      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreRevision": {
+        "q": "Are you sure you want to restore the previous version of the account '${vName}'? <br><br>The current version will be saved as the past version.",
+        "y": "Yes, definitely!<br>Restore the previous version.",
+        "n": "No!<br>Keep the current version.",
+        "i": "restoreTrashedBtn"
       },
-      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreTrashed": {
+        "q": "Are you sure you want to restore the account '${vName}' from the bin? <br><br>The restored account's name will have today's date.",
+        "y": "Yes, definitely!<br>Restore the deleted account.",
+        "n": "No!<br>Leave the account in the bin.",
+        "i": "restoreTrashedBtn"
       },
       "newVersion": {
         "q": "A new version of SecreSync is available.",
@@ -283,6 +283,12 @@ const txtBankObj = {
         "y": "Okay, refresh access now.",
         "n": "This is frustrating! I don't want to do this every time.",
         "i": "oneDriveFile"
+      },
+      "saveVendorChanges": {
+        "q": "Do you want to save your changes?",
+        "y": "Yes,<br>Save changes",
+        "n": "No,<br>Discard changes",
+        "i": "draftVendObj"
       }
     },
     "message": {
@@ -292,7 +298,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Successfully connected to ${ sName }.",
       "storeConnectionFalse": "${ sName } has been disconnected.",
       "storeConnectFail": "Oops! There's an issue... Unable to connect to the ${ sName } database.",
-      "existingDb": "Please unlock your Database.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Please enter your Database password. 
+      "existingDb": "Please unlock your database to proceed.", 
       "loggedOff": "The database has been secured due to inactivity. Unlock to access data.",
       "loadDbStandard": "SecreSync is operating in Standard Mode. Load an existing database or create a new one.",
       "loadDbPrivate": "SecreSync is operating in Private Mode. Load an existing database or create a new one.",
@@ -300,9 +306,9 @@ const txtBankObj = {
       "logShort": "The login must be at least 3 characters.",
       "nameShort": "The Account Name must be at least 3 characters.",
       "deleteVendorReject": "The '${ vName }' Account has not been deleted.",
-      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreRevisionReject": "The previous version of the account '${vName}' was not restored.",
+      "deleteRevisionReject": "The previous version of the account '${vName}' was not deleted.",
+      "restoreTrashedReject": "The account '${vName}' was not restored from the bin.",
       "deleteVendorFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been removed, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
       "submitFormFailed": "Oops! There's an issue... No Database is available for modifications. The '${ vName }' Account has been updated, but changes will persist only until the application is closed. Re-establish the connection to an external Database or download a copy of the Database.",
       "submitFormSucess": "The '${ vName }' Account has been updated.",
@@ -323,8 +329,8 @@ const txtBankObj = {
       "pickFile": "Please select a Database File...",
       "offline": "No internet connection detected. Unable to sync with the cloud.",
       "online": "Internet connection restored. You are now online.",
-      //"offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //"offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "offlineCredNoVerify": "No Internet connection.<br>Cannot verify the saved password.<br>",
+      "offlineCredNoSave": "No Internet connection.<br>Cannot save the password on the device.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "The entered PIN is too long.",
       "credFormPassTooLong": "The entered password is too long.",
       "persistedSucess": "The encrypted password has been saved on the device. You will log in with a PIN next time.",
@@ -349,7 +355,8 @@ const txtBankObj = {
       "remoteFileMissing": "A problem occurred.<br>It seems that ${ sName } is connected to the application,<br>but the data could not be loaded.<br><br>It is possible that the database file was deleted from the cloud.<br><br>The cloud connection will be removed.",
       "noSessionStorage": "I can't connect to the cloud.<br><br>It seems like access to the browser's session storage, which is necessary for connecting the application to the cloud, has been disabled.",
       "remoteRedirectError": "I can't connect to the cloud.<br><br>An error occurred during redirection.<br><br>Please try again.",
-      "textAreaLimitReached": "You have reached the maximum character limit."
+      "textAreaLimitReached": "You have reached the maximum character limit.",
+      "tapToOpenFullArchive": "Tap to open the Notification History."
     },
     "app": {
       "titles": {
@@ -447,7 +454,8 @@ const txtBankObj = {
         "restoreSettings": "Restore Defaults",
         "shareBarcodeText": "Display Password QR Code", //*Description: Generate a QR code that contains the plain password for local sharing.*
         "shareBarcodeLink": "Display Encrypted Password QR Code", //*Description: Generate a QR code with a link and a PIN to decrypt the password.*
-        "shareWebshareLink": "Share Password Link with PIN" //*Description: Share a link and display a PIN to decrypt the password.*
+        "shareWebshareLink": "Share Password Link with PIN", //*Description: Share a link and display a PIN to decrypt the password.*
+        "draftVendObj": "Draft version"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -522,7 +530,7 @@ const txtBankObj = {
         "appLayoutMobile": "Mobile Layout",
         "appLayoutDesktop": "Desktop Layout",
         "appLogOff": "Set the delay time before the application logs off automatically.<br>Current delay: ${value} seconds.",
-        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
+        "selfProfile": "My database login details:<br>Password: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Created on: ${timestamp}.",
         "appIconSize": "Change the size of the application icons.<br>Current icon size: ${value} pixels.",
         "appBlur": "Enable or disable the blur effect when the application is not in focus.<br>Current setting: ${value}.",
         "appBlurEnabled": "Enabled",
@@ -568,23 +576,23 @@ const txtBankObj = {
         "n": "¡No!<br>¡Déjalo como está!",
         "i": "deleteVendorBtn"
       },
-      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
+      "deleteRevision": {
+        "q": "¿Está seguro de que desea eliminar la versión anterior de la cuenta '${vName}'? <br><br>Esta acción no se puede deshacer.",
+        "y": "¡Sí, definitivamente!<br>Elimina la versión anterior.",
+        "n": "¡No!<br>Mantén la versión anterior.",
         "i": "deleteVendorBtn"
       },
-      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreRevision": {
+        "q": "¿Está seguro de que desea restaurar la versión anterior de la cuenta '${vName}'? <br><br>La versión actual se guardará como versión anterior.",
+        "y": "¡Sí, definitivamente!<br>Restaura la versión anterior.",
+        "n": "¡No!<br>Mantén la versión actual.",
+        "i": "restoreTrashedBtn"
       },
-      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreTrashed": {
+        "q": "¿Está seguro de que desea restaurar la cuenta '${vName}' de la papelera? <br><br>El nombre de la cuenta restaurada tendrá la fecha de hoy.",
+        "y": "¡Sí, definitivamente!<br>Restaura la cuenta eliminada.",
+        "n": "¡No!<br>Deja la cuenta en la papelera.",
+        "i": "restoreTrashedBtn"
       },
       "newVersion": {
         "q": "Una nueva versión de la App está disponible.",
@@ -825,6 +833,12 @@ const txtBankObj = {
         "y": "De acuerdo, actualiza el acceso ahora.",
         "n": "¡Esto es frustrante! No quiero hacer esto cada vez.",
         "i": "oneDriveFile"
+      },
+      "saveVendorChanges": {
+        "q": "¿Quieres guardar los cambios?",
+        "y": "Sí,<br>Guardar cambios",
+        "n": "No,<br>Descartar cambios",
+        "i": "draftVendObj"
       }
 
     },
@@ -835,7 +849,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Conexión exitosa a ${ sName }.",
       "storeConnectionFalse": "${ sName } se ha desconectado.",
       "storeConnectFail": "¡Vaya! Hay un problema... No se pudo conectar a la base de datos ${ sName }.",
-      "existingDb": "Por favor, ingrese la contraseña de su base de datos.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "existingDb": "Por favor, desbloquee su base de datos para continuar.",
       "loggedOff": "La base de datos ha sido asegurada debido a la inactividad. Desbloquee para acceder a los datos.",
       "loadDbStandard": "SecreSync está en Modo Estándar. Cargue una base de datos existente o cree una nueva.",
       "loadDbPrivate": "SecreSync está en Modo Privado. Cargue una base de datos existente o cree una nueva.",
@@ -843,9 +857,9 @@ const txtBankObj = {
       "logShort": "El inicio de sesión debe tener al menos 3 caracteres.",
       "nameShort": "El nombre de la cuenta debe tener al menos 3 caracteres.",
       "deleteVendorReject": "La cuenta '${ vName }' no ha sido eliminada.",
-      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreRevisionReject": "La versión anterior de la cuenta '${vName}' no fue restaurada.",
+      "deleteRevisionReject": "La versión anterior de la cuenta '${vName}' no fue eliminada.",
+      "restoreTrashedReject": "La cuenta '${vName}' no fue restaurada de la papelera.",
       "deleteVendorFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha eliminado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
       "submitFormFailed": "¡Vaya! Hay un problema... No hay base de datos disponible para modificaciones. La cuenta '${ vName }' se ha actualizado correctamente, pero los cambios solo serán visibles hasta que cierre la aplicación. Restablezca la conexión con una base de datos externa o descargue una copia de la base de datos.",
       "submitFormSucess": "La cuenta '${ vName }' se ha actualizado.",
@@ -866,8 +880,8 @@ const txtBankObj = {
       "pickFile": "Seleccione un archivo de base de datos...",
       "offline": "No hay conexión a Internet. No se puede sincronizar con la nube.",
       "online": "Ha vuelto a estar en línea.",
-      //"offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //"offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "offlineCredNoVerify": "Sin conexión a Internet.<br>No se puede verificar la contraseña guardada.<br>",
+      "offlineCredNoSave": "Sin conexión a Internet.<br>No se puede guardar la contraseña en el dispositivo.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "El PIN ingresado es demasiado largo.",
       "credFormPassTooLong": "La contraseña ingresada es demasiado larga.",
       "persistedSucess": "La contraseña cifrada se ha guardado en el dispositivo. La próxima vez iniciará sesión con un PIN.",
@@ -892,7 +906,8 @@ const txtBankObj = {
       "remoteFileMissing": "Ha ocurrido un problema.<br>Parece que ${ sName } está conectado a la aplicación,<br>pero no se pudieron cargar los datos.<br><br>Es posible que el archivo de la base de datos haya sido eliminado de la nube.<br><br>La conexión con la nube se eliminará.",
       "noSessionStorage": "No puedo conectarme a la nube.<br><br>Parece que el acceso al almacenamiento de sesión del navegador, que es necesario para conectar la aplicación a la nube, ha sido deshabilitado.",
       "remoteRedirectError": "No puedo conectarme a la nube.<br><br>Ocurrió un error durante la redirección.<br><br>Inténtalo de nuevo.",
-      "textAreaLimitReached": "Has alcanzado el límite máximo de caracteres."
+      "textAreaLimitReached": "Has alcanzado el límite máximo de caracteres.",
+      "tapToOpenFullArchive": "Toca para abrir el historial de notificaciones."
     },
     "app": {
       "titles": {
@@ -990,7 +1005,8 @@ const txtBankObj = {
         "restoreSettings": "Restaurar valores predeterminados",
         "shareBarcodeText": "Mostrar código QR de la contraseña",
         "shareBarcodeLink": "Mostrar código QR de la contraseña cifrada",
-        "shareWebshareLink": "Compartir enlace de la contraseña con PIN"
+        "shareWebshareLink": "Compartir enlace de la contraseña con PIN",
+        "draftVendObj": "Versión borrador"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -1065,7 +1081,7 @@ const txtBankObj = {
         "appLayoutMobile": "Diseño móvil",
         "appLayoutDesktop": "Diseño de escritorio",
         "appLogOff": "Establezca el tiempo de retraso antes de que la aplicación cierre sesión automáticamente.<br>Retraso actual: ${value} segundos.",
-        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
+        "selfProfile": "Mis datos de inicio de sesión en la base de datos:<br>Contraseña: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Creado el: ${timestamp}.",
         "appIconSize": "Cambia el tamaño de los iconos de la aplicación.<br>Tamaño actual de los iconos: ${value} píxeles.",
         "appBlur": "Habilitar o deshabilitar el efecto de desenfoque cuando la aplicación no está en foco.<br>Configuración actual: ${value}.",
         "appBlurEnabled": "Habilitado",
@@ -1111,23 +1127,23 @@ const txtBankObj = {
         "n": "Non!<br>Laissez-le tel quel!",
         "i": "deleteVendorBtn"
       },
-      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
+      "deleteRevision": {
+        "q": "Êtes-vous sûr de vouloir supprimer la version précédente du compte '${vName}' ? <br><br>Cette action est irréversible.",
+        "y": "Oui, absolument !<br>Supprimez la version précédente.",
+        "n": "Non !<br>Gardez la version précédente.",
         "i": "deleteVendorBtn"
       },
-      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreRevision": {
+        "q": "Êtes-vous sûr de vouloir restaurer la version précédente du compte '${vName}' ? <br><br>La version actuelle sera enregistrée comme version antérieure.",
+        "y": "Oui, absolument !<br>Restaurez la version précédente.",
+        "n": "Non !<br>Gardez la version actuelle.",
+        "i": "restoreTrashedBtn"
       },
-      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreTrashed": {
+        "q": "Êtes-vous sûr de vouloir restaurer le compte '${vName}' depuis la corbeille ? <br><br>Le nom du compte restauré aura la date d'aujourd'hui.",
+        "y": "Oui, absolument !<br>Restaurez le compte supprimé.",
+        "n": "Non !<br>Laissez le compte dans la corbeille.",
+        "i": "restoreTrashedBtn"
       },
       "newVersion": {
         "q": "Une nouvelle version de l'application est disponible.",
@@ -1368,6 +1384,12 @@ const txtBankObj = {
         "y": "D'accord, actualisez l'accès maintenant.",
         "n": "C'est frustrant ! Je ne veux pas faire ça à chaque fois.",
         "i": "oneDriveFile"
+      },
+      "saveVendorChanges": {
+        "q": "Voulez-vous enregistrer vos modifications?",
+        "y": "Oui,<br>Enregistrer les modifications",
+        "n": "Non,<br>Annuler les modifications",
+        "i": "draftVendObj"
       }
     },
     "message": {
@@ -1377,7 +1399,7 @@ const txtBankObj = {
       "storeConnectionTrue": "Connexion réussie à ${ sName }.",
       "storeConnectionFalse": "${ sName } a été déconnecté.",
       "storeConnectFail": "Oups ! Il y a un problème... Impossible de se connecter à la base de données ${ sName }.",
-      "existingDb": "Veuillez entrer votre mot de passe de base de données.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "existingDb": "Veuillez déverrouiller votre base de données pour continuer.",
       "loggedOff": "La base de données a été sécurisée en raison d'une inactivité. Déverrouillez pour accéder aux données.",
       "loadDbStandard": "SecreSync est en Mode Standard. Chargez une base de données existante ou créez-en une nouvelle.",
       "loadDbPrivate": "SecreSync est en Mode Privé. Chargez une base de données existante ou créez-en une nouvelle.",
@@ -1385,9 +1407,9 @@ const txtBankObj = {
       "logShort": "Le login doit comporter au moins 3 caractères.",
       "nameShort": "Le nom du compte doit comporter au moins 3 caractères.",
       "deleteVendorReject": "Le compte '${ vName }' n'a pas été supprimé.",
-      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreRevisionReject": "La version précédente du compte '${vName}' n'a pas été restaurée.",
+      "deleteRevisionReject": "La version précédente du compte '${vName}' n'a pas été supprimée.",
+      "restoreTrashedReject": "Le compte '${vName}' n'a pas été restauré depuis la corbeille.",
       "deleteVendorFailed": "Oups ! Il y a un problème... Aucune base de données n'est disponible pour des modifications. Le compte '${ vName }' a été supprimé, mais les changements ne persisteront que jusqu'à la fermeture de l'application. Rétablissez la connexion à une base de données externe ou téléchargez une copie de la base de données.",
       "submitFormFailed": "Oups ! Il y a un problème... Aucune base de données n'est disponible pour des modifications. Le compte '${ vName }' a été mis à jour, mais les changements ne persisteront que jusqu'à la fermeture de l'application. Rétablissez la connexion à une base de données externe ou téléchargez une copie de la base de données.",
       "submitFormSucess": "Le compte '${ vName }' a été mis à jour avec succès.",
@@ -1408,8 +1430,8 @@ const txtBankObj = {
       "pickFile": "Veuillez sélectionner un fichier de base de données...",
       "offline": "Aucune connexion Internet détectée. Impossible de synchroniser avec le cloud.",
       "online": "Connexion Internet rétablie. Vous êtes maintenant en ligne.",
-      //"offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //"offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "offlineCredNoVerify": "Pas de connexion Internet.<br>Impossible de vérifier le mot de passe enregistré.<br>",
+      "offlineCredNoSave": "Pas de connexion Internet.<br>Impossible d'enregistrer le mot de passe sur l'appareil.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "Le PIN saisi est trop long.",
       "credFormPassTooLong": "Le mot de passe saisi est trop long.",
       "persistedSucess": "Le mot de passe chiffré a été enregistré sur l'appareil. Vous vous connecterez avec un PIN la prochaine fois.",
@@ -1434,7 +1456,8 @@ const txtBankObj = {
       "remoteFileMissing": "Un problème est survenu.<br>Il semble que ${ sName } soit connecté à l'application,<br>mais les données n'ont pas pu être chargées.<br><br>Il est possible que le fichier de la base de données ait été supprimé du cloud.<br><br>La connexion au cloud sera supprimée.",
       "noSessionStorage": "Je ne peux pas me connecter au cloud.<br><br>Il semble que l'accès au stockage de session du navigateur, qui est nécessaire pour connecter l'application au cloud, ait été désactivé.",
       "remoteRedirectError": "Je ne peux pas me connecter au cloud.<br><br>Une erreur s'est produite lors de la redirection.<br><br>Veuillez réessayer.",
-      "textAreaLimitReached": "Vous avez atteint la limite maximale de caractères."
+      "textAreaLimitReached": "Vous avez atteint la limite maximale de caractères.",
+      "tapToOpenFullArchive": "Appuyez pour ouvrir l'historique des notifications."
     },
     "app": {
       "titles": {
@@ -1532,7 +1555,8 @@ const txtBankObj = {
         "restoreSettings": "Restaurer les paramètres par défaut",
         "shareBarcodeText": "Afficher le code QR du mot de passe",
         "shareBarcodeLink": "Afficher le code QR du mot de passe chiffré",
-        "shareWebshareLink": "Partager le lien du mot de passe avec le code PIN"
+        "shareWebshareLink": "Partager le lien du mot de passe avec le code PIN",
+        "draftVendObj": "Version brouillon"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1607,7 +1631,7 @@ const txtBankObj = {
         "appLayoutMobile": "Disposition mobile",
         "appLayoutDesktop": "Disposition de bureau",
         "appLogOff": "Définissez le temps de délai avant la déconnexion automatique de l'application.<br>Délai actuel : ${value} secondes.",
-        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
+        "selfProfile": "Mes identifiants de connexion à la base de données :<br>Mot de passe : ${plainPassString}.<br>PIN : ${plainPinString}.<br>Créé le : ${timestamp}.",
         "appIconSize": "Changez la taille des icônes de l'application.<br>Taille actuelle des icônes : ${value} pixels.",
         "appBlur": "Activez ou désactivez l'effet de flou lorsque l'application n'est pas au premier plan.<br>Paramètre actuel : ${value}.",
         "appBlurEnabled": "Activé",
@@ -1653,23 +1677,23 @@ const txtBankObj = {
         "n": "Nie!<br>Zostaw to tak, jak jest!",
         "i": "deleteVendorBtn"
       },
-      "restoreRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
+      "deleteRevision": {
+        "q": "Czy na pewno chcesz usunąć poprzednią wersję konta '${vName}'? <br><br>Tej operacji nie można cofnąć.",
+        "y": "Tak, zdecydowanie!<br>Usuń poprzednią wersję.",
+        "n": "Nie!<br>Zachowaj poprzednią wersję.",
         "i": "deleteVendorBtn"
       },
-      "deleteRevision": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "deleteRevision TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreRevision": {
+        "q": "Czy na pewno chcesz przywrócić poprzednią wersję konta '${vName}'? <br><br>Obecna wersja zostanie zapisana jako wersja archiwalna.",
+        "y": "Tak, zdecydowanie!<br>Przywróć poprzednią wersję.",
+        "n": "Nie!<br>Zachowaj obecną wersję.",
+        "i": "restoreTrashedBtn"
       },
-      "restoreTrashed": { // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        "q": "restoreTrashed TO DO !!!!!!!!! ${ vName }?",
-        "y": "Tak, zdecydowanie!<br>Rozumiem, że nie ma odwrotu.",
-        "n": "Nie!<br>Zostaw to tak, jak jest!",
-        "i": "deleteVendorBtn"
+      "restoreTrashed": {
+        "q": "Czy na pewno chcesz przywrócić konto '${vName}' z kosza? <br><br>Nazwa przywróconego konta będzie miała dzisiejszą datę.",
+        "y": "Tak, zdecydowanie!<br>Przywróć usunięte konto.",
+        "n": "Nie!<br>Pozostaw konto w koszu.",
+        "i": "restoreTrashedBtn"
       },
       "newVersion": {
         "q": "Nowa wersja SecreSync jest dostępna.",
@@ -1910,7 +1934,13 @@ const txtBankObj = {
         "y": "Dobrze, odśwież dostęp teraz.",
         "n": "To frustrujące! Nie chcę tego robić za każdym razem.",
         "i": "oneDriveFile"
-     }
+     },
+      "saveVendorChanges": {
+        "q": "Czy chcesz zapisać zmiany?",
+        "y": "Tak,<br>Zapisz zmiany",
+        "n": "Nie,<br>Odrzuć zmiany",
+        "i": "draftVendObj"
+      }
     },
     "message": {
       "appFailed":"Coś poszło nie tak...<br><br>Nie można uruchomić SecreSync.<br><br>Spróbuj zamknąć aplikację i uruchomić ją ponownie.",
@@ -1919,7 +1949,7 @@ const txtBankObj = {
       "storeConnectionTrue": "${ sName } zostala polaczona.",
       "storeConnectionFalse": "${ sName } zostala odlaczona.",
       "storeConnectFail": "Ups! Wystąpił problem... Nie udało się połączyć z bazą danych ${ sName }.",
-      "existingDb": "Odblokuj bazę danych.", //"Proszę wprowadzić hasło do bazy danych." // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "existingDb": "Proszę odblokować bazę danych, aby kontynuować.",
       "loggedOff": "Baza danych zostala zabezpieczona z powodu braku aktywności. Odblokuj, aby uzyskać dostęp danych.",
       "loadDbStandard": "SecreSync jest w Trybie Standardowym. Załaduj istniejącą bazę danych lub utwórz nową.",
       "loadDbPrivate": "SecreSync jest w Trybie Prywatnym. Załaduj istniejącą bazę danych lub utwórz nową.",
@@ -1927,9 +1957,9 @@ const txtBankObj = {
       "logShort": "Login musi mieć co najmniej 3 znaki.",
       "nameShort": "Nazwa konta musi mieć co najmniej 3 znaki.",
       "deleteVendorReject": "Konto '${ vName }' nie zostało usunięte.",
-      "restoreRevisionReject": "restoreRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "deleteRevisionReject": "deleteRevisionReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
-      "restoreTrashedReject": "restoreTrashedReject '${ vName }' TO DO.", //TODO !!!!!!!!!!!!!!!!!!!!!!
+      "restoreRevisionReject": "Poprzednia wersja konta '${vName}' nie została przywrócona.",
+      "deleteRevisionReject": "Poprzednia wersja konta '${vName}' nie została usunięta.",
+      "restoreTrashedReject": "Konto '${vName}' nie zostało przywrócone z kosza.",
       "deleteVendorFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało usunięte, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
       "submitFormFailed": "Ups! Wystąpił problem... Żadna baza danych nie jest dostępna do modyfikacji. Konto '${ vName }' zostało zaktualizowane, ale zmiany będą widoczne tylko do zamknięcia aplikacji. Przywróć połączenie z zewnętrzną bazą danych lub pobierz kopię bazy danych.",
       "submitFormSucess": "Konto '${ vName }' zostało zaktualizowane.",
@@ -1950,8 +1980,8 @@ const txtBankObj = {
       "pickFile": "Proszę wybrać plik bazy danych...",
       "offline": "Brak połączenia z Internetem. Nie można zsynchronizować z chmurą.",
       "online": "Połączenie z Internetem zostało przywrócone.",
-      //"offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //"offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      "offlineCredNoVerify": "Brak połączenia z Internetem.<br>Nie można zweryfikować zachowanego hasła.<br>",
+      "offlineCredNoSave": "Brak połączenia z Internetem.<br>Nie można zapisać hasła na urządzeniu.", // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       "credFormPinTooLong": "Wprowadzony PIN jest za długi.",
       "credFormPassTooLong": "Wprowadzone hasło jest za długie.",
       "persistedSucess": "Zaszyfrowane hasło zostało zapisane na urządzeniu. Następnym razem zalogujesz się za pomocą PIN-u.",
@@ -1976,7 +2006,8 @@ const txtBankObj = {
       "remoteFileMissing": "Wystąpił problem.<br>Wygląda na to, że ${ sName } jest połączona z aplikacją,<br>jednak nie udało się wczytać danych.<br><br>Możliwe, że plik bazy danych został usunięty z chmury.<br><br>Połączenie z chmurą zostanie usunięte.",
       "noSessionStorage": "Nie mogę połączyć się z chmurą.<br><br>Wygląda na to, że dostęp do pamięci sesji przeglądarki, która jest niezbędna do połączenia aplikacji z chmurą, został wyłączony.",
       "remoteRedirectError": "Nie mogę połączyć się z chmurą.<br><br>Wystąpił błąd podczas przekierowania.<br><br>Spróbuj ponownie.",
-      "textAreaLimitReached": "Maksymalny limit znaków został osiągnięty."
+      "textAreaLimitReached": "Maksymalny limit znaków został osiągnięty.",
+      "tapToOpenFullArchive": "Dotknij, aby otworzyć historię powiadomień."
     },
     "app": {
       "titles": {
@@ -2074,7 +2105,8 @@ const txtBankObj = {
         "restoreSettings": "Przywróć ustawienia domyślne",
         "shareBarcodeText": "Wyświetl kod QR hasła",
         "shareBarcodeLink": "Wyświetl zaszyfrowany kod QR hasła",
-        "shareWebshareLink": "Udostępnij link do hasła z PIN-em"
+        "shareWebshareLink": "Udostępnij link do hasła z PIN-em",
+        "draftVendObj": "Wersja Robocza"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",
@@ -2149,7 +2181,7 @@ const txtBankObj = {
         "appLayoutMobile": "Układ mobilny",
         "appLayoutDesktop": "Układ desktopowy",
         "appLogOff": "Ustaw czas opóźnienia przed automatycznym wylogowaniem aplikacji.<br>Aktualne opóźnienie: ${value} sekund.",
-        "selfProfile": "Moje dane logowania do bazy danych.<br>Hasło: ${plainPassString}<br>PIN: ${plainPinString}<br>Utworzono: ${timestamp}", // TODO!!! To Do!!!
+        "selfProfile": "Moje dane logowania do bazy danych:<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}.",
         "appIconSize": "Zmień rozmiar ikon aplikacji.<br>Aktualny rozmiar ikon: ${value} pikseli.",
         "appBlur": "Włącz lub wyłącz efekt rozmycia, gdy aplikacja nie jest w fokusie.<br>Aktualne ustawienie: ${value}.",
         "appBlurEnabled": "Włączone",
