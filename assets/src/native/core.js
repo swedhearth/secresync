@@ -1,11 +1,11 @@
 /* 'frequent_0.035_GitHub' */
 "use strict";
 
+//Debugging
 const developerMode = true; // Global constant for printing console
-
 const mobileDebugAry = [];
 const mobileDebug = (...msg) => {
-    mobileDebugAry.push([new Date().toISOString(), msg.join(", ")]);
+   developerMode && mobileDebugAry.push([new Date().toISOString(), msg.join(", ")]);
 };
 
 // Native prototypes
@@ -254,7 +254,6 @@ function isURL(string){
             divDom.kill();
             return mm;
         })();
-        console.log(MILLIMITER);
         window.REM = parseInt(getComputedStyle(document.documentElement).fontSize);
         window.TOUCH_DEVICE = !!navigator.maxTouchPoints || (doc.body.on("touchstart", _ => window.TOUCH_DEVICE = true, {once: true}), false);
         

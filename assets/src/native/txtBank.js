@@ -141,7 +141,7 @@ const txtBankObj = {
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "There is no possibility to synchronise<br>with the Database File on this device.<br><br>However, you can download a copy of the application's database.",//Device Database File
+        "q": "There is no possibility to synchronise<br>with the Database File on this device/browser.<br><br>However, you can download a copy of the application's database.",//Device Database File
         "y": "I want to download a copy<br>of the database.",
         "n": "I do not want to download a copy<br>of the database.",
         "i": "localFile"
@@ -540,7 +540,14 @@ const txtBankObj = {
         "darkThemeDisabled": "Light Theme",
         "shareBarcodeText": "Generate a QR code that contains the plain password for local sharing.",
         "shareBarcodeLink": "Generate a QR code with a link and a PIN to decrypt the password.",
-        "shareWebshareLink": "Share a link and display a PIN to decrypt the password."
+        "shareWebshareLink": "Share a link and display a PIN to decrypt the password.",
+        "statusTypeNoteNew": "Editing a New Note-Type Account",
+        "statusTypeLogNew": "Editing a New Login-Type Account",
+        "statusDraftTypeNote": "Editing a New Note-Type Account. Current Account Name: ${accountName}",
+        "statusDraftTypeLog": "Editing a Login-Type Account. Current Account Name: ${accountName}",
+        "statusRevisions": "Revision History. Versions Back: ${revisionIdx}",
+        "statusTypeNote": "Viewing Note-Type Account. Account Name: ${accountName}",
+        "statusTypeLog": "Viewing Login-Type Account. Account Name: ${accountName}"
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -691,7 +698,7 @@ const txtBankObj = {
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "No es posible sincronizar<br>con el archivo de base de datos en este dispositivo.<br><br>Sin embargo, puedes descargar una copia de la base de datos de la aplicación.",
+        "q": "No es posible sincronizar<br>con el archivo de base de datos en este dispositivo/navegador.<br><br>Sin embargo, puedes descargar una copia de la base de datos de la aplicación.",
         "y": "Quiero descargar una copia<br>de la base de datos.",
         "n": "No quiero descargar una copia<br>de la base de datos.",
         "i": "localFile"
@@ -1091,7 +1098,14 @@ const txtBankObj = {
         "darkThemeDisabled": "Tema claro",
         "shareBarcodeText": "Generar un código QR que contiene la contraseña en texto plano para compartir localmente.",
         "shareBarcodeLink": "Generar un código QR con un link y un PIN para descifrar la contraseña.",
-        "shareWebshareLink": "Compartir un link y mostrar un PIN para descifrar la contraseña."
+        "shareWebshareLink": "Compartir un link y mostrar un PIN para descifrar la contraseña.",
+        "statusTypeNoteNew": "Editando una nueva cuenta de tipo nota",
+        "statusTypeLogNew": "Editando una nueva cuenta de tipo inicio de sesión",
+        "statusDraftTypeNote": "Editando una nueva cuenta de tipo nota. Nombre actual de la cuenta: ${accountName}",
+        "statusDraftTypeLog": "Editando una cuenta de tipo inicio de sesión. Nombre actual de la cuenta: ${accountName}",
+        "statusRevisions": "Historial de revisiones. Versiones anteriores: ${revisionIdx}",
+        "statusTypeNote": "Visualizando cuenta de tipo nota. Nombre de la cuenta: ${accountName}",
+        "statusTypeLog": "Visualizando cuenta de tipo inicio de sesión. Nombre de la cuenta: ${accountName}"
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1242,7 +1256,7 @@ const txtBankObj = {
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "Il n'est pas possible de synchroniser<br>avec le fichier de base de données sur cet appareil.<br><br>Toutefois, vous pouvez télécharger une copie de la base de données de l'application.",
+        "q": "Il n'est pas possible de synchroniser<br>avec le fichier de base de données sur cet appareil/navigateur.<br><br>Toutefois, vous pouvez télécharger une copie de la base de données de l'application.",
         "y": "Je veux télécharger une copie<br>de la base de données.",
         "n": "Je ne veux pas télécharger une copie<br>de la base de données.",
         "i": "localFile"
@@ -1505,7 +1519,7 @@ const txtBankObj = {
         "editFormBtn": "Éditer un Compte",
         "restoreTrashedBtn": "Restaurer de la corbeille",
         "restoreRevisionBtn": "Restaurer cette version",
-        "revisions": "Historique des modifications",
+        "revisions": "Historique des révisions",
         "previousVersion": "Version précédente",
         "nextVersion": "Version suivante",
         "btnClose": "Fermer",
@@ -1641,7 +1655,14 @@ const txtBankObj = {
         "darkThemeDisabled": "Thème clair",
         "shareBarcodeText": "Générer un code QR contenant le mot de passe en clair pour le partage local.",
         "shareBarcodeLink": "Générer un code QR avec un lien et un code PIN pour déchiffrer le mot de passe.",
-        "shareWebshareLink": "Partager un lien et afficher un code PIN pour déchiffrer le mot de passe."
+        "shareWebshareLink": "Partager un lien et afficher un code PIN pour déchiffrer le mot de passe.",
+        "statusTypeNoteNew": "Édition d'un nouveau compte de type note",
+        "statusTypeLogNew": "Édition d'un nouveau compte de type connexion",
+        "statusDraftTypeNote": "Édition d'un nouveau compte de type note. Nom actuel du compte : ${accountName}",
+        "statusDraftTypeLog": "Édition d'un compte de type connexion. Nom actuel du compte : ${accountName}",
+        "statusRevisions": "Historique des révisions. Versions précédentes : ${revisionIdx}",
+        "statusTypeNote": "Affichage d'un compte de type note. Nom du compte : ${accountName}",
+        "statusTypeLog": "Affichage d'un compte de type connexion. Nom du compte : ${accountName}"
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1792,7 +1813,7 @@ const txtBankObj = {
         "i": "localFile"
       },
       "localFileDownload": {
-        "q": "Nie istnieje możliwość synchronizacji<br>z Plikiem Bazy Danych na tym urządzeniu.<br><br>Możesz natomiast pobrać kopię bazy danych aplikacji.",
+        "q": "Nie istnieje możliwość synchronizacji<br>z Plikiem Bazy Danych na tym urządzeniu/przeglądarce.<br><br>Możesz natomiast pobrać kopię bazy danych aplikacji.",
         "y": "Chcę pobrać kopię bazy danych.",
         "n": "Nie chce pobierać kopii bazy danych.",
         "i": "localFile"
@@ -2191,7 +2212,14 @@ const txtBankObj = {
         "darkThemeDisabled": "Motyw jasny",
         "shareBarcodeText": "Wygeneruj kod QR zawierający zwykłe hasło do lokalnego udostępniania.",
         "shareBarcodeLink": "Wygeneruj kod QR z linkiem i PIN-em do odszyfrowania hasła.",
-        "shareWebshareLink": "Udostępnij link i wyświetl PIN do odszyfrowania hasła."
+        "shareWebshareLink": "Udostępnij link i wyświetl PIN do odszyfrowania hasła.",
+        "statusTypeNoteNew": "Edytowanie nowego konta typu notatka",
+        "statusTypeLogNew": "Edytowanie nowego konta typu logowanie",
+        "statusDraftTypeNote": "Edytowanie nowego konta typu notatka. Obecna nazwa konta: ${accountName}",
+        "statusDraftTypeLog": "Edytowanie konta typu logowanie. Obecna nazwa konta: ${accountName}",
+        "statusRevisions": "Historia zmian. Wersji wstecz: ${revisionIdx}",
+        "statusTypeNote": "Wyświetlanie konta typu notatka. Nazwa konta: ${accountName}",
+        "statusTypeLog": "Wyświetlanie konta typu logowanie. Nazwa konta: ${accountName}"
         
       },
       "values": {

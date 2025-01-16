@@ -89,13 +89,12 @@
 }
 
 html {
-scrollbar-width: none;
-height:100%;
-background: var(--app-theme);
+    scrollbar-width: none;
+    height:100%;
+    background: var(--app-theme);
 }
 html.invert{
-  filter:invert(1);
-    
+    filter:invert(1);
 }
 @scope (html.invert){
     :scope{
@@ -121,6 +120,7 @@ html.invert{
 html *{
     scrollbar-width: none;
     white-space: break-spaces;
+/*     text-box: trim-both cap alphabetic; */
 }
 
 body{
@@ -1063,6 +1063,7 @@ html.invert .msgHistoryRow.flash:before{
     align-items: center;
     /* opacity: 0.5; */
     justify-content: center;
+    z-index:2;
 }
 
 .statusContainer{
@@ -1087,7 +1088,7 @@ content: "";
     position: relative;
     padding: calc(var(--db-mod-bar-height) / 2);
     margin: 0 calc(var(--db-mod-bar-height) / 2);
-    background-image: url(../../../assets/static/appSvg/sprite.svg#vMod);
+/*     background-image: url(../../../assets/static/appSvg/sprite.svg#vMod); */
     background-size: var(--svg-background-size);
     background-position: center;
     background-repeat: no-repeat;
@@ -1095,6 +1096,35 @@ content: "";
 }
 .statusContainer.withHit::before{
     background-image: url(../../../assets/static/appSvg/sprite.svg#search);
+}
+.statusContainer.typeNoteNew::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeNoteNew);
+}
+.statusContainer.typeLogNew::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeLogNew);
+}
+.statusContainer.draftVendObj::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
+}
+.statusContainer.revisionHistory::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#revisionHistory);
+}
+
+.statusContainer.statusTypeLog::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeLog);
+}
+.statusContainer.statusTypeNote::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeNote);
+}
+
+.statusContainer.dbMod::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#dbMod);
+}
+.statusContainer.fullDb::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#fullDb);
+}
+.statusContainer.secreSyncVersion::before{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#secreSync);
 }
 
 /* ------------------------------------------------------  Scroll Bar ----------------------------------------------------------*/ 
@@ -1638,19 +1668,14 @@ html.invert .vEntry.draftVendObj{
     background: rgb(230 245 255)
 }
 .vEntry.draftVendObj > div:before{
-        background-color: rgb(255 245 230);
-
-    /* -webkit-mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft); */
-    /* mask-image: url(../../../assets/static/appSvg/sprite.svg#vDraft); */
-    
+    background-color: rgb(255 245 230);
     background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
-    /* background-image: unset; */
     background-blend-mode: color-burn;;
 }
 
 
 html.invert .vEntry.draftVendObj > div:before{
-    background-color: rgb(0 160 255);
+    background-color: rgb(224 255 255);
 
 }
 
@@ -1780,6 +1805,12 @@ html.invert .vEntry.draftVendObj > div:before{
     
     background-image: url(../../../assets/static/appSvg/sprite.svg#vDraft);
     background-blend-mode: color-burn;
+}
+
+html.invert .addVendorBtn.draftVendObj{
+box-shadow: 1px 1px 1px 0px rgb(5 100 236), 0 0 1px 0px rgb(0 105 255);
+
+    background-color: rgb(254 255 255);
 }
 
 .hit{
@@ -1945,6 +1976,14 @@ html.invert .passGradeBarWrp div{ /*passGradeBar*/
 
 .formIconTypeNoteNew{
     background-image: url(../../../assets/static/appSvg/sprite.svg#typeNoteNew);
+}
+
+.formIconTypeLogEdit{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeLogEdit);
+}
+
+.formIconTypeNoteEdit{
+    background-image: url(../../../assets/static/appSvg/sprite.svg#typeNoteEdit);
 }
 
 .copyClipboard{

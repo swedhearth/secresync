@@ -1,11 +1,12 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "MobileOptimisation_102";
+    let tempVer = "frequent_0.135_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
     // Initiate DOM
+   // import Dom from "./assets/src/native/modules/Dom.js"; //assets/src/native/modules/Dom.js
     const dom = Dom(document);
     
     //Hijack and overwrite the dom's "el.on" function to reset the Log Out Timer on every assigned event handler for the not yet created elements
@@ -19,8 +20,6 @@ function Interface(thisApp){
         }
     });
 
-
-    
     //  --------------------------------------------------------------- submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
     // -------------- Helper to get from the TextBank ----------------------------------//
     const getTxtBankParsedTxt = txtBankPropTopDir => (txtBankPropJoinString, templateObj) => txtBankPropJoinString ? thisApp.txtBank.getParsedText(`${txtBankPropTopDir}.${txtBankPropJoinString}`, templateObj) : "";
@@ -31,32 +30,27 @@ function Interface(thisApp){
     
     // -------------- Helper to get app HTML elements ----------------------------------//
     const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml))
-    .on("pointerdown", function(e){ // select first empty input element in the fieldset
-        
-        if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
-        const isPinFieldset = this.hasClass("pinFieldset");
-        this.killClass("pinFieldset");
-        e.preventDefault();
-        //e.stopPropagation();
-            let firstEmptyInpEl = null;
-            const inpEls = this.kidsByClass("inpEl");
-            inpEls.forEach(el => {
-                if(firstEmptyInpEl) return;
-                if(!el.value || el.type === "range") firstEmptyInpEl = el;// || el.type === "range"
-            });
-            const focusInpEl = firstEmptyInpEl || inpEls[0];
+        .on("pointerdown", function(e){ // select first empty input element in the fieldset
+            if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
+            e.preventDefault();
+            
+            const isFieldsetPin = this.hasClass("pinFieldset");
+            this.killClass("pinFieldset");
 
+            const inpEls = this.kidsByClass("inpEl");
+            const focusInpEl = inpEls.find(el => !el.value || el.type === "range") || inpEls[0];
+            
             if(!focusInpEl?.disabled) {
                 focusInpEl.focus();
                 window.requestAnimationFrame(_ => focusInpEl.focus()); // let the focus scroll to the element, then refocus after scroll will blur the input
             }
 
-            if(isPinFieldset) this.addClass("pinFieldset");
-    }, {capture: true});
+            if(isFieldsetPin) this.addClass("pinFieldset");
+        }, {capture: true});
 
     let lastActiveInputEl = null;
     const getInpEl = inpObj => {
-        const inpEl = dom.addInput("inpEl");
+        const inpEl = dom.addInput("inpEl").on("focus", _ => lastActiveInputEl = inpEl);
         inpObj._cssAry?.forEach(css => inpEl.addClass(css));
         inpObj._onInput && inpEl.on("input", inpObj._onInput);
         inpObj._onKeydown && inpEl.on("keydown", inpObj._onKeydown);
@@ -70,18 +64,13 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                        /* if(inpEl.isBlured && !window.itIsPainInTheButtOneDrivePlainHandle)  */
                             entry.target.blur();
                     }, 200);
-                    
-                    //entry.target.blur();
                 }
             });
         }, {}));
         Object.entries(inpObj).forEach(([attr, value]) => !attr.includes("_") && value && (inpEl[attr] = value));
         //inpEl.autocomplete = "off";
-        inpEl.on("focus", _ => lastActiveInputEl = inpEl);
-
         return inpEl;
     };
     const getSvgIcon = (cssString = "", title, onClick = null) => dom.addSpan("svgIcon " + (onClick ? "active " : "") + cssString).setAttr("title", getTxtBankTitleTxt(title === true ? cssString : title)).onClick(onClick);
@@ -145,11 +134,10 @@ function Interface(thisApp){
     const msgModule = dom.addDiv("msgModule");
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
-    const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer")).hide(); // DB Modified bar
-    const updateAppStatusBar = (cssNames, html) => appStatusBar.ridKids().attach(dom.addDiv("statusContainer" + cssNames).attach(dom.addDiv("vListBarLabel").html(html)));
+    const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer secreSyncVersion").attach(dom.addDiv("vListBarLabel").html(tempVer)));
+    const updateAppStatusBar = (cssName, html) => appStatusBar.kid().cssName("statusContainer " + cssName).kid().html(html);
     let searchFormEl, appMoreTaskbar; /// These must be outside of paintList to enable popstate firing
-    
-    
+
     const spinner = (_ => {// create spinner Section
         const spinnerSection = dom.addDiv("spinnerSection show").attach(dom.addDiv("spinnerWrp"));// make it visible at the start of app
         spinnerSection.on("transitionend", _ => spinnerSection.cssName("spinnerSection"));
@@ -740,7 +728,7 @@ function Interface(thisApp){
         let saveDraftVendTimer = null;
        
         /////////////////////////////////////////////////MAIN - FORM APP SECTION paintFormSection!!!!!!! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       const paintFormSection = async (addHistory, vendObj, edit, submitForm, toggleForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
+       const paintFormSection = async (addHistory, vendObj, edit, submitForm, revAry = [], revisionIdx = 0) => { //paintFormSection(false, vendObj, false, false, false, revAry, revisionIdx)
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Form Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const saveDraftVendor = _ => {
                 if(thisApp.dbObj.draftVendObj && thisApp.dbObj.draftVendObj === vendObj){
@@ -841,8 +829,8 @@ function Interface(thisApp){
 
             const toggleVendor = _ => {
                 vendObj.isNote = !vendObj.isNote;
-                vendObj.mod = null;
-                paintFormSection(false, vendObj, true, false, true)
+                addDraftVendor();
+                paintFormSection(false, vendObj, true, false);
             };
             
             const shareVendor = async _ => { //shareCredentials
@@ -1049,7 +1037,7 @@ function Interface(thisApp){
 
             vendObj = new thisApp.crypto.Vendor(vendObj, thisApp.dbObj.vendors);
             if(isNew) vendObj.isNew = true;
-            if(toggleForm || isEditingVendorDraft) vendObj.mod = null;
+            if(isEditingVendorDraft) vendObj.mod = null;
             
             const displayMode = !isNew && !edit;
             appSectionForm.isDisplay = displayMode; // for swipe events
@@ -1063,6 +1051,28 @@ function Interface(thisApp){
             }
             
             if(addHistory) addModalToHistory();
+
+            const statusContent = (() => {
+                if (vendObj.isNew) {
+                    return vendObj.isNote 
+                        ? ["typeNoteNew", getTxtBankHtmlTxt("statusTypeNoteNew")] 
+                        : ["typeLogNew", getTxtBankHtmlTxt("statusTypeLogNew")];
+                }
+                if (revisionIdx) {
+                    return ["revisionHistory", getTxtBankHtmlTxt("statusRevisions", {revisionIdx})];
+                }
+                const accountName = vendObj.name;
+                if (edit) {
+                    return vendObj.isNote 
+                    ? ["draftVendObj", getTxtBankHtmlTxt("statusDraftTypeNote", {accountName})] 
+                    : ["draftVendObj", getTxtBankHtmlTxt("statusDraftTypeLog", {accountName})];
+                }
+                return vendObj.isNote 
+                    ? ["statusTypeNote", getTxtBankHtmlTxt("statusTypeNote", {accountName})] 
+                    : ["statusTypeLog", getTxtBankHtmlTxt("statusTypeLog", {accountName})];
+            })();
+
+            updateAppStatusBar(...statusContent)
 
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Create Form Sections - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             const txtAreaElMaxLex = 10000;
@@ -1302,7 +1312,7 @@ function Interface(thisApp){
             //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Form Components - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
             // ------------------------- Buttons ---------------------------------
-            const getNavigateRevisionBtn = step => getSvgIcon(step > 0 ? "previousVersion" : "nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx + step], false, false, false, revAry, revisionIdx + step)) 
+            const getNavigateRevisionBtn = step => getSvgIcon(step > 0 ? "previousVersion" : "nextVersion", true, _ => paintFormSection(false, revAry[revisionIdx + step], false, false, revAry, revisionIdx + step)) 
             const actionBtn = revisionIdx || vendObj.isTrash
                 ? revisionIdx
                     ? getSvgIcon("restoreRevisionBtn", true, restoreRevision)
@@ -1311,7 +1321,7 @@ function Interface(thisApp){
 
             const middleTopEl = displayMode
                 ? dom.addDiv("formTitle", vendObj.name || "")
-                : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : "formIconEdit" , vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog");
+                : getSvgIcon(vendObj.isNew ? vendObj.isNote ? "formIconTypeNoteNew" : "formIconTypeLogNew" : vendObj.isNote ? "formIconTypeNoteEdit" : "formIconTypeLogEdit" , vendObj.isNote ? "formIconTypeNote" : "formIconTypeLog");
 
             const deleteOldBtn = revisionIdx
                 ? getSvgIcon("trashBin", "deleteRevisionBtn", deleteRevision)
@@ -1321,8 +1331,8 @@ function Interface(thisApp){
 
             const revisionsBtn = displayMode && revAry.length && !vendObj.isTrash 
                 ? getSvgIcon("revisions" + (revisionIdx ? " selected" : ""), "revisions", revisionIdx 
-                    ? _ => paintFormSection(false, revAry[0], false, false, false, revAry, 0)
-                    :_ => paintFormSection(false, revAry[1], false, false, false, revAry, 1)
+                    ? _ => paintFormSection(false, revAry[0], false, false, revAry, 0)
+                    :_ => paintFormSection(false, revAry[1], false, false, revAry, 1)
                 )
                 : [];
 
@@ -1331,7 +1341,7 @@ function Interface(thisApp){
             const shareBtn = vendObj.isTrash ? getSvgIcon() : getSvgIcon("share", true, shareVendor);
             const toggleVendorBtn = getSvgIcon(vendObj.isNote ? "toggleToLog" : "toggleToNote", true, toggleVendor);
             const deleteCurrentBtn = vendObj.isNew ? [] : getSvgIcon("trashBin", "deleteVendorBtn", deleteVendor);
-            const undoChangesBtn = getSvgIcon("undoChanges" + isEditingVendorDraft ? "" : " elNoDisplay", "undoChangesBtn", undoChanges);
+            const undoChangesBtn = getSvgIcon("undoChanges" + (isEditingVendorDraft ? "" : " elNoDisplay"), "undoChangesBtn", undoChanges);
 
             // ------------------------- Info Wrap ---------------------------------
             // Creation and Modification Wrap
@@ -2074,17 +2084,15 @@ function Interface(thisApp){
                     const allHits = nameHitAry.length + tagHitAry.length + noteHitAry.length;
                     
                     
+/*                     const statusContent = searchStr 
+                        ? [" withHit", getLabelHtml("nameFound", allHits)]
+                        : ["", "<span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"]; */
+                        
                     const statusContent = searchStr 
-                        ? getLabelHtml("nameFound", allHits)
-                        : "<span>" + (new Date(thisApp.dbObj.mod).toUKstring() + " - " + tempVer) + "</span><span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"
-                    
+                        ? ["withHit", getLabelHtml("nameFound", allHits)]
+                        : ["fullDb", allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)];
 
-                    
-/*                     appStatusBar.ridKids().attach(
-                        dom.addDiv("statusContainer" + (searchStr ? " withHit" : "")).attach(getListBarLabel(statusContent))
-                    ); */
-                    
-                    updateAppStatusBar(searchStr ? " withHit" : "", statusContent);
+                    updateAppStatusBar(...statusContent);
                     
                     if(tagHitAry.length) tagHitAry.unshift(vListAuxBarWrp(getLabelHtml("tagsFound", tagHitAry.length))); 
                     if(noteHitAry.length) noteHitAry.unshift(vListAuxBarWrp(getLabelHtml("notesFound", noteHitAry.length)));
@@ -2115,6 +2123,8 @@ function Interface(thisApp){
         const resetUI = _ => {
             appSectionForm.slideOut();
             appSectionList.show();
+
+            thisApp.dbObj?.mod && updateAppStatusBar("dbMod", new Date(thisApp.dbObj.mod).toUKstring());
         };
         
         const blurUI = doBlur => {
@@ -2129,9 +2139,11 @@ function Interface(thisApp){
         };
 
         const initUI = _ => {
-            paintListSection();
             resetUI();
-            appStatusBar.show();
+            
+            paintListSection();
+
+            //appStatusBar.show();
         };
         
         return {
@@ -2336,8 +2348,8 @@ function Interface(thisApp){
     // Attach Sections
     document.body.ridKids()
     .attachAry([
-        appSectionList, appSectionForm, appStatusBar,
-        modalSection,
+        appSectionList, appSectionForm,
+        modalSection, appStatusBar,
         msgModule,
         spinner,
         uiBlur
@@ -2372,24 +2384,7 @@ function Interface(thisApp){
 
             
             console.log(thisApp.dbObj);
-/*             dom.addDiv("settingsSection").onClick(e => e.currentTarget.kill())
-            .attach(dom.addDiv("msgHistoryContentWrp").attachAry(mobileDebugAry.map(msgAry => 
-                    dom.addDiv("msgHistoryRow dev")
-                    .attach(
-                        dom.addDiv("msgBody")
-                        .attach(dom.addSpan("msgDate", msgAry[0]))
-                        .attach(dom.addSpan("msgText", msgAry[1]))
-                    )
-                ))
-            ).attachTo(document.body); */
-/*             document.body.kidsByClass("svgIcon").forEach(el => { el.toggleClass("noDrop");});
-            document.body.kidsByClass("pinInput").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("padded").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("submitCredentialsLabel").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("unlockDbIcon").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("protectDb").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("vEntry").forEach(el => { el.toggleClass("alt"); });
-            document.body.kidsByClass("vName").forEach(el => { el.toggleClass("alt"); }); */
+
         })
     );
 }
