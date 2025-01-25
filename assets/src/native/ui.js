@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.136_GitHub";
+    let tempVer = "frequent_0.137_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -71,8 +71,8 @@ function Interface(thisApp){
                 }else{
                     inpEl.isBlured = true;
                     setTimeout(_ => {
-                            entry.target.blur();
-                    }, 500);
+                           if(inpEl.isBlured) entry.target.blur();
+                    }, 200);
                 }
             });
         }, {}));

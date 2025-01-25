@@ -1,6 +1,6 @@
 const appCaches = [
     {
-        name: 'frequent_0.136_GitHub',
+        name: 'frequent_0.137_GitHub',
         urls: [
             "./",
             "./secresync.webmanifest",
@@ -17,13 +17,15 @@ const appCaches = [
         ]
     },
     {
-        name: 'rare_0.001_GitHub',
+        name: 'rare_0.002_GitHub',
         urls: [
             "./favicon.ico",
             "./browserconfig.xml",
             
             "./assets/src/aquired/dbx.min.js",
             "./assets/src/aquired/detectIncognito.min.js",
+            "./assets/src/aquired/qr-creator.min.js",
+            "./assets/src/aquired/terra.js",
             
             "./assets/static/@fonts/century-gothic/cg.woff2",
             "./assets/static/@fonts/century-gothic/cg.woff",
