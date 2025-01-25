@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.135_GitHub";
+    let tempVer = "frequent_0.136_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -19,6 +19,13 @@ function Interface(thisApp){
             return this;
         }
     });
+    
+    // Apply Application Theme To HTML
+    const applyAppTheme = isDarkTheme => {
+        const themeColor = isDarkTheme ? '#dedede' : '#f5f5f5'; //'#050505' : '#fafafa';
+        document.documentElement.classList.toggle("invert", isDarkTheme);
+        document.querySelectorAll('meta[name="theme-color"], meta[name="msapplication-TileColor"]').forEach(meta => meta.setAttribute('content', themeColor));
+    };
 
     //  --------------------------------------------------------------- submodules  / HELPERS --------------------------------------------------------------- */scrollWrpOverflow
     // -------------- Helper to get from the TextBank ----------------------------------//
@@ -31,7 +38,7 @@ function Interface(thisApp){
     // -------------- Helper to get app HTML elements ----------------------------------//
     const getFieldsetEl = (fieldsetCss, legendHtml, beforeIcon) => dom.addFieldset(fieldsetCss).attach(dom.addLegend(beforeIcon || "", legendHtml))
         .on("pointerdown", function(e){ // select first empty input element in the fieldset
-            if(e.target !== this && e.target !== this.firstChild && !e.target.hasClass("credInpWrp") ) return;
+            if(e.target !== this && e.target !== this.firstChild && !e.target?.hasClass("credInpWrp") ) return;
             e.preventDefault();
             
             const isFieldsetPin = this.hasClass("pinFieldset");
@@ -40,7 +47,7 @@ function Interface(thisApp){
             const inpEls = this.kidsByClass("inpEl");
             const focusInpEl = inpEls.find(el => !el.value || el.type === "range") || inpEls[0];
             
-            if(!focusInpEl?.disabled) {
+            if(focusInpEl && !focusInpEl.disabled) {
                 focusInpEl.focus();
                 window.requestAnimationFrame(_ => focusInpEl.focus()); // let the focus scroll to the element, then refocus after scroll will blur the input
             }
@@ -65,7 +72,7 @@ function Interface(thisApp){
                     inpEl.isBlured = true;
                     setTimeout(_ => {
                             entry.target.blur();
-                    }, 200);
+                    }, 500);
                 }
             });
         }, {}));
@@ -134,7 +141,7 @@ function Interface(thisApp){
     const msgModule = dom.addDiv("msgModule");
     const appSectionForm = dom.addDiv("appSection appForm").slideOut();
     const appSectionList = dom.addDiv("appSection appList");//.hide();
-    const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer secreSyncVersion").attach(dom.addDiv("vListBarLabel").html(tempVer)));
+    const appStatusBar = dom.addDiv("appStatusBar").attach(dom.addDiv("statusContainer secreSync").attach(dom.addDiv("vListBarLabel").html(tempVer)));
     const updateAppStatusBar = (cssName, html) => appStatusBar.kid().cssName("statusContainer " + cssName).kid().html(html);
     let searchFormEl, appMoreTaskbar; /// These must be outside of paintList to enable popstate firing
 
@@ -251,6 +258,7 @@ function Interface(thisApp){
             this.minLength = isPin ? 1 : 10;
             this.maxLength = isPin ? 1 : 32;
         }
+        let submitCredentialsLabel;
         
         const getHintAry = hint => {
             const credHintWrp = dom.addDiv("credHintWrp").attach(dom.addSpan("credHintSpan", hint)).hide();
@@ -276,7 +284,7 @@ function Interface(thisApp){
                     if(pinInputEl.value.length > 1) return processPastePin(pinInputEl.value, pinInputEl);
                     
                     const updatePin = _ => {
-                        pinInputEl[pinInputEl.value ? "addClass" : "killClass"]("pinCharValue");
+                        pinInputEl.toggleClass("pinCharValue", !!pinInputEl.value)
                         inputObject._value = pinInputEl.siblings().map(pinInpEl => pinInpEl.value).join("");
                         !pinInputEl.value && 
                         pinInputEl.siblings().length > inputObject._inputsCount 
@@ -300,6 +308,9 @@ function Interface(thisApp){
                         inputObject.type = pinInputEl.forebear(1).sibling(-1).hasClass("passEyeHide") ?  "text" : "password";
 
                         (pinInputEl.siblings().find(pinInpEl => !pinInpEl.value) || getPinInputEl(false, inputObject._value.length).attachTo(pinInputEl.parentElement)).focus();
+                        
+                        submitCredentialsLabel.toggleClass("show", inputObject._inputsCount <= inputObject._value.length);
+                        
                     }
                 };
                 
@@ -394,12 +405,13 @@ function Interface(thisApp){
             }).hide();
             const inputAry = isPinOnly ? [getInputFieldset(pinInputObj)] : [getInputFieldset(passInputObj), getInputFieldset(pinInputObj)];
             const unlinkDbIcon = getSvgIcon(canDelete ? "trashBin" : "crosx", canDelete ? "unlinkDb" : "btnClose", _ => modalSectionPromise.fulfill([]));
-            const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")),  getSvgIcon("unlockDbIcon active", "unlockDb")];
+            const unlockDbAry = [dom.addSpan("", getTxtBankHtmlTxt("unlockDb")), getSvgIcon(`${isUnlock === "auth" ? "unlockDbAuth" : "unlockDbIcon"} active`, "unlockDb")];
             const protectDbAry = [dom.addSpan("", getTxtBankHtmlTxt("protectDb")), getSvgIcon("protectDb active", "protectDb")];
             
 /*             const unlockDbAry = [getSvgIcon("unlockDbIcon active", "unlockDb")];
             const protectDbAry = [getSvgIcon("protectDb active", "protectDb")]; */
-            const submitCredentialsLabel =  dom.add("label").setAttr("for", "submitCredentials").cssName("credInpWrp submitCredentialsLabel").attachAry(isUnlock ? unlockDbAry : protectDbAry);
+            
+            submitCredentialsLabel = dom.add("label").setAttr("for", "submitCredentials").cssName("credInpWrp submitCredentialsLabel").attachAry(isUnlock ? unlockDbAry : protectDbAry);
             const submitCredentials = async e =>{
                 e.preventDefault(); 
                 await new Promise(res => setTimeout(res, 300)); //wait until the virtual keyboard returns the full body height if in mobile and potentially the viewport.offsetTop is non zero,
@@ -440,7 +452,7 @@ function Interface(thisApp){
             pinHint: getTxtBankHtmlTxt("credFormPinHint"),//"Please provide a new PIN. It can be between 4 and 32 characters long and contain any type of characters.",
             passHint: getTxtBankHtmlTxt("credFormPassHint"),//"Please enter a new Password. It can be between 10 and 32 characters long and contain any type of characters.",
         });
-        this.pin = (canDelete, canPersist)  => showCredentials(canDelete, canPersist, true, true, true,{ //canDelete, canPersist, isPersisted, isPinOnly, isUnlock
+        this.pin = (canDelete, canPersist, persistedType)  => showCredentials(canDelete, canPersist, true, true, persistedType,{ //canDelete, canPersist, isPersisted, isPinOnly, isUnlock
             title: getTxtBankHtmlTxt("credFormTitle"), 
             pinInputLabel: getTxtBankHtmlTxt("credFormPin"), //"Enter PIN:"
             persistLabel: getTxtBankHtmlTxt("credFormPersistRemove"), //"Save the password in the database and enable unlocking the database using the pin only?"
@@ -535,6 +547,8 @@ function Interface(thisApp){
         
         
         this.saveVendorChanges =_ => appAlert("saveVendorChanges");
+        
+        this.secreSyncReset = _ => appAlert("secreSyncReset");
     }
  
      /* Messages -----------------------------------------------------------------------*/
@@ -877,7 +891,7 @@ function Interface(thisApp){
                             size: size // in pixels
                         }, shareContentWrp);
                         
-                        shareSection.attach(shareContentWrp.attach(sharePinDivWrp))
+                        shareSection.attach(shareContentWrp.attach(sharePinDivWrp));
 
                     }catch(err){
                         thisApp.message.shareFail();
@@ -937,6 +951,9 @@ function Interface(thisApp){
                 ];
 
                 shareSection.attachAry([shareTitleBar.attachAry(shareTitleEls), shareOptionsBar.attachAry(shareOptions)]).attachTo(document.body);
+                
+                updateAppStatusBar("statusShare", getTxtBankTitleTxt("share"));
+                
                 addModalToHistory(true); //force adding to history
             };
             
@@ -1511,7 +1528,7 @@ function Interface(thisApp){
                     if (!await thisApp.alert.importDb()) return thisApp.message.importDbCancel();
                     importedDBJson.vendors.forEach(importVendObj => {
                         importVendObj.id = null; // nextID
-                        importVendObj.imp = new Date().getTime();
+                        importVendObj.imp = Date.now();
                         let importCount = 1;
                         const getImportName = _ => `${importVendObj.name} (i_${importCount})`;
                         while (thisApp.dbObj.vendors.some(vendObj => vendObj.name === getImportName())) importCount++;
@@ -1715,13 +1732,7 @@ function Interface(thisApp){
                 };
                 
                 const changeAppTheme = (e, settingName) => {
-                    const adjustValue = value => {
-                        document.documentElement.classList.toggle("invert");
-                        const themeColor = thisApp.settings.appTheme ? '#050505' : '#fafafa';
-                        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
-                        document.querySelector('meta[name="msapplication-TileColor"]').setAttribute('content', themeColor);
-                    };
-                    addStaticSettingFieldset(e, settingName, adjustValue, {true: "darkThemeEnabled", false: "darkThemeDisabled"});
+                    addStaticSettingFieldset(e, settingName, applyAppTheme, {true: "darkThemeEnabled", false: "darkThemeDisabled"});
                 };
                 
                 const changeAppLayout = (e, settingName) =>{
@@ -1751,13 +1762,85 @@ function Interface(thisApp){
                     }
                     addRangeSettingFieldset(e, settingName, adjustValue);
                 };
-                
-                const getDonate = _ => {
-                     console.log("TO DO getDonate");
+
+// ----------------------------------------------------- TODO TO DO --------------------------------------------------
+                const donate = (e, settingName) => { // settingName === "donate"
+                    console.log("TO DO getDonate");
+                    e.target.toggleClass("selected");
+                    if(killExistingFieldset(settingName)){
+                        while(killExistingFieldset(settingName)) console.log("section Kill");
+                        return;
+                    }
+
+                    if(!thisApp.dbObj.donateAccounts?.length) {
+                        thisApp.dbObj.getNewDonateAccounts(); // do not save yet
+                        //thisApp.dbStore.updateAll(thisApp, true);
+                    }
+                    
+                    thisApp.dbObj.donateAccounts.forEach(donateAcc => {
+                        
+                        const coinBtn = getFieldsetEl(`padded ${settingName}Field`, getTxtBankHtmlTxt(settingName, {donateAcc: donateAcc.name}), `${settingName}Legend`).attach(
+
+                                getSvgIcon("wallet", true, _ => {
+                                    settingsSection.kidsByClass(`padded ${settingName}Field`).forEach(cB => {
+                                        if(cB !== coinBtn) cB.kill();
+                                    });
+                                    if(donateAcc.setEnquire()) thisApp.dbStore.updateAll(thisApp, true); // save - from this point check if donated - every week?
+
+                                    const shareContentWrp = dom.addDiv("shareContentWrp barcodeLink");
+
+                                    const size = (
+                                        Math.min(
+                                            settingsSection.clientHeight - setingTitleBar.clientHeight - settingsOptionsBar.clientHeight - appStatusBar.clientHeight - document.body.clientHeight * 0.03 - window.MILLIMITER * 10 - window.REM,
+                                            thisApp.settings.appWidth.current * 0.98 - document.body.clientWidth * 0.02 - (Math.min(document.body.clientWidth * 0.04, window.REM * 2))
+                                        )
+                                    ) - window.MILLIMITER * 20;
+
+                                    try{
+                                        QrCreator.render({
+                                            text: donateAcc.sAddress, //max 2900 char
+                                            radius: 0.5, // 0.0 to 0.5
+                                            ecLevel: 'H', // L, M, Q, H
+                                            fill: '#000', // foreground color
+                                            background: "#fff", // color or null for transparent
+                                            size: size // in pixels
+                                        }, shareContentWrp);
+                                        
+                                        coinBtn.replaceWith(
+                                            getFieldsetEl(`padded ${settingName}Field`, donateAcc.name, `${settingName}Legend`).attach( //
+                                                shareContentWrp.attach(
+                                                    dom.addDiv("sharePinDivWrp").attachAry([
+                                                        getSvgIcon("wallet", true),
+                                                        dom.addDiv("sharePinDiv", donateAcc.sAddress),
+                                                        getSvgIcon("copyClipboard", "copyPinBtn", _ => {
+                                                            window.navigator.vibrate(200);
+                                                            navigator.clipboard.writeText(donateAcc.sAddress).then(thisApp.message.pinCopied);
+                                                        })
+                                                    ])
+                                                )
+                                            )
+                                        )
+                                        //.attachTo(settingsSection);
+                                    }catch(err){
+                                        console.error(err);
+                                    }
+
+                                })
+
+                        ).attachTo(settingsSection);
+                        
+                    });
+
+
                 };
                 
-                const showSelfProfile = (e, settingName, idx = 0) => { // Improve visuals in the next version
-                    killExistingFieldset(settingName);
+                const showSelfProfile = (e, settingName, idx = 0, repaint) => { // Improve visuals in the next version
+                    if(!repaint){
+                        e.target.toggleClass("selected");
+                        if(killExistingFieldset(settingName)) return;
+                    }else{
+                        killExistingFieldset(settingName);
+                    }
 
                     const credObj = { ...thisApp.dbObj.credentials[idx] };
                     credObj.timestamp = new Date(credObj.timestamp).toUKstring();
@@ -1765,12 +1848,12 @@ function Interface(thisApp){
                     getFieldsetEl(`padded ${settingName}Field`, getTxtBankTitleTxt(settingName), `${settingName}Legend`)
                     .attach(
                         dom.addDiv("adjustDetais").attachAry([
-                            thisApp.dbObj.credentials[idx + 1] ? getSvgIcon("previousVersion", true, _ => showSelfProfile(e, settingName, ++idx)) : getSvgIcon(),
+                            thisApp.dbObj.credentials[idx + 1] ? getSvgIcon("previousVersion", true, _ => showSelfProfile(e, settingName, ++idx, true)) : getSvgIcon(),
                             dom.addDiv("profileDetails", getTxtBankHtmlTxt(settingName, credObj)),
-                            idx ? getSvgIcon("nextVersion", true, _ => showSelfProfile(e, settingName, --idx)) : getSvgIcon() 
+                            idx ? getSvgIcon("nextVersion", true, _ => showSelfProfile(e, settingName, --idx, true)) : getSvgIcon() 
                         ])
                     )
-                    .attachTo(settingsSection).onClick(e => e.currentTarget.kill());
+                    .attachTo(settingsSection);//.onClick(e => e.currentTarget.kill());
                 };
                 
                 const changePassword = async _ => await thisApp.alert.changePassword() && thisApp.credentials.change()
@@ -1778,6 +1861,9 @@ function Interface(thisApp){
                     .catch(err => {thisApp.message.dbCredentialsChangeFail();})
                     .finally(_ => spinner.stop("in changePassword")); // if not in curly brackets the finally function does not fire!!!
                 
+                const secreSyncReset = async _ => {
+                    if(await thisApp.alert.secreSyncReset()) thisApp.makePrivate();
+                };
                 // Create and show the Settings Section
                 const contextIcons = [
                     getSvgIcon("selfProfile", true, e => showSelfProfile(e, "selfProfile")),
@@ -1793,8 +1879,13 @@ function Interface(thisApp){
                             window.addEventListener('popstate',  changePassword, {once: true});
                             historyStack.goBack();
                         }
-                        : null),
-                    getSvgIcon("donate", true, getDonate)
+                        : null
+                    ),
+                    getSvgIcon("donate", true, e => donate(e, "donate")),
+                    getSvgIcon("secreSyncResetIcon", "secreSyncReset", _ => {
+                        window.addEventListener('popstate',  secreSyncReset, {once: true});
+                        historyStack.goBack();
+                    })
                 ];
                 
                 const setingTitleBar = dom.addDiv("disposableModalTitleBar setingTitleBar")
@@ -1808,12 +1899,18 @@ function Interface(thisApp){
                 .attach(dom.addDiv("", getTxtBankTitleTxt("settings"))) 
                 .attach(getSvgIcon("disposableModalClose", "btnClose", historyStack.goBack));
                 
+                const settingsOptionsBar = dom.addDiv("disposableOptionsBar settingsOptionsBar")
+                .attachAry(contextIcons)
+                
                 const settingsSection = dom.addDiv("disposableModalSection settingsSection")
                 .attach(setingTitleBar)
-                .attach(dom.addDiv("disposableOptionsBar settingsOptionsBar").attachAry(contextIcons))
-                .onClick(e => {
+                .attach(settingsOptionsBar)
+/*                 .onClick(e => {
                     if(e.target === e.currentTarget)  historyStack.goBack();
-                }).attachTo(document.body);
+                }) */
+                .attachTo(document.body);
+                
+                updateAppStatusBar("statusSettings", getTxtBankTitleTxt("settings"));
                 
                 addModalToHistory(true); //force adding to history
             };
@@ -1974,12 +2071,11 @@ function Interface(thisApp){
                 .on("scroll", e => {
                     if(searchFormEl.preventScrollBlur && thisApp.settings.isMobileLayout()) return;
                     if(!searchFormEl.preventScrollBlur) searchFormEl.scrollBlur();
+                    const scrollUp = vListScrollTop - e.target.scrollTop > 0
+                    vListMainBarWrp.toggleClass("mainBarToggle", scrollUp);
+                    vListTaskBarWrp.toggleClass("taskBarToggle", !scrollUp);
+                    vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp.toggleClass("taskBarWrpDoubleTop", scrollUp)); // For Bars when Note or Tags are found
 
-                    const scrollDifference = vListScrollTop - e.target.scrollTop;
-                    const [appTaskCssMethod, listTaskCssMethod] = scrollDifference > 0 ? ["addClass", "killClass"] : ["killClass", "addClass"];
-                    vListMainBarWrp[appTaskCssMethod]("mainBarToggle"); 
-                    vListTaskBarWrp[listTaskCssMethod]("taskBarToggle");
-                    vListWrp.kidsByClass("vListAuxBarWrp").forEach(auxBarWrp => auxBarWrp[appTaskCssMethod]("taskBarWrpDoubleTop")); // For Bars when Note or Tags are found
                     vListScrollTop = e.target.scrollTop;
                 }).attachAry([
                         vListMainBarWrp,
@@ -2025,7 +2121,8 @@ function Interface(thisApp){
                         clearTimeout(stopSpinnerTimout);
                         stopSpinnerTimout = setTimeout(_ => {
                             toggleScrollWrpOverflow(vListScrollWrp);
-                            spinner.stop("in paintList - requestAnimationFrame");
+                            spinner.stop("in paintList - list Painted");
+                            console.log("Painted")
                         }, 200); //200ms give enough time after vListElement is attached to the vListWrp to establish that there will be no more vListElements attached at this time
                     });
                     elIdx++;
@@ -2082,12 +2179,7 @@ function Interface(thisApp){
 
                     const getLabelHtml = (vListHeadsProp, hits) => getTxtBankHtmlTxt(`vListHeads.${hits ? vListHeadsProp : "notFound"}`, {searchStr, hits});
                     const allHits = nameHitAry.length + tagHitAry.length + noteHitAry.length;
-                    
-                    
-/*                     const statusContent = searchStr 
-                        ? [" withHit", getLabelHtml("nameFound", allHits)]
-                        : ["", "<span>" + (allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)) + "</span>"]; */
-                        
+
                     const statusContent = searchStr 
                         ? ["withHit", getLabelHtml("nameFound", allHits)]
                         : ["fullDb", allHits ? getLabelHtml("name", allHits) : getLabelHtml("empty", true)];
@@ -2107,7 +2199,7 @@ function Interface(thisApp){
             paintList();
             
             //Check if draftVendObj exists and if it's ID is greater than the length of the thisApp.dbObj.vendors - wchich would mean that it is a draft of a new vendor object
-            const isNewDraftVendObj = thisApp.dbObj.draftVendObj?.id > thisApp.dbObj.vendors.length;            
+            const isNewDraftVendObj = thisApp.dbObj.draftVendObj?.id > thisApp.dbObj.vendors.length;
             appSectionList.ridKids().attachAry([
                 vListScrollWrp,
                 getSvgIcon("addVendorBtn" + (isNewDraftVendObj ? " draftVendObj" : ""), "addVendorBtn", e => {
@@ -2317,7 +2409,7 @@ function Interface(thisApp){
 /*************************************/
     // Add Popstate Listener
     window.addEventListener('popstate', e => {
-
+updateAppStatusBar("secreSync", thisApp.name);
         historyStack.setUserActive(false);
         if(!window.history.state){
             thisApp.message.exitAppConfirm();
@@ -2329,7 +2421,7 @@ function Interface(thisApp){
             
             const disposableModalSections = document.body.kidsByClass("disposableModalSection");
             if(disposableModalSections.length){
-                disposableModalSections.forEach(disposableModalSection => disposableModalSection.remove());
+                disposableModalSections.forEach(disposableModalSection => disposableModalSection.kill());
                 return;
             }
 
@@ -2359,17 +2451,14 @@ function Interface(thisApp){
     .on("touchend", touchHandler.endSwipe, false)
     .on("touchcancel", touchHandler.endSwipe, false)
     .onClick(historyStack.setUserActive)
-    
-/*     .on("pointerdown", touchHandler.startSwipe)
-    .on("pointermove", touchHandler.swiping)
-    .on("pointerup", touchHandler.endSwipe)
-    .on("pointercancel", touchHandler.endSwipe) */
 
 
 /* Apply settings */
-    if(thisApp.settings.appTheme){
+/*     if(thisApp.settings.appTheme){
         document.documentElement.classList.add("invert");
-    }
+    } */
+    
+    applyAppTheme(thisApp.settings.appTheme);
     
     document.documentElement.style.setProperty("--max-app-width", `${thisApp.settings.appWidth.current}px`);
     document.documentElement.style.setProperty("--svg-background-size", `${thisApp.settings.appIconSize.current}%`); 
@@ -2380,11 +2469,168 @@ function Interface(thisApp){
     console.log("%cEnd_ui.js_script%c!!!", "font-weight:900;color:red;font-size: 1.5rem; font-family: sans-serif", "color: teal;font-size: 1.5rem;font-size: 3rem;");
 // /* Temp and tests */
     document.body.attach(
-        dom.addDiv("removeDrop").onClick(_ => {
+        dom.addDiv("removeDrop").onClick(async _ => {
 
             
-            console.log(thisApp.dbObj);
+            //console.log(thisApp.dbObj);
+            
+            
+/*                 const gasPrices = await(
+                  await fetch("https://columbus-api.terra.dev/gas-prices", {
+                    redirect: "follow",
+                  })
+                ).json();
+                const gasPricesCoins = new Terra.Coins(gasPrices);            
 
+                console.log(gasPricesCoins);
+
+                const lcd = new Terra.LCDClient({
+                URL: 'https://columbus-lcd.terra.dev',
+                chainID: 'columbus-5',
+                gasPrices: gasPricesCoins,
+                gasAdjustment: "1.5",
+                gas: 10000000,
+                isClassic: true
+            });
+
+            
+            /* terra-classic-lcd.publicnode.com */
+
+            //privateKey: {"type": "Buffer", "data": [230,70,90,218,69,231,39,90,151,65,63,56,218,58,17,98,146,95,130,165,179,107,2,163,106,12,146,131,206,213,142,238]}
+            //"mnemonic": "price latin panel surge robust duty suggest useful measure true business innocent cousin curious maple panel tell pluck toward fan erase tube media phone"
+            //"publicKey": "{\"@type\":\"/cosmos.crypto.secp256k1.PubKey\",\"key\":\"A7LGWENkZSH6Dp7bDQRaXWicWaxXWWPMs8nmsTwjwdqQ\"}",
+            //accAddress: "terra1w8u6fv83ansjqecrhy0h7h5tcxyaarjswperk9" // SecreSync Terra Classic Account!!!!
+            //valAddress: "terravaloper1w8u6fv83ansjqecrhy0h7h5tcxyaarjsww47xk"
+
+/*             const lcd = new Terra.LCDClient({
+              URL: 'https://terra-classic-lcd.publicnode.com',
+              chainId: 'columbus-5',
+              isClassic: true
+            });
+
+            
+           const mk = new Terra.RawKey(new Uint8Array([230,70,90,218,69,231,39,90,151,65,63,56,218,58,17,98,146,95,130,165,179,107,2,163,106,12,146,131,206,213,142,238]));
+
+            const wallet = lcd.wallet(mk);
+            console.log(mk);
+            console.log(wallet);  */
+
+
+/*             const getNewUserTerraAccount = _ =>{
+                const mk = new Terra.MnemonicKey();
+                localStorage.setItem("userLuncMnemonics", mk.mnemonic);
+                localStorage.setItem("userLuncAddress", mk.accAddress);
+                localStorage.setItem("userLuncPrivateKey", JSON.stringify([...mk.privateKey]));
+                
+                //This is user Account to be sttored in the AppDbObj (e.g. AppDbObj.donate = {terraClassic: {accAddress: "terra195...", mnemonic: "xxx zzz...", privateKey: "[166,66,121..."}, dogeCoin: ....}
+                //half weather still salt talent sun gate office stick soap skirt fluid skill initial shy truly gas vicious wisdom tip soda mutual senior shrug
+                //terra195hds935de9es0cdklrrgh8wzcp4ppxx46qmgs
+                //[166,66,121,174,251,42,109,117,159,11,179,16,233,0,132,150,169,46,36,158,176,95,223,148,255,62,64,107,179,138,245,217]
+                
+                //const lcd = getLcd();
+                //const wallet = lcd.wallet(mk);
+            };
+            
+            //getNewUserTerraAccount(); */
+            
+                        
+
+                
+            //import { Terra as Terra } from "assets/src/aquired/terra.js";
+            const terraModule = await import ("/assets/src/aquired/terra.js").catch(_ => null);
+            if(!terraModule || !Terra) return console.log("No Terra!");
+
+            const getLcd = name => {
+                return {
+                    terraClassic: async _ => {
+                        return new Terra.LCDClient({
+                            URL: 'https://terra-classic-lcd.publicnode.com',
+                            chainID: 'columbus-5',
+                            isClassic: true
+                        })
+                    },
+                    dogeCoin: _ => "TODO"
+                }[name]();
+            };
+            
+            const getUserTerraWallet = async _ => {
+
+                
+/* {
+    "name": "terraClassic",
+    "mnemonic": "equal three front citizen search old wheel creek maid tone stand symptom apart supply extra blanket child mask dry small pattern cactus gallery blame",
+    "accAddress": "terra1gg4fhzewny9fdtkwwrqs824j8px82v7y7dlper",
+    "privateKey": {50,125,231,212,173,252,178,33,150,64,134, 134, 113, 105, 2, 34, 53, 166, 232, 186, 108, 28, 92, 220, 191, 63, 234, 93, 81, 230, 170, 186}
+} */
+
+                const terraClassic = thisApp.dbObj.donateAccounts[0];
+                if(terraClassic.enquire){
+                    if(Date.now() - 7 * 24 * 60 *60 * 1000 > terraClassic.enquire){// a week
+                        terraClassic.setEnquire(true);
+                    }
+                }
+                const account = new Terra.RawKey(terraClassic.privateKey);
+                const lcd = await getLcd(terraClassic.id);
+                const [balance] = await lcd.bank.balance(account.accAddress);
+                const ulunaCoin = balance._coins.uluna;
+                const ulunaBallanceString = ulunaCoin.amount.toString();
+                const ulunaBallanceInt = parseInt(ulunaBallanceString);
+                const minBalanceRequired = 5000000000 + 50000000; //in uluna. Min amount to send 5,000.00 LUNC + 50.00 LUNC Fee
+                const enoughFunds = minBalanceRequired > ulunaBallanceInt;
+                if(!enoughFunds) return;
+
+                const maxFee = new Terra.Fee(1000000, { uluna: 50000000 }); // 50.00 LUNC
+                const willSend = ulunaCoin.sub(maxFee);
+                const willSendAmountString = willSend.amount.toString();
+                console.log("willSendAmountString", willSendAmountString);
+
+                const send = new Terra.MsgSend(
+                    account.accAddress, 
+                    terraClassic.sAddress, //SecreSync Account Address
+                    { uluna: willSendAmountString } 
+                );
+                console.log(send);
+                
+                const wallet = lcd.wallet(account);
+                
+                const tx = await wallet.createAndSignTx({
+                    msgs: [send],
+                    fee: maxFee,
+                    memo: "SentFromSecreSync"
+                });
+                
+                console.log(tx);
+                //return;
+                
+                try{
+                    const txResult = await lcd.tx.broadcast(tx);
+                    console.log("Sucess Transaction: ", txResult);
+                    // check for errors;
+                    terraClassic.donated = ulunaBallanceInt;
+                    // Update UI - baloons, flowers, VIP, etc...
+                }catch(err){
+                    console.error("Transaction has not been brodcasted")
+                }
+               
+
+                /*
+                const mkFromMnemonics = new Terra.MnemonicKey({
+                  mnemonic: localStorage.getItem("userLuncMnemonics"),
+                });
+                */
+
+            };
+                getUserTerraWallet();
+
+                //const address = "terra15w6wls52jndw4075chcy42jckqwag8sx9n6utp";  // HACKED
+                // const address = "terra1vkh7xfccjxnqfa2n8vyxj8vwhewtxfx3hx4wyv";// TrustWallet
+                //const [balance] = await lcd.bank.balance(address);
+                
+                //            console.log(balance);         
+            /// https://terra-classic-lcd.publicnode.com/cosmos/staking/v1beta1/delegations/terra1vkh7xfccjxnqfa2n8vyxj8vwhewtxfx3hx4wyv
+            // https://terra-classic-fcd.publicnode.com/v1/txs?offset=0&limit=100&account=terra15w6wls52jndw4075chcy42jckqwag8sx9n6utp
+        //https://api.carbon.network/carbon/fee/v1/gas_prices
+            //_________________________________________________________________________________
         })
     );
 }

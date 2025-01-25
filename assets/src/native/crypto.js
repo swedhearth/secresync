@@ -383,8 +383,8 @@ function Crypto(){
         this.name = vO.name;
         this.base = vO.b ? u8AryFromB64(vO.b) : vO.base || randomU8Ary(32);
 
-        this.cr8 = vO.c ? timeIntFromB64(vO.c) : vO.cr8 || new Date().getTime();
-        this.mod = vO.m ? timeIntFromB64(vO.m) : vO.mod || new Date().getTime();
+        this.cr8 = vO.c ? timeIntFromB64(vO.c) : vO.cr8 || Date.now();
+        this.mod = vO.m ? timeIntFromB64(vO.m) : vO.mod || Date.now();
 
         if(vO.isNote) this.isNote = true;
         if(vO.log) this.log = vO.log;
@@ -429,17 +429,47 @@ function Crypto(){
         return [plainPinString, shareB64];
     };
 
-
+    /* ------------------------------------------- DonateAccount object constructor ----------------------------------------------------- */
+    function DonateAccount(aO){
+        this.id = aO.id;
+        this.name = aO.name;
+        this.sAddress = aO.sAddress; //"terra1rfq7dx4m5r0y24cq2kqdchs8c82uwfw6mf78x0"; //SecreSync Account Address
+        this.privateKey = aO.k ? u8AryFromB64(aO.k) : aO.privateKey || randomU8Ary(32); // u8Ary
+        this.enquired = aO.e ? timeIntFromB64(aO.e) : aO.enquired || false; // integer
+        this.donated = aO.d ? timeIntFromB64(aO.d) : aO.donated || false; // integer
+    }
+    
+    DonateAccount.prototype.prepareForSend = function(){
+        const aO = {...this};
+        aO.k = trimmedB64FromAry(this.privateKey);
+        if(this.enquired) aO.e = b64FromTimeInt(this.enquired);
+        if(this.donated) aO.d = b64FromTimeInt(this.donated);
+        const { privateKey, enquired, donated, ...accountRest } = aO;
+        return accountRest;
+    };
+    
+    DonateAccount.prototype.setEnquire = function(force){
+        if(this.enquired && !force) return false;
+        this.enquired = Date.now();
+        return true;
+    };
+    
+    const getNewDonateAccounts = _ => [
+        {id: "terraClassic", name: "Terra Luna Classic", sAddress: "terra1rfq7dx4m5r0y24cq2kqdchs8c82uwfw6mf78x0"},
+        {id: "dogeCoin", name: "Doge Coin", sAddress: "dogcoin_address"}
+    ].map(aO => new DonateAccount(aO));
+    
     /* -------------------------------------------- New DB Object ------------------------------------------------------- */
     function AppDbObj(dbObj, doUpdateMod){
-        //console.log("in AppDbObj Object constructor", dbObj.draftVendObj);
         this.mod = dbObj && !doUpdateMod ? dbObj.mod : Date.now();
         this.vendors = dbObj?.vendors?.map(vendObj => new Vendor(vendObj)) || [];
         this.credentials = dbObj?.credentials || [];
-        this.draftVendObj = dbObj?.draftVendObj ? new Vendor(dbObj.draftVendObj) : null;
-        //console.log("dbObj. After constructing: new Vendor(dbObj.draftVendObj)", new Vendor(dbObj.draftVendObj))
-        //console.log("dbObj. After constructing this.draftVendObj:", this.draftVendObj)
-        //console.log("dbObj. After constructing this:", this);
+        if(dbObj?.draftVendObj) this.draftVendObj = new Vendor(dbObj.draftVendObj);
+        if(dbObj?.donateAccounts){
+            this.donateAccounts = dbObj.donateAccounts.map(accountObj => new DonateAccount(accountObj));
+        }else{
+            this.getNewDonateAccounts = _ => this.donateAccounts = getNewDonateAccounts();
+        }
     }
     
     AppDbObj.prototype.reset = function(){
@@ -453,13 +483,15 @@ function Crypto(){
     
     AppDbObj.prototype.prepare = function(filteredVendors){
         const sendVendors = filteredVendors || this.vendors;
-        //console.log("AppDbObj.prototype.prepare - this.draftVendObj:", this.draftVendObj);
-        return JSON.stringify({
+        const sendAppDbObj = {
             mod: this.mod,
             vendors: sendVendors.map(vendObj => vendObj.prepareForSend()),
             credentials: this.credentials,
-            draftVendObj: this.draftVendObj ? this.draftVendObj.prepareForSend() : null
-        });
+        };
+        if(this.draftVendObj) sendAppDbObj.draftVendObj = this.draftVendObj.prepareForSend();
+        if(this.donateAccounts) sendAppDbObj.donateAccounts = this.donateAccounts.map(accountObj => accountObj.prepareForSend());
+
+        return JSON.stringify(sendAppDbObj);
     };
 
     

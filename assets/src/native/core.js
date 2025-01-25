@@ -3,6 +3,7 @@
 
 //Debugging
 const developerMode = true; // Global constant for printing console
+const servedLocally = developerMode && !location.host;
 const mobileDebugAry = [];
 const mobileDebug = (...msg) => {
    developerMode && mobileDebugAry.push([new Date().toISOString(), msg.join(", ")]);
@@ -108,7 +109,7 @@ function isURL(string){
             addClass: cssClass => {cssClass && el.classList.add(cssClass); return el;},
             addClasses: (...cssClasses) => {cssClasses.length && cssClasses.forEach(cssClass => el.classList.add(cssClass)); return el;},
             killClass: cssClass => {cssClass && el.classList.remove(cssClass); return el;},
-            toggleClass: cssClass => {cssClass && el.classList.toggle(cssClass); return el;},
+            toggleClass: (cssClass, force) => {cssClass && el.classList.toggle(cssClass, force); return el;},
             hasClass: cssClass => el.classList.contains(cssClass),
             cssName: cssClasses => {cssClasses && (el.className = cssClasses); return el;},
             hide: _ => el.addClass("elNoDisplay"),

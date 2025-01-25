@@ -27,11 +27,10 @@ function App(urlSearchParams){
         this.getFilteredDbFileBlobForExport = filteredVendors => this.encryptString(thisApp.dbObj.prepare(filteredVendors)).then(getFileBlob);
         
         this.setDbObj = (dbObj, doUpdateMod) => {
-            console.log("Setting New DBOBJ", dbObj, doUpdateMod);
             dbCipher = null;
             thisApp.dbObj = new thisApp.crypto.AppDbObj(dbObj, doUpdateMod); 
         };
-        
+
         this.saveOpfsFile = async(opfsFileName, fileContent) => {
             const opfsFileBlob = getFileBlob(fileContent);
             const opfsRoot = await navigator.storage.getDirectory();
@@ -193,7 +192,6 @@ function App(urlSearchParams){
         Persisted.prototype.delete = async function() {
             await thisApp.cryptoHandle.clearOpfs().catch(err => console.error(err));
             thisApp.localStorage.delete("persistPepper");
-            
             return this.exist().then(len => len && Promise.all(Object.values(this).map(methods => methods.delete())).then(thisApp.message.persistedDeleted))
         };
         
@@ -259,7 +257,7 @@ function App(urlSearchParams){
                 : isPersisted
                     ? (persistedType === "online" && !thisApp.online)
                         ? (await thisApp.alert.offlineCredNoVerify(), await thisApp.ui.credentials.pinPass(true, canPersist, true))
-                        : await thisApp.ui.credentials.pin(true, canPersist) // isPersisted must be true - not forwarded
+                        : await thisApp.ui.credentials.pin(true, canPersist, persistedType) // isPersisted must be true - not forwarded
                     : await thisApp.ui.credentials.pinPass(true, canPersist, false);
 
             if(!dbRawCredentials) throw "BackButtonPressed";
@@ -277,7 +275,7 @@ function App(urlSearchParams){
                     console.log(persistOnline);
 
                     if(persistOnline === false) {
-                        persistType = developerMode && !location.host ? "online" : "device";
+                        persistType = servedLocally ? "online" : "device";
                     }
                 }
                 return persistType;//if registerAuth === null (user cancelled) then persistType = null - will mean not persists at all
@@ -327,7 +325,7 @@ function App(urlSearchParams){
             
             await Promise.all(storesWithEncryptedHandles.map((storeObj, idx) => storeObj.handleUpdate(thisApp.cryptoHandle.encryptString(decryptedHandles[idx])))); // restore newly encrypted handles
             thisApp.dbObj.credentials.unshift({plainPassString: dbCredentials.plainPassString, plainPinString: dbCredentials.plainPinString, timestamp: Date.now()});
-            thisApp.dbStore.updateAll(thisApp).then(rejectedPromises => {
+            thisApp.dbStore.updateAll(thisApp, true).then(rejectedPromises => {
                 if(rejectedPromises.length) thisApp.message.dbCredentialsChangeModerateFail(rejectedPromises);
                 this.persist(dbCredentials, cryptoKey);
             }).catch(err => {
@@ -392,15 +390,6 @@ function App(urlSearchParams){
     
     const uninstallServiceWorker = async thisApp => {
         try {
-/*             const keys = await caches.keys();
-            const cacheDeleteResults = await Promise.all(keys.map(caches.delete));
-            if(developerMode) console.log('Caches have been deleted.', cacheDeleteResults, keys);
-
-            const regs = await navigator.serviceWorker.getRegistrations();
-            const unregisterResults = await Promise.all(regs.map(reg => reg.unregister())); */
-             
-             
-             
             const registrations = await navigator.serviceWorker.getRegistrations();
             const unregisterPromises = registrations.map(registration => registration.unregister());
 
@@ -478,7 +467,10 @@ function App(urlSearchParams){
 
     this.urlReplace = url => url && location.replace(url);
     this.reload = async saveState => {
-        ///saveState === true && this.dbObj.draftVendObj && await this.dbStore.updateAll(this, false).catch(err => null); // NOT NEEDED ANYMORE?
+        if(servedLocally){
+            this.urlReplace(location.href);
+            return;
+        }
         this.urlReplace(this.URL);
     }
     const resetAndReloadApp = _ => this.dbStore.removeAllHandles(true).then(this.reload);// force removal of storeObj handles
@@ -486,11 +478,8 @@ function App(urlSearchParams){
     this.online = navigator.onLine;
 
     this.connectivitychange = e => {
-
         const wasOnline = this.online;
-        
         this.online = e.type !== "offline";
-        
          mobileDebug("connectivitychange. e.type = ", e.type);
 
         this.dbStore.getRemoteObjects().forEach(storeObj => storeObj.switchConnection()); 
@@ -509,7 +498,7 @@ function App(urlSearchParams){
             this.sessionStorage.set(reloadBy, Date.now() + this.settings.appLogOff.current * 1000); //60000 ms = 1 minute
         }else{
             if(this.sessionStorage.get(reloadBy) < Date.now()){
-                this.reload(true);
+                this.reload();
             }else{
                 setTimeout(_ => {
                     this.ui.blur(false);
@@ -524,29 +513,28 @@ function App(urlSearchParams){
         return _ => {
             if(!this.dbObj) return;
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(_ => this.reload(true), 600000);//600000 ms = 10 minutes
+            inactivityTimer = setTimeout(_ => this.reload(), 600000);//600000 ms = 10 minutes
         }
     })();
 
-
-    
-/*     this.clearAllStorage = _ => {
+    this.reset = async _ => {
+        const {consent, lang} = this.localStorage;
         this.localStorage.clear();
         this.sessionStorage.clear();
-        return this.idxDb.clear();
-    }; */
+        await this.idxDb.clear();
+        if(consent) this.localStorage.set("consent", consent);
+        if(lang) this.localStorage.set("lang", lang);
+        this.reload();
+        return null;
+    };
 
     this.makePrivate = async _ =>{
-        //await this.clearAllStorage();
-        
         this.localStorage.clear();
         this.sessionStorage.clear();
-        
         await uninstallServiceWorker(this);
-        
         await this.idxDb.clear();
-        
         await this.idxDb.destroySelf();
+        this.lang = null;
         this.consent = null;
         this.init();
     };
@@ -554,6 +542,7 @@ function App(urlSearchParams){
     this.setConsent = async _ => {
         this.consent = true;
         this.localStorage.set("consent", Date.now());
+        if(this.lang) this.localStorage.set("lang", this.lang);
         this.init();
     };
 
@@ -631,8 +620,6 @@ function App(urlSearchParams){
         
         this.settings = new AppSettings(this);
         
-/*         const appLayout = parseInt(this.localStorage.get("appLayout")); // '1' , '2' or nan
-        this.hasMobileLayout = _ => appLayout ? appLayout === 2 : this.settings.appWidth.current < 800 && window.TOUCH_DEVICE; */
 
         this.dbStore = new AppDbStore(this); //appDbStore;
         this.ui = new Interface(this);
@@ -659,8 +646,8 @@ function App(urlSearchParams){
 
     this.createNewDb = async _ => {
         this.dbStore.restoreObjectsSync();
-        const dbObjCredentials = await this.cryptoHandle.decryptToJson(false);
-        this.cryptoHandle.setDbObj(dbObjCredentials, true);
+        const dbObj = await this.cryptoHandle.decryptToJson(false); // returns dbObj containing user credentials property
+        this.cryptoHandle.setDbObj(dbObj, true);
         this.dbObj.isNew = true;
         this.paint();
        //throw "where does it throw when create a new db?" dbObj
@@ -722,7 +709,7 @@ function App(urlSearchParams){
                     case "DeleteDatabase":
                         for (const storeObj of savedStoreObjs) {
                             if (!await this.alert.deleteExistingStore(storeObj.key)) return this.start(null, false);
-                            await storeObj.handleRemove(false, false);
+                            await storeObj.handleRemove(false, false, true);
                         }
                         return this.start(null, false);
                     case "BackButtonPressed":

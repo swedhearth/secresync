@@ -3,82 +3,20 @@
 console.log("index core MobileOptimisation_97");
 /* 
 TO DO:
-- Google Drive Integration - Will not do
-- decide on payment/supportDonate - To do
- 
- UserSettings - and or AppDBObjUserSettiings l(for app before loading the the db object - then another for after the DBObj has been loaded - e.g. number of revisions stored)make?
- catchSync vs catchLoad vs catchUpdate make correct
- 
-DONE - alert before getChangePassword !!!!
- 
- 
-DONE - Theme to white.
-DONE - Link section out of order
-DONE - Log-off tied to visibility change
-DONE - Local file database change textBank
-DONE!!!  -Icons before sections headers - icons ::before name, log, link, note, etc
+IN PROGRESS - decide on payment/supportDonate - To do
 
-DONE - Scroll event tied to el.focus() - search input to lose focus
-DONE - Maximum revisions - overwrite the oldest - is it done?
+TODO- Time zone and timeformat setting
 
-DONE!!!  -history - swipe from bottom to display all history messages
-DONE!!! - Tooltips in mobile view for icons
-DONE!!! - spinner - change
-
-
-DONE!!! - redo the vdertical alignment in typeLog and typeNote
-
-DONE!!! revisions - shorten the descryption to just date or v: xx/xx/xxxx tt:tt:tt
-
-DONE!!! Change the remember password hint and the checkbox text to: remember password. Password is remembered. / Remove the remembered password.... maybe make it in the unrolled hint
-
-DONE!!! Make hint for new Password 
-
-Settings: 
- - history versions - DONE !!! 
- - app max width (if not mobile) - DONE !!! FOR ALL
- - AppLogOff seconds
- - app colour mode
- 
-
-Export Database filtered - ui.js - exportDb function -  make add to history. Make History popstate to remove all class="disposableModalSection". Remove Trash from the list to export!!!!!!!
-
-disposableModal - sort history back!!!!!!!!!!!!!
-
-
-DONE !!!!!!! beforeMsgModule - hide when popping up!!!!!!!!!!!!!
-
-DONE!!!hide sharing option if the account type is note
-
-DONE!!! For notification history icon to be a bell or klepsydra (bell would be better)
-DONE!!! revision history move to the bottom bar and hide the account modification bar when historical account is showing
-
-DONE!!!!!!!! horizontal scroll bar  to make thin as vertical
-
-TODO make all database icons as thick as the current expDb - And some other icons maybe a little fatter.
-
-DONE!!! revision wrap to caption in the middle
-DONE!!!!!!!!!! select the history button when revision displayed
-DONE!!!!!!!!!!!!! bell fr historyclose button to arrowleft in Formexport account to finish
-|Done!!swap main bar with taskbar
-make some of the settings in the database (DbObj) settings directly
-
-TODo - settings to display the current and the past credentials
-TOTO- Time zone and timeformat setting
-DONE!!! Blur disable from start
-
-
-Check the persist password methods on live production server ->  the "online" Alert - not available -> is it an close button to not save on the device? -> ALSO check the "offlineCredNoSave" alert -> wtf?
+TODO -Check the persist password methods on live production server ->  the "online" Alert - not available -> is it an close button to not save on the device? -> ALSO check the "offlineCredNoSave" alert -> wtf?
 
 */
 
 // get url search parameters
-mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.stringify(window.history.state));
 (async _ =>{
     let locationSearch = window.location.search; // if redirected, the location should be: "?code=code&state=state" || "?error=error&state=state" OR empty string
     if(locationSearch){
         const wasHistoryLength = window.sessionStorage?.getItem("historyLength");
-        if(wasHistoryLength){ // Maybe if no history - then don;t do it?
+        if(wasHistoryLength){
             window.sessionStorage.setItem("locationSearch", locationSearch);
             await new Promise(res => setTimeout(res, 300));//wait until disk is flushed 500ms,
             const wasHistoryLengthInt = parseInt(wasHistoryLength); // not needed really
@@ -91,6 +29,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             return null;
         }
         window.location.replace(window.location.origin + window.location.pathname.replace("index.html", ""));
+        return null;
     }
 
     window.history.state || window.history.pushState({lastBackExists: true}, "", "");// add lastBackExists state if empty state
@@ -108,13 +47,10 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     return Object.fromEntries(new URLSearchParams(locationSearch));
     
 })().then(urlSearchParams => {
-
-    console.log("urlSearchParams", urlSearchParams);
     if(!urlSearchParams){
-        setTimeout(_ =>{
-            if(confirm("IN INDEX - !!! This has been caught when no urlSearchParams and 2 seconds ellapsed. WILL RELOAD. history.state: " + JSON.stringify(window.history.state) + " - window.history.length = " + window.history.length)){
-                window.location.replace(window.location.origin + window.location.pathname.replace("index.html", ""));
-            }
+        setTimeout(_ => {
+            //urlSearchParams is null and 2 seconds ellapsed - it looks like we don't go back in history.
+            window.location.replace(window.location.origin + window.location.pathname.replace("index.html", ""));
         }, 2000);
         return;
     }
@@ -123,14 +59,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
     new App(urlSearchParams).init().then(async thisApp => {
         if(developerMode) console.log(thisApp);
 
-        window.addEventListener('online', thisApp.connectivitychange);
-        window.addEventListener('offline', thisApp.connectivitychange);
-        
-        document.addEventListener('visibilitychange', thisApp.visibilityChange);
-        window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
-
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
-        
         mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
         
         let squeezedViewPortHeightInt = window.virtualKeyboardIsDisplayed = 0;
@@ -152,7 +81,7 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 resizeDelay = setTimeout(_ => { //wait as it may be squeezing back from 500 to 400
                     squeezedViewPortHeightInt = eventViewPortHeightInt; // either 400 or 500
                     document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-                }, 50);
+                }, 200);
                 return;
             }else{ // if body was not squeezed, now it will be squeezed
                 resizeDelay = setTimeout(_ => {
@@ -161,7 +90,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
 
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-            
             mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
         };
 
@@ -184,10 +112,6 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
             }
         };
 
-        window.visualViewport.addEventListener('scroll', viewportScrollHandler);
-        window.visualViewport.addEventListener('resize', viewportResizeHandler);
-        mobileDebug("viewportScrollHandler and viewportResizeHandler addEventListener. virtualKeyboard in navigator = ", "virtualKeyboard" in navigator);
-
         let appInstalled = false;
         window.addEventListener("appinstalled", () => {
             thisApp.message.tempAppInstalled();
@@ -203,16 +127,83 @@ mobileDebug("In Index. Start the History Check. window.history.state = ", JSON.s
                 const result = await e.prompt();
             }
         });
-
+        
+        window.visualViewport.addEventListener('scroll', viewportScrollHandler);
+        window.visualViewport.addEventListener('resize', viewportResizeHandler);
+        
+        window.addEventListener('online', thisApp.connectivitychange);
+        window.addEventListener('offline', thisApp.connectivitychange);
+        
+        window.addEventListener('blur', e => e.target === this && thisApp.ui.blur(true), {capture: true});
+        
+        document.addEventListener('visibilitychange', thisApp.visibilityChange);
 
     }).catch(err => {
-        console.log(err);
-        mobileDebug("In Index.  new App(urlSearchParams).init() catch error: ", JSON.stringify(err));
-        if(confirm("new App(urlSearchParams).init() Failed. TRUE = Remove document and asow alert. FALSE = Do nothing, I will examin the error.")){
-            document.documentElement.remove();
-            alert("cant't initiate the Application");
+        const crEl = tag => document.createElement('html'); 
+        const createErrorPage = () => {
+
+            const html = crEl('html');
+            html.lang = 'en';
+
+            const head = document.createElement('head');
+            const metaCharset = document.createElement('meta');
+            metaCharset.setAttribute('charset', 'UTF-8');
+            const metaViewport = document.createElement('meta');
+            metaViewport.setAttribute('name', 'viewport');
+            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+            const title = document.createElement('title');
+            title.textContent = 'Application Error';
+            const style = document.createElement('style');
+            style.textContent = `
+                body {
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 {
+                    font-size: 50px;
+                }
+                p {
+                    font-size: 20px;
+                }
+                a {
+                    color: #007BFF;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            `;
+
+            head.append(metaCharset, metaViewport, title, style);
+
+            const body = document.createElement('body');
+            const h1 = document.createElement('h1');
+            h1.textContent = 'Something Went Wrong';
+            const p1 = document.createElement('p');
+            p1.textContent = 'Cannot start the application.';
+            const p2 = document.createElement('p');
+            const a = document.createElement('a');
+            a.href = window.location.origin + window.location.pathname.replace("index.html", "");
+            a.textContent = 'Reload application';
+            p2.appendChild(a);
+
+            body.append(h1, p1, p2);
+
+            html.append(head, body);
+
+            return html;
+        };
+        
+        if(developerMode){
+            console.log(err);
+            mobileDebug("In Index.  new App(urlSearchParams).init() catch error: ", JSON.stringify(err));
+            if(confirm("new App(urlSearchParams).init() Failed. TRUE = Remove document and asow alert. FALSE = Do nothing, I will examin the error.")){
+                document.documentElement.replaceWith(createErrorPage());
+                alert("cant't initiate the Application");
+            }
+        }else{
+            document.documentElement.replaceWith(createErrorPage());
         }
-        
-        
     });
 });

@@ -84,19 +84,22 @@ function AppDbStore(thisApp){
             await thisApp.idxDb.set(storeObj.key, storeObj.handle);
             storeObj.handlePlain = null;
         };
-        storeObj.handleRemove = async (noMoreSync, forceRemove) => {
-            if(await thisApp.credentials.persisted.exist() && this.objectsExist() === 1 && this.getObjectsWithHandles()[0] === storeObj){
-                if(forceRemove || await thisApp.alert.removePersistedLastStoreDisconnect()){
-                    await thisApp.credentials.persisted.delete();
-                }else{
-                    return null; //do not remove the handle
-                }
+        storeObj.handleRemove = async (noMoreSync, forceRemove, deleteDatabase) => {
+            if(this.objectsExist() === 1 && this.getObjectsWithHandles()[0] === storeObj){
+                if(
+                    await thisApp.credentials.persisted.exist()
+                    && !forceRemove
+                    && !await thisApp.alert.removePersistedLastStoreDisconnect()
+                ) return null; //do not remove the handle
+
+                if(deleteDatabase) return thisApp.reset();
             };
+            
             if(noMoreSync) thisApp.localStorage.set(storeObj.key + "DontSync", true);
             await thisApp.idxDb.delete(storeObj.key);
             storeObj.tempHandlePlain = null;
             await storeObj.reset();
-            if(storeObj.connected) thisApp.message.storeConnectionFalse(storeObj.name);
+            if(storeObj.connected || forceRemove) thisApp.message.storeConnectionFalse(storeObj.name);
             storeObj.connected = false;
             return null;
         };
@@ -121,7 +124,7 @@ function AppDbStore(thisApp){
                 }else if(storeObj.dbMod){ //storeObj exists and is older than thisApp.dbObj - localFile and / or Dbx File will be overwritten if accepted
                    const isSetOlderStore = await thisApp.alert.setOlderStore(storeObj.key);
                     if(isSetOlderStore) thisApp.cryptoHandle.setDbObj(storeDbObj);
-                    if(isSetOlderStore === null) await storeObj.handleRemove(false, true); // cross presses
+                    if(isSetOlderStore === null) await storeObj.handleRemove(false, true); // cross pressed
                     //else (false) - continue - the storeDbObj will be overwritten with the current thisApp.dbObj 
                 }// if (storeObj.dbMod = undefined) - when connection new DB from dbx - update with thisApp.dbObj
 
@@ -138,10 +141,8 @@ function AppDbStore(thisApp){
             return storeObj.key;//used to confirm the successful update (and for dev reason to see which of the stores have been updated)
         };
         storeObj.iconOpacity = (show, afterConnection) => {
-            let method = show ? "killClass": "addClass";
-            storeObj.credIcon[method]("elDimmed");
-            method = afterConnection ? method : "addClass";
-            storeObj.syncIcon[method]("elDimmed");
+            storeObj.credIcon.toggleClass("elDimmed", !show);
+            storeObj.syncIcon.toggleClass("elDimmed", afterConnection ? !show : true);
         };
         storeObj.syncToggle = async _ => {
             if(storeObj.syncing) return thisApp.message.storeIsSyncing(storeObj.name);
@@ -572,6 +573,7 @@ function AppDbStore(thisApp){
         const readDbUseFileHandle = async existing => { //FileSystemdbFileHandle API
             this.syncStart();
             let dbCredentials = null;
+
             if(!thisApp.dbObj){ //|| !existing
                 this.iconOpacity(true);
                 dbCredentials = await thisApp.credentials.get(false);// if throws then 2 possibilities: No dbRawCredentials (DeleteDatabase or BackButton was pressed);
@@ -718,9 +720,10 @@ function AppDbStore(thisApp){
 /* ****************************--------------------------------- END App Stores  ---------------------------------***********************************/
 
     this.local = new Local();
+    this.localFile = new LocalFile();
     this.dbxFile = new DbxFile(); //dbxFileLoad
     this.oneDriveFile = new OneDriveFile(); //oneDriveFileLoad
-    this.localFile = new LocalFile();
+    
 
 }
 

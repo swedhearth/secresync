@@ -289,6 +289,12 @@ const txtBankObj = {
         "y": "Yes,<br>Save changes",
         "n": "No,<br>Discard changes",
         "i": "draftVendObj"
+      },
+      "secreSyncReset": {
+        "q": "Do you want to reset the application?",
+        "y": "Yes,<br>I want to remove all connections to my database and restore the application to its default settings.",
+        "n": "No,<br>This was a mistake.",
+        "i": "secreSyncReset"
       }
     },
     "message": {
@@ -455,7 +461,9 @@ const txtBankObj = {
         "shareBarcodeText": "Display Password QR Code", //*Description: Generate a QR code that contains the plain password for local sharing.*
         "shareBarcodeLink": "Display Encrypted Password QR Code", //*Description: Generate a QR code with a link and a PIN to decrypt the password.*
         "shareWebshareLink": "Share Password Link with PIN", //*Description: Share a link and display a PIN to decrypt the password.*
-        "draftVendObj": "Draft version"
+        "draftVendObj": "Draft version",
+        "wallet": "Wallet address",
+        "secreSyncReset": "Reset Application"
       },
       "htmls": {
         "formLabelName": "Account Name",
@@ -530,7 +538,7 @@ const txtBankObj = {
         "appLayoutMobile": "Mobile Layout",
         "appLayoutDesktop": "Desktop Layout",
         "appLogOff": "Set the delay time before the application logs off automatically.<br>Current delay: ${value} seconds.",
-        "selfProfile": "My database login details:<br>Password: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Created on: ${timestamp}.",
+        "selfProfile": "My database login details:<br>Password: ${plainPassString}<br>PIN: ${plainPinString}<br>Created on: ${timestamp}",
         "appIconSize": "Change the size of the application icons.<br>Current icon size: ${value} pixels.",
         "appBlur": "Enable or disable the blur effect when the application is not in focus.<br>Current setting: ${value}.",
         "appBlurEnabled": "Enabled",
@@ -546,8 +554,9 @@ const txtBankObj = {
         "statusDraftTypeNote": "Editing a New Note-Type Account. Current Account Name: ${accountName}",
         "statusDraftTypeLog": "Editing a Login-Type Account. Current Account Name: ${accountName}",
         "statusRevisions": "Revision History. Versions Back: ${revisionIdx}",
-        "statusTypeNote": "Viewing Note-Type Account. Account Name: ${accountName}",
-        "statusTypeLog": "Viewing Login-Type Account. Account Name: ${accountName}"
+        "statusTypeNote": "Note-Type Account. Account Name: ${accountName}",
+        "statusTypeLog": "Login-Type Account. Account Name: ${accountName}",
+        "donate": "Support us by donating ${ donateAcc }"
       },
       "values": {
         "badPass": "Password incorrect... Removing all databases...",
@@ -846,8 +855,13 @@ const txtBankObj = {
         "y": "Sí,<br>Guardar cambios",
         "n": "No,<br>Descartar cambios",
         "i": "draftVendObj"
+      },
+      "secreSyncReset": {
+        "q": "¿Quieres restablecer la aplicación?",
+        "y": "Sí,<br>quiero eliminar todas las conexiones a mi base de datos y restaurar la configuración predeterminada de la aplicación.",
+        "n": "No,<br>esto fue un error.",
+        "i": "secreSyncReset"
       }
-
     },
     "message": {
       "appFailed":"Algo salió mal...<br><br>La aplicación no puede iniciar.<br><br>Intenta recargar la aplicación",
@@ -1013,7 +1027,9 @@ const txtBankObj = {
         "shareBarcodeText": "Mostrar código QR de la contraseña",
         "shareBarcodeLink": "Mostrar código QR de la contraseña cifrada",
         "shareWebshareLink": "Compartir enlace de la contraseña con PIN",
-        "draftVendObj": "Versión borrador"
+        "draftVendObj": "Versión borrador",
+        "wallet": "Dirección de la cartera",
+        "secreSyncReset": "Restablecer la aplicación"
       },
       "htmls": {
         "formLabelName": "Nombre de la Cuenta",
@@ -1088,7 +1104,7 @@ const txtBankObj = {
         "appLayoutMobile": "Diseño móvil",
         "appLayoutDesktop": "Diseño de escritorio",
         "appLogOff": "Establezca el tiempo de retraso antes de que la aplicación cierre sesión automáticamente.<br>Retraso actual: ${value} segundos.",
-        "selfProfile": "Mis datos de inicio de sesión en la base de datos:<br>Contraseña: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Creado el: ${timestamp}.",
+        "selfProfile": "Mis datos de inicio de sesión en la base de datos:<br>Contraseña: ${plainPassString}<br>PIN: ${plainPinString}<br>Creado el: ${timestamp}",
         "appIconSize": "Cambia el tamaño de los iconos de la aplicación.<br>Tamaño actual de los iconos: ${value} píxeles.",
         "appBlur": "Habilitar o deshabilitar el efecto de desenfoque cuando la aplicación no está en foco.<br>Configuración actual: ${value}.",
         "appBlurEnabled": "Habilitado",
@@ -1104,8 +1120,9 @@ const txtBankObj = {
         "statusDraftTypeNote": "Editando una nueva cuenta de tipo nota. Nombre actual de la cuenta: ${accountName}",
         "statusDraftTypeLog": "Editando una cuenta de tipo inicio de sesión. Nombre actual de la cuenta: ${accountName}",
         "statusRevisions": "Historial de revisiones. Versiones anteriores: ${revisionIdx}",
-        "statusTypeNote": "Visualizando cuenta de tipo nota. Nombre de la cuenta: ${accountName}",
-        "statusTypeLog": "Visualizando cuenta de tipo inicio de sesión. Nombre de la cuenta: ${accountName}"
+        "statusTypeNote": "Cuenta de tipo nota. Nombre de la cuenta: ${accountName}",
+        "statusTypeLog": "Cuenta de tipo inicio de sesión. Nombre de la cuenta: ${accountName}",
+        "donate": "Apóyanos donando ${ donateAcc }"
       },
       "values": {
         "badPass": "Contraseña incorrecta... Eliminando todas las bases de datos...",
@@ -1404,6 +1421,12 @@ const txtBankObj = {
         "y": "Oui,<br>Enregistrer les modifications",
         "n": "Non,<br>Annuler les modifications",
         "i": "draftVendObj"
+      },
+      "secreSyncReset": {
+        "q": "Voulez-vous réinitialiser l'application ?",
+        "y": "Oui,<br>je veux supprimer toutes les connexions à ma base de données et restaurer les paramètres par défaut de l'application.",
+        "n": "Non,<br>c'était une erreur.",
+        "i": "secreSyncReset"
       }
     },
     "message": {
@@ -1570,7 +1593,9 @@ const txtBankObj = {
         "shareBarcodeText": "Afficher le code QR du mot de passe",
         "shareBarcodeLink": "Afficher le code QR du mot de passe chiffré",
         "shareWebshareLink": "Partager le lien du mot de passe avec le code PIN",
-        "draftVendObj": "Version brouillon"
+        "draftVendObj": "Version brouillon",
+        "wallet": "Adresse du portefeuille",
+        "secreSyncReset": "Réinitialiser l'application"
       },
       "htmls": {
         "formLabelName": "Nom du Compte",
@@ -1645,7 +1670,7 @@ const txtBankObj = {
         "appLayoutMobile": "Disposition mobile",
         "appLayoutDesktop": "Disposition de bureau",
         "appLogOff": "Définissez le temps de délai avant la déconnexion automatique de l'application.<br>Délai actuel : ${value} secondes.",
-        "selfProfile": "Mes identifiants de connexion à la base de données :<br>Mot de passe : ${plainPassString}.<br>PIN : ${plainPinString}.<br>Créé le : ${timestamp}.",
+        "selfProfile": "Mes identifiants de connexion à la base de données :<br>Mot de passe : ${plainPassString}<br>PIN : ${plainPinString}<br>Créé le : ${timestamp}",
         "appIconSize": "Changez la taille des icônes de l'application.<br>Taille actuelle des icônes : ${value} pixels.",
         "appBlur": "Activez ou désactivez l'effet de flou lorsque l'application n'est pas au premier plan.<br>Paramètre actuel : ${value}.",
         "appBlurEnabled": "Activé",
@@ -1661,8 +1686,9 @@ const txtBankObj = {
         "statusDraftTypeNote": "Édition d'un nouveau compte de type note. Nom actuel du compte : ${accountName}",
         "statusDraftTypeLog": "Édition d'un compte de type connexion. Nom actuel du compte : ${accountName}",
         "statusRevisions": "Historique des révisions. Versions précédentes : ${revisionIdx}",
-        "statusTypeNote": "Affichage d'un compte de type note. Nom du compte : ${accountName}",
-        "statusTypeLog": "Affichage d'un compte de type connexion. Nom du compte : ${accountName}"
+        "statusTypeNote": "Compte de type note. Nom du compte : ${accountName}",
+        "statusTypeLog": "Compte de type connexion. Nom du compte : ${accountName}",
+        "donate": "Soutenez-nous en faisant un don de ${ donateAcc }"
       },
       "values": {
         "badPass": "Mot de passe incorrect... Suppression de toutes les bases de données...",
@@ -1961,6 +1987,12 @@ const txtBankObj = {
         "y": "Tak,<br>Zapisz zmiany",
         "n": "Nie,<br>Odrzuć zmiany",
         "i": "draftVendObj"
+      },
+      "secreSyncReset": {
+        "q": "Czy chcesz zresetować aplikację?",
+        "y": "Tak,<br>chcę usunąć wszystkie połączenia z moją bazą danych i przywrócić domyślne ustawienia aplikacji.",
+        "n": "Nie,<br>to była pomyłka.",
+        "i": "secreSyncReset"
       }
     },
     "message": {
@@ -2127,7 +2159,9 @@ const txtBankObj = {
         "shareBarcodeText": "Wyświetl kod QR hasła",
         "shareBarcodeLink": "Wyświetl zaszyfrowany kod QR hasła",
         "shareWebshareLink": "Udostępnij link do hasła z PIN-em",
-        "draftVendObj": "Wersja Robocza"
+        "draftVendObj": "Wersja Robocza",
+        "wallet": "Adres portfela",
+        "secreSyncReset": "Zresetuj aplikację"
       },
       "htmls": {
         "formLabelName": "Nazwa Konta",
@@ -2202,7 +2236,7 @@ const txtBankObj = {
         "appLayoutMobile": "Układ mobilny",
         "appLayoutDesktop": "Układ desktopowy",
         "appLogOff": "Ustaw czas opóźnienia przed automatycznym wylogowaniem aplikacji.<br>Aktualne opóźnienie: ${value} sekund.",
-        "selfProfile": "Moje dane logowania do bazy danych:<br>Hasło: ${plainPassString}.<br>PIN: ${plainPinString}.<br>Utworzono: ${timestamp}.",
+        "selfProfile": "Moje dane logowania do bazy danych:<br>Hasło: ${plainPassString}<br>PIN: ${plainPinString}<br>Utworzono: ${timestamp}",
         "appIconSize": "Zmień rozmiar ikon aplikacji.<br>Aktualny rozmiar ikon: ${value} pikseli.",
         "appBlur": "Włącz lub wyłącz efekt rozmycia, gdy aplikacja nie jest w fokusie.<br>Aktualne ustawienie: ${value}.",
         "appBlurEnabled": "Włączone",
@@ -2218,8 +2252,9 @@ const txtBankObj = {
         "statusDraftTypeNote": "Edytowanie nowego konta typu notatka. Obecna nazwa konta: ${accountName}",
         "statusDraftTypeLog": "Edytowanie konta typu logowanie. Obecna nazwa konta: ${accountName}",
         "statusRevisions": "Historia zmian. Wersji wstecz: ${revisionIdx}",
-        "statusTypeNote": "Wyświetlanie konta typu notatka. Nazwa konta: ${accountName}",
-        "statusTypeLog": "Wyświetlanie konta typu logowanie. Nazwa konta: ${accountName}"
+        "statusTypeNote": "Konto typu notatka. Nazwa konta: ${accountName}",
+        "statusTypeLog": "Konto typu logowanie. Nazwa konta: ${accountName}",
+        "donate": "Wesprzyj nas, wpłacając ${ donateAcc }"
         
       },
       "values": {
