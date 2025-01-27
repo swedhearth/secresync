@@ -1,7 +1,7 @@
 /* 'frequent_0.084_GitHub' */
 
 function Interface(thisApp){
-    let tempVer = "frequent_0.137_GitHub";
+    let tempVer = "frequent_0.138_GitHub";
     "use strict";
     if(developerMode) console.log("initiate Interface");
     
@@ -505,6 +505,7 @@ function Interface(thisApp){
         this.disconnectDbFrom = storeKey => appAlert(`disconnectDbFrom.${storeKey}`);
         this.deleteExistingStore = storeKey => appAlert(`deleteExistingStore.${storeKey}`);
         this.localFileLoadOrCreate = _ => appAlert("localFileLoadOrCreate");
+        this.localFileUserActivate = _ => appAlert("localFileUserActivate");
         this.localFileDownload = _ => appAlert("localFileDownload");
         this.exportDb = _ => appAlert("exportDb", {localFileName: getTxtBankTitleTxt("localFile")});
         this.importDb = _ => appAlert("importDb");

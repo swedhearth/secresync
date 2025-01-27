@@ -140,6 +140,12 @@ const txtBankObj = {
         "n": "No, I don't.<br>I need to create and save a new file.",
         "i": "localFile"
       },
+      "localFileUserActivate": {
+        "q": "Tap OK to allow access to the database file on this device/browser",
+        "y": "OK.",
+        "n": "No,<br>I don't want to give access to the database file on this device/browser.",
+        "i": "localFile"
+      },
       "localFileDownload": {
         "q": "There is no possibility to synchronise<br>with the Database File on this device/browser.<br><br>However, you can download a copy of the application's database.",//Device Database File
         "y": "I want to download a copy<br>of the database.",
@@ -551,11 +557,11 @@ const txtBankObj = {
         "shareWebshareLink": "Share a link and display a PIN to decrypt the password.",
         "statusTypeNoteNew": "Editing a New Note-Type Account",
         "statusTypeLogNew": "Editing a New Login-Type Account",
-        "statusDraftTypeNote": "Editing a New Note-Type Account. Current Account Name: ${accountName}",
-        "statusDraftTypeLog": "Editing a Login-Type Account. Current Account Name: ${accountName}",
+        "statusDraftTypeNote": "Editing a New Note-Type Account: ${accountName}",
+        "statusDraftTypeLog": "Editing a Login-Type Account: ${accountName}",
         "statusRevisions": "Revision History. Versions Back: ${revisionIdx}",
-        "statusTypeNote": "Note-Type Account. Account Name: ${accountName}",
-        "statusTypeLog": "Login-Type Account. Account Name: ${accountName}",
+        "statusTypeNote": "Note-Type Account: ${accountName}",
+        "statusTypeLog": "Login-Type Account: ${accountName}",
         "donate": "Support us by donating ${ donateAcc }"
       },
       "values": {
@@ -704,6 +710,12 @@ const txtBankObj = {
         "q": "¿Ya tienes un archivo con una copia de la base de datos?",
         "y": "Sí, lo tengo.<br>Quiero elegir el archivo.",
         "n": "No, no lo tengo.<br>Necesito crear y guardar un nuevo archivo.",
+        "i": "localFile"
+      },
+      "localFileUserActivate": {
+        "q": "Toca OK para permitir el acceso al archivo de base de datos en este dispositivo/navegador",
+        "y": "OK.",
+        "n": "No,<br>no quiero permitir el acceso al archivo de base de datos en este dispositivo/navegador.",
         "i": "localFile"
       },
       "localFileDownload": {
@@ -1117,11 +1129,11 @@ const txtBankObj = {
         "shareWebshareLink": "Compartir un link y mostrar un PIN para descifrar la contraseña.",
         "statusTypeNoteNew": "Editando una nueva cuenta de tipo nota",
         "statusTypeLogNew": "Editando una nueva cuenta de tipo inicio de sesión",
-        "statusDraftTypeNote": "Editando una nueva cuenta de tipo nota. Nombre actual de la cuenta: ${accountName}",
-        "statusDraftTypeLog": "Editando una cuenta de tipo inicio de sesión. Nombre actual de la cuenta: ${accountName}",
+        "statusDraftTypeNote": "Editando una nueva cuenta de tipo nota: ${accountName}",
+        "statusDraftTypeLog": "Editando una cuenta de tipo inicio de sesión: ${accountName}",
         "statusRevisions": "Historial de revisiones. Versiones anteriores: ${revisionIdx}",
-        "statusTypeNote": "Cuenta de tipo nota. Nombre de la cuenta: ${accountName}",
-        "statusTypeLog": "Cuenta de tipo inicio de sesión. Nombre de la cuenta: ${accountName}",
+        "statusTypeNote": "Cuenta de tipo nota: ${accountName}",
+        "statusTypeLog": "Cuenta de tipo inicio de sesión: ${accountName}",
         "donate": "Apóyanos donando ${ donateAcc }"
       },
       "values": {
@@ -1270,6 +1282,12 @@ const txtBankObj = {
         "q": "Avez-vous déjà un fichier avec une copie de la base de données?",
         "y": "Oui, j'en ai un.<br>Je veux choisir le fichier.",
         "n": "Non, je n'en ai pas.<br>Je dois créer et enregistrer un nouveau fichier.",
+        "i": "localFile"
+      },
+      "localFileUserActivate": {
+        "q": "Appuyez sur OK pour autoriser l'accès au fichier de base de données sur cet appareil/navigateur",
+        "y": "OK.",
+        "n": "Non,<br>je ne veux pas autoriser l'accès au fichier de base de données sur cet appareil/navigateur.",
         "i": "localFile"
       },
       "localFileDownload": {
@@ -1683,11 +1701,11 @@ const txtBankObj = {
         "shareWebshareLink": "Partager un lien et afficher un code PIN pour déchiffrer le mot de passe.",
         "statusTypeNoteNew": "Édition d'un nouveau compte de type note",
         "statusTypeLogNew": "Édition d'un nouveau compte de type connexion",
-        "statusDraftTypeNote": "Édition d'un nouveau compte de type note. Nom actuel du compte : ${accountName}",
-        "statusDraftTypeLog": "Édition d'un compte de type connexion. Nom actuel du compte : ${accountName}",
+        "statusDraftTypeNote": "Édition d'un nouveau compte de type note: ${accountName}",
+        "statusDraftTypeLog": "Édition d'un compte de type connexion: ${accountName}",
         "statusRevisions": "Historique des révisions. Versions précédentes : ${revisionIdx}",
-        "statusTypeNote": "Compte de type note. Nom du compte : ${accountName}",
-        "statusTypeLog": "Compte de type connexion. Nom du compte : ${accountName}",
+        "statusTypeNote": "Compte de type note: ${accountName}",
+        "statusTypeLog": "Compte de type connexion: ${accountName}",
         "donate": "Soutenez-nous en faisant un don de ${ donateAcc }"
       },
       "values": {
@@ -1842,6 +1860,12 @@ const txtBankObj = {
         "q": "Nie istnieje możliwość synchronizacji<br>z Plikiem Bazy Danych na tym urządzeniu/przeglądarce.<br><br>Możesz natomiast pobrać kopię bazy danych aplikacji.",
         "y": "Chcę pobrać kopię bazy danych.",
         "n": "Nie chce pobierać kopii bazy danych.",
+        "i": "localFile"
+      },
+      "localFileUserActivate": {
+        "q": "Kliknij OK, aby zezwolić na dostęp do pliku bazy danych na tym urządzeniu/przeglądarce",
+        "y": "OK.",
+        "n": "Nie,<br>nie chcę zezwalać na dostęp do pliku bazy danych na tym urządzeniu/przeglądarce.",
         "i": "localFile"
       },
       "importDb": {
@@ -2249,11 +2273,11 @@ const txtBankObj = {
         "shareWebshareLink": "Udostępnij link i wyświetl PIN do odszyfrowania hasła.",
         "statusTypeNoteNew": "Edytowanie nowego konta typu notatka",
         "statusTypeLogNew": "Edytowanie nowego konta typu logowanie",
-        "statusDraftTypeNote": "Edytowanie nowego konta typu notatka. Obecna nazwa konta: ${accountName}",
-        "statusDraftTypeLog": "Edytowanie konta typu logowanie. Obecna nazwa konta: ${accountName}",
+        "statusDraftTypeNote": "Edytowanie nowego konta typu notatka: ${accountName}",
+        "statusDraftTypeLog": "Edytowanie konta typu logowanie: ${accountName}",
         "statusRevisions": "Historia zmian. Wersji wstecz: ${revisionIdx}",
-        "statusTypeNote": "Konto typu notatka. Nazwa konta: ${accountName}",
-        "statusTypeLog": "Konto typu logowanie. Nazwa konta: ${accountName}",
+        "statusTypeNote": "Konto typu notatka: ${accountName}",
+        "statusTypeLog": "Konto typu logowanie: ${accountName}",
         "donate": "Wesprzyj nas, wpłacając ${ donateAcc }"
         
       },

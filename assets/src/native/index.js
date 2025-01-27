@@ -60,7 +60,7 @@ TODO -Check the persist password methods on live production server ->  the "onli
         if(developerMode) console.log(thisApp);
 
         const origViewPortHeightInt = parseInt(window.visualViewport.height); //800
-        mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
+        //mobileDebug('origViewPortHeightInt', origViewPortHeightInt);
         
         let squeezedViewPortHeightInt = window.virtualKeyboardIsDisplayed = 0;
         let resizeDelay;
@@ -70,7 +70,7 @@ TODO -Check the persist password methods on live production server ->  the "onli
         window.testWithVitualKeyboard = true;
 
         const viewportResizeHandler = e => {
-            mobileDebug("viewportResizeHandler triggered. eventViewPortHeightInt: ", parseInt(e.target.height), "squeezedViewPortHeightInt", squeezedViewPortHeightInt);
+            //mobileDebug("viewportResizeHandler triggered. eventViewPortHeightInt: ", parseInt(e.target.height), "squeezedViewPortHeightInt", squeezedViewPortHeightInt);
             if(disableResize) return;
             clearTimeout(resizeDelay);
             const eventViewPortHeightInt = parseInt(e.target.height);
@@ -90,7 +90,7 @@ TODO -Check the persist password methods on live production server ->  the "onli
             }
 
             document.documentElement.style.setProperty("--body-height", `${e.target.height}px`);
-            mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
+            //mobileDebug("viewportResizeHandler triggered. Body Size set to: ", e.target.height);
         };
 
         const viewportScrollHandler = e => {

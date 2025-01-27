@@ -339,7 +339,7 @@ function AppDbStore(thisApp){
         };
         
         storeObj.remoteUpdate = async updateStore => {
-            mobileDebug("In storeObj.remoteUpdate Start. The storeObj.key = ", storeObj.key);
+            //mobileDebug("In storeObj.remoteUpdate Start. The storeObj.key = ", storeObj.key);
             const alreadyUpdated = storeObj.dbMod === thisApp.dbObj?.mod;
             if(!thisApp.dbObj || !thisApp.online || !storeObj.canAlter() || storeObj.dontSync || storeObj.syncPaused || alreadyUpdated){
                 storeObj.iconOpacity(alreadyUpdated, true);
@@ -353,22 +353,22 @@ function AppDbStore(thisApp){
         };
         
         storeObj.switchConnection = async _ => {
-            mobileDebug("In storeObj.switchConnection Start. The storeObj.key = ", storeObj.key);
+            //mobileDebug("In storeObj.switchConnection Start. The storeObj.key = ", storeObj.key);
             if(!thisApp.online || !storeObj.handle) return storeObj.syncPause();
             
             storeObj.syncPaused = false;
             storeObj.iconOpacity(true, false);
             
             if(!thisApp.dbObj){
-                mobileDebug("In storeObj.switchConnection. The storeObj.key = ", storeObj.key, "NO thisApp.dbObj. Will RETURN!!!");
+                //mobileDebug("In storeObj.switchConnection. The storeObj.key = ", storeObj.key, "NO thisApp.dbObj. Will RETURN!!!");
                 return;
             }
 
             if(storeObj.canAlter()){
-                mobileDebug("In storeObj.switchConnection storeObj.canAlter - will update the store.");
+                //mobileDebug("In storeObj.switchConnection storeObj.canAlter - will update the store.");
                 storeObj.update().catch(storeObj.catchUpdate);
             }else{
-                mobileDebug("In storeObj.switchConnection storeObj.canAlter is false - will read the store (storeObj.remoteRead). Is the thisApp.dbObj? = ", JSON.stringify(thisApp.dbObj));
+                //mobileDebug("In storeObj.switchConnection storeObj.canAlter is false - will read the store (storeObj.remoteRead). Is the thisApp.dbObj? = ", JSON.stringify(thisApp.dbObj));
                 try{
                     await storeObj.read().then(thisApp.paint).catch(storeObj.catchLoad); 
                 }catch(err){ //would be one of the following: "OperationError", "DeleteDatabase", "BackButtonPressed","noFilePickedErr" - neither can really happen
@@ -570,15 +570,28 @@ function AppDbStore(thisApp){
                    "granted" === await this.handle.requestPermission({ mode });
         };
         
-        const readDbUseFileHandle = async existing => { //FileSystemdbFileHandle API
+        const readDbUseFileHandle = async (existing, transientActivation) => { //FileSystemdbFileHandle API
             this.syncStart();
             let dbCredentials = null;
+            let filePermission = null;
 
             if(!thisApp.dbObj){ //|| !existing
                 this.iconOpacity(true);
                 dbCredentials = await thisApp.credentials.get(false);// if throws then 2 possibilities: No dbRawCredentials (DeleteDatabase or BackButton was pressed);
             }
-            if(!await verifyPermission(existing ? "readwrite" : "read")) throw thisApp.txtBank.app.values.userReject;
+            mobileDebug("readDbUseFileHandle - navigator.userActivation.isActive = ", navigator.userActivation.isActive);
+            console.log("readDbUseFileHandle - navigator.userActivation.isActive = ", navigator.userActivation.isActive);
+            
+            try{
+                filePermission = await verifyPermission(existing ? "readwrite" : "read");
+            }catch(err){
+                mobileDebug("readDbUseFileHandle catch(err) = ", JSON.stringify(err));
+                if(transientActivation) throw err;
+                if(await thisApp.alert.localFileUserActivate()) return readDbUseFileHandle(existing, true);
+                // else - will throw thisApp.txtBank.app.values.userReject; 
+            }
+            if(!filePermission) throw thisApp.txtBank.app.values.userReject;
+            //if(!await verifyPermission(existing ? "readwrite" : "read")) throw thisApp.txtBank.app.values.userReject;
             return [await this.handle.getFile().then(file => file.arrayBuffer()), dbCredentials];
         }
 
